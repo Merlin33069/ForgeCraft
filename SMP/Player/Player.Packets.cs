@@ -8,46 +8,7 @@ namespace SMP
     /// </summary>
 	public partial class Player : System.IDisposable
 	{
-		//////////////////////////////////////////////////"http://www.wiki.vg/Protocol"///
-        // 0x01 - Login Request
-		// --------------------
-		// Sent by the client after the handshake to finish logging in. 
-		// If the version is outdated or any field is invalid, the 
-		// server will disconnect the client with a kick. If the client
-		// is started in offline mode, the player's username will 
-		// default to Player, making LAN play with more than one player
-		// impossible (without authenticating) as the server will 
-		// prevent multiple users with the same name. 
-		// --Payload---------------------------------
-		//  - int, Protocol Version
-		//  - string16, Username
-		//  - long, Map seed
-		//  - byte, Dimension
-		private void HandleLogin(byte[] message)
-		{
-			int version = util.EndianBitConverter.Big.ToInt32(message, 0);
-			short length = util.EndianBitConverter.Big.ToInt16(message, 4);
-			username = Encoding.BigEndianUnicode.GetString(message, 6, (length * 2));
-			Server.Log(username);
-
-			SendLoginPass();
-		}
-		
-		//////////////////////////////////////////////////"http://www.wiki.vg/Protocol"///
-        // 0x02 - Handshake
-		// ----------------
-		// This is the first packet sent when the client connects and
-		// is used for Authentication. 
-		// --Payload------------------
-		//  - string16, Username
-		private void HandleHandshake(byte[] message)
-		{
-			short length = util.EndianBitConverter.Big.ToInt16(message, 0);
-			Server.Log(length + "");
-			Server.Log(Encoding.BigEndianUnicode.GetString(message, 2, length * 2));
-
-			SendHandshake();
-		}       
+		       
 		
 		//////////////////////////////////////////////////"http://www.wiki.vg/Protocol"///
         // 0x03 - Chat Message
