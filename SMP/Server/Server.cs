@@ -12,7 +12,7 @@ namespace SMP
 		Server s;
 		public bool shuttingDown = false;
 		public static Socket listen;
-
+		public static World mainlevel;
 		public static int protocolversion = 14;
 		public static string name = "sc";
 		public static int port = 25565;
