@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SMP
 {
-	class DataValues
+	public class DataValues
 	{
 		enum Blocks {
 			Air = 0,

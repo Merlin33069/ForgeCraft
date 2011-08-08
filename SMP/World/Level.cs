@@ -10,7 +10,7 @@ namespace SMP
 		public float SpawnYaw;
 		public float SpawnPitch;
 		public string Map_Name;
-		public FCGenerator generator = new FCGenerator();
+		public FCGenerator generator;
 		Dictionary<long, Chunk> chunkData;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SMP.World"/> class and generates 49 chunks.
@@ -26,6 +26,7 @@ namespace SMP
 		/// </param>
 		public World (double spawnx, double spawny, double spawnz)
 		{
+			generator = new FCGenerator(this);
 			int i = 1;
 			while (i != 50)
 			{
@@ -38,6 +39,7 @@ namespace SMP
 		public static World LoadLVL(string filename)
 		{
 			//TODO Load files
+			return null;
 		}
 		public void SaveLVL(World  w)
 		{
@@ -49,14 +51,14 @@ namespace SMP
 			Player.players.ForEach(delegate(Player p)
 			{
 				byte[] tosend1 = new byte[2];
-				tosend1[0] = c.x;
-				tosend1[1] = c.z;
+				tosend1[0] = (byte)c.x;
+				tosend1[1] = (byte)c.z;
 				tosend1[2] = 1;
 				p.SendRaw(0x32, tosend1);
 				byte[] tosend = new byte[7];
-				tosend[0] = c.x;
+				tosend[0] = (byte)c.x;
 				tosend[1] = 0;
-				tosend[2] = c.z;
+				tosend[2] = (byte)c.z;
 				tosend[3] = 15;
 				tosend[4] = 127;
 				tosend[5] = 15;

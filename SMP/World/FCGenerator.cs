@@ -18,14 +18,15 @@ namespace SMP
 					for (int z = 0; z < 16; z++)
 					{
 						if (y < 64)
-							c.PlaceBlock(x, y, z, DataValues.Blocks.Stone);
+							c.PlaceBlock(x, y, z, 1);
 						else if (y == 64)
-							c.PlaceBlock(x, y, z, DataValues.Blocks.Dirt);
+							c.PlaceBlock(x, y, z, 2);
 						else
-							c.PlaceBlock(x, y, z, DataValues.Blocks.Air);
+							c.PlaceBlock(x, y, z, 0);
 					}
 				}
 			}
+			return c;
 		}
 	}
 }
