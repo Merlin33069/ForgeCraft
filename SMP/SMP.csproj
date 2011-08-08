@@ -52,10 +52,13 @@
     <Compile Include="util\LittleEndianBitConverter.cs" />
     <Compile Include="World\Level.cs" />
     <Compile Include="World\DataValues.cs" />
+    <Compile Include="World\Chunck.cs" />
+    <Compile Include="World\FCGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gui\" />
     <Folder Include="World\" />
+    <Folder Include="..\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
