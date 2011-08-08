@@ -11,6 +11,7 @@ namespace SMP
 	class Player : System.IDisposable
 	{
 		Socket socket;
+		public World level;
 		static Random random = new Random();
 		byte[] buffer = new byte[0];
 		byte[] tempbuffer = new byte[0xFF];
@@ -19,7 +20,7 @@ namespace SMP
 		string ip;
 		int id;
 		string username;
-		byte dimension; //-1 for hell, 0 otherwise
+		byte dimension; //-1 for hell, 0 otherwise, 1 skyworld?
 
 		public Player(Socket s)
 		{
@@ -27,7 +28,8 @@ namespace SMP
 			socket = s;
 			ip = socket.RemoteEndPoint.ToString().Split(':')[0];
 			Server.Log(ip + " connected to the server.");
-
+			level = Server.mainlevel;
+			dimension = 0;
 			socket.BeginReceive(tempbuffer, 0, tempbuffer.Length, SocketFlags.None, new AsyncCallback(Receive), this);
 		}
 
