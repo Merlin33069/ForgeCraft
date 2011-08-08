@@ -68,15 +68,12 @@
     <Compile Include="util\WordWrap.cs" />
     <Compile Include="Command\Commands\CmdMe.cs" />
     <Compile Include="Command\Commands\CmdSay.cs" />
-<<<<<<< HEAD
     <Compile Include="Command\Commands\CmdList.cs" />
     <Compile Include="Command\Commands\CmdKick.cs" />
     <Compile Include="Command\Commands\CmdHelp.cs" />
     <Compile Include="Command\Commands\CmdDevs.cs" />
-=======
     <Compile Include="Plugins\Plugin_Manager.cs" />
->>>>>>> a947556100c6ef73798319d1a3c4a0a3f340f929
-  </ItemGroup>
+</ItemGroup>
   <ItemGroup>
     <Folder Include="Gui\" />
     <Folder Include="World\" />
