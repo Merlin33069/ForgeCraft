@@ -82,16 +82,16 @@ namespace SMP
                 using (ZOutputStream zout = new ZOutputStream(ms, zlibConst.Z_BEST_COMPRESSION))
                 {
                     // Write block types
-                    zout.Write(blockTypes, 0, blockTypes.Length);
+                    zout.Write(blocks, 0, blocks.Length);
 
                     // Write metadata
-                    zout.Write(metaData, 0, metaData.Length);
+                    zout.Write(meta, 0, meta.Length);
 
                     // Write block light
-                    zout.Write(blockLight, 0, blockLight.Length);
+                    zout.Write(Light, 0, Light.Length);
 
                     // Write sky light
-                    zout.Write(skyLight, 0, skyLight.Length);
+                    zout.Write(SkyL, 0, SkyL.Length);
                 }
                 compressed = ms.ToArray();
             }
@@ -133,12 +133,12 @@ namespace SMP
 		/// <param name='id'>
 		/// Block id.
 		/// </param>
-		public void PlaceBlock(int x, int y, int z, DataValues id)
+		/*public void PlaceBlock(int x, int y, int z, DataValues id)
 		{
 			if (BlockPlaced != null) { if (BlockPlaced(x, y, z, id)) return; }
 			if (InBound(x, y, z))
 				blocks[PosToInt(x, y, z)] = id;
-		}
+		}*/
 		public static int PosToInt(int x, int y, int z)
         {
             return (x * Depth + z) * Height + y;

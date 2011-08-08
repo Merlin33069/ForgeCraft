@@ -4,8 +4,8 @@ namespace SMP
 {
 	public class FCGenerator
 	{
-		public Level l;
-		public FCGenerator (Level l)
+		public World l;
+		public FCGenerator (World l)
 		{
 			this.l = l;
 		}

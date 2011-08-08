@@ -48,7 +48,12 @@ namespace SMP
 		{
 			Player.players.ForEach(delegate(Player p)
 			{
-				byte[] tosend;
+				byte[] tosend1 = new byte[2];
+				tosend1[0] = c.x;
+				tosend1[1] = c.z;
+				tosend1[2] = 1;
+				p.SendRaw(0x32, tosend1);
+				byte[] tosend = new byte[7];
 				tosend[0] = c.x;
 				tosend[1] = 0;
 				tosend[2] = c.z;
