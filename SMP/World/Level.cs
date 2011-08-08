@@ -10,9 +10,16 @@ namespace SMP
 		public float SpawnYaw;
 		public float SpawnPitch;
 		public FCGenerator generator = new FCGenerator();
-		Dictionary<long, Chunck> chunkData;
+		Dictionary<long, Chunk> chunkData;
 		public World ()
 		{
+			int i = 1;
+			while (i != 50)
+			{
+				Chunk c = new Chunk(i * 16, i * 16);
+				chunkData.Add(i, generator.FlatChunk(c));
+				i++;
+			}
 		}
 	}
 }
