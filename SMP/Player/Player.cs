@@ -19,6 +19,11 @@ namespace SMP
 		bool disconnected = false;
         public bool LoggedIn { get; protected set; }
 
+		double Stance = 72;
+		double[] pos = new double[3] { 0, 72, 0 };
+		float[] rot = new float[2] { 0, 0 };
+		byte onground = 1; //really a bool, but were going to hold it as a byte (1 or 0 ONLY) so we can send it easier
+
 		public string ip;
 		int id;
 		public string username;
@@ -31,7 +36,6 @@ namespace SMP
 			ip = socket.RemoteEndPoint.ToString().Split(':')[0];
 			Server.Log(ip + " connected to the server.");
 			level = Server.mainlevel;
-			level.SendData(this);
 			dimension = 0;
 			socket.BeginReceive(tempbuffer, 0, tempbuffer.Length, SocketFlags.None, new AsyncCallback(Receive), this);
 		}
@@ -188,6 +192,10 @@ namespace SMP
 				Server.Log(e.Message);
 				Server.Log(e.StackTrace);
 			}
+
+			SendMap();
+			SendSpawnPoint();
+			SendLoginDone();
 		}
 		void SendHandshake()
 		{
@@ -201,11 +209,73 @@ namespace SMP
 			}
 			SendRaw(2, bytes);
 		}
+
+		void SendInventory()
+		{
+
+		}
+
+		void SendMap()
+		{
+			int i = 0;
+			foreach (Chunk c in Server.mainlevel.chunkData.Values)
+			{
+				SendChunk(c);
+				i++;
+			}
+			Server.Log(i + " Chunks sent");
+		}
+		void SendChunk(Chunk c)
+		{
+			//Send Chunk Init
+			byte[] tosend1 = new byte[9];
+			util.EndianBitConverter.Big.GetBytes(c.x).CopyTo(tosend1, 0);
+			util.EndianBitConverter.Big.GetBytes(c.z).CopyTo(tosend1, 3);
+			tosend1[8] = 1;
+			SendRaw(0x32, tosend1);
+
+			Server.Log(c.x + " " + c.z + " " + c.x * 16 + " " + c.z * 16);
+
+			//Send Chunk Data
+			byte[] CompressedData = c.GetCompressedData();
+			byte[] bytes = new byte[17 + CompressedData.Length];
+			util.EndianBitConverter.Big.GetBytes((int)(c.x * 16)+8).CopyTo(bytes, 0);
+			util.EndianBitConverter.Big.GetBytes((int)0).CopyTo(bytes, 4);
+			util.EndianBitConverter.Big.GetBytes((int)(c.z * 16)+8).CopyTo(bytes, 6);
+			bytes[10] = 15;
+			bytes[11] = 127;
+			bytes[12] = 15;
+			util.EndianBitConverter.Big.GetBytes(CompressedData.Length).CopyTo(bytes, 13);
+			CompressedData.CopyTo(bytes, 17);
+			SendRaw(0x33, bytes);
+		}
+		void SendSpawnPoint()
+		{
+			byte[] bytes = new byte[12];
+			util.EndianBitConverter.Big.GetBytes(0).CopyTo(bytes, 0);
+			util.EndianBitConverter.Big.GetBytes(72).CopyTo(bytes, 4);
+			util.EndianBitConverter.Big.GetBytes(0).CopyTo(bytes, 8);
+			SendRaw(0x06, bytes);
+		}
+		void SendLoginDone()
+		{
+			Server.Log("Login Done");
+
+			byte[] bytes = new byte[41];
+			util.EndianBitConverter.Big.GetBytes(pos[0]).CopyTo(bytes, 0);
+			util.EndianBitConverter.Big.GetBytes(Stance).CopyTo(bytes, 8);
+			util.EndianBitConverter.Big.GetBytes(pos[1]).CopyTo(bytes, 16);
+			util.EndianBitConverter.Big.GetBytes(pos[2]).CopyTo(bytes, 24);
+			util.EndianBitConverter.Big.GetBytes(rot[0]).CopyTo(bytes, 32);
+			util.EndianBitConverter.Big.GetBytes(rot[1]).CopyTo(bytes, 36);
+			bytes[40] = onground;
+			SendRaw(0x0D, bytes);
+
+			Server.Log(pos[0] + " " + pos[1] + " " + pos[2]);
+		}
 		#endregion
 		
 		#region INCOMING
-		
-		
 		void HandleCommand(string cmd, string message)
 		{
 		  	Command command = Command.all.Find(cmd);
@@ -387,13 +457,13 @@ namespace SMP
 			
 			if (message != null)
 			{
-				Server.ServerLogger.Log(LogLevel.Notice, "{0}{1} kicked: {2}",
-                	LoggedIn ? "" : "/", LoggedIn ? username : ip, message);
+			//	Server.ServerLogger.Log(LogLevel.Notice, "{0}{1} kicked: {2}",
+            //    	LoggedIn ? "" : "/", LoggedIn ? username : ip, message);
 			}
 			else
 			{
-				Server.ServerLogger.Log(LogLevel.Notice, "{0}{1} kicked: {2}",
-                	LoggedIn ? "" : "/", LoggedIn ? username : ip, Server.KickMessage);				
+			//	Server.ServerLogger.Log(LogLevel.Notice, "{0}{1} kicked: {2}",
+            //    	LoggedIn ? "" : "/", LoggedIn ? username : ip, Server.KickMessage);				
 			}
             if (LoggedIn)
                 GlobalMessage("§5{0} §fhas been kicked from the server!", WrapMethod.None, username);
@@ -412,7 +482,6 @@ namespace SMP
 			//TODO: Despawn
 			this.Dispose();
 		}
-
 		public void Disconnect()
 		{
 			if (disconnected) return;
@@ -420,8 +489,8 @@ namespace SMP
 			disconnected = true;
 			
 			
-			Server.ServerLogger.Log(LogLevel.Notice, "{0}{1} kicked: {2}",
-            	LoggedIn ? "" : "/", LoggedIn ? username : ip);
+			//Server.ServerLogger.Log(LogLevel.Notice, "{0}{1} kicked: {2}",
+            //	LoggedIn ? "" : "/", LoggedIn ? username : ip);
             if (LoggedIn)
                 GlobalMessage("§5{0} §fhas been kicked from the server!", WrapMethod.None, username);
             LoggedIn = false;

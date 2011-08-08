@@ -26,7 +26,7 @@ namespace SMP
 		{
 			Log("Starting Server");
 			s = this;
-			mainlevel = new World(0, 64, 0);
+			mainlevel = new World(0, 66, 0);
 			//TODO update thread for pos
 			Setup();
 

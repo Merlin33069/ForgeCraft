@@ -100,5 +100,6 @@ namespace SMP
             Server.ServerLogger.Log(LogLevel.Info, username + ": " + message);
         }
 
+
 	}
 }
