@@ -14,15 +14,17 @@ namespace SMP
 		public static Socket listen;
 		public static World mainlevel;
 		public static int protocolversion = 14;
+		public static string Version = "0.1";
 		public static string name = "sc";
 		public static int port = 25565;
+		public static bool unsafe_plugin = false;
 		public static Logger ServerLogger = new Logger();
 		
 		public Server()
 		{
 			Log("Starting Server");
 			s = this;
-			
+			mainlevel = new World(0, 64, 0);
 			//TODO update thread for pos
 			Setup();
 

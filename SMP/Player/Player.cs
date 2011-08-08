@@ -30,6 +30,7 @@ namespace SMP
 			ip = socket.RemoteEndPoint.ToString().Split(':')[0];
 			Server.Log(ip + " connected to the server.");
 			level = Server.mainlevel;
+			level.SendData(this);
 			dimension = 0;
 			socket.BeginReceive(tempbuffer, 0, tempbuffer.Length, SocketFlags.None, new AsyncCallback(Receive), this);
 		}
