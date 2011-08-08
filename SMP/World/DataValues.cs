@@ -105,5 +105,141 @@ namespace SMP
 			//LockedChest = 95,
 			Trapdoor = 96
 		};
+		enum Items {
+			IronShovel = 256,
+			IronPickaxe = 257,
+			IronAxe = 258,
+			FlintAndSteel = 259,
+			AppleRed = 260,
+			Bow = 261,
+			Arrow = 262,
+			Coal = 263,
+			Diamond = 264,
+			IronIngot = 265,
+			GoldIngot = 266,
+			IronSword = 267,
+			WoodenSword = 268,
+			WoodenShovel = 269,
+			WoodenPickaxe = 270,
+			WoodenAxe = 271,
+			StoneSword = 272,
+			StoneShovel = 273,
+			StonePickaxe = 274,
+			StoneAxe = 275,
+			DiamondSword = 276,
+			DiamondShovel = 277,
+			DiamondPickaxe = 278,
+			DiamondAxe = 279,
+			Stick = 280,
+			Bown = 281,
+			SoupMushroom = 282,
+			GoldSword = 283,
+			GoldShovel = 284,
+			GoldPickaxe = 285,
+			GoldAxe = 286,
+			String = 287,
+			Feather = 288,
+			Gunpowder = 289,
+			WoodenHoe = 290,
+			StoneHoe = 291,
+			IronHoe = 292,
+			DiamondHoe = 293,
+			GoldHoe = 294,
+			Seeds = 295,
+			Wheat = 296,
+			Bread = 297,
+			LeatherCap = 298,
+			LeatherTunic = 299,
+			LeatherPants = 300,
+			LeatherBoots = 301,
+			ChainHelmet = 302,
+			ChainChestplate = 303,
+			ChainLeggings = 304,
+			ChainBoots = 305,
+			IronHelmet = 306,
+			IronChestplate = 307,
+			IronLeggings = 308,
+			IronBoots = 309,
+			DiamondHelmet = 310,
+			DiamondChestplate = 311,
+			DiamondLeggings = 312,
+			DiamondBoots = 313,
+			GoldHelmet = 314,
+			GoldChestplate = 315,
+			GoldLeggings = 316,
+			GoldBoots = 317,
+			Flint = 318,
+			PorkchopRaw = 319,
+			PorkchopCooked = 320,
+			Paintings = 321,
+			AppleGolden = 322,
+			Sign = 323,
+			DoorWooden = 324,
+			Bucket = 325,
+			BucketWater = 326,
+			BucketLava = 327,
+			Minecart = 328,
+			Saddle = 329,
+			DoorIron = 330,
+			Redstone = 331,
+			Snowball = 332,
+			Boat = 333,
+			Leather = 334,
+			Milk = 335,
+			ClayBrick = 336,
+			Clay = 337,
+			SugarCane = 338,
+			Paper = 339,
+			Book = 340,
+			Slimeball = 341,
+			MinecartStorage = 342,
+			MinecartPowered = 343,
+			Egg = 344,
+			Compass = 345,
+			FishingRod = 346,
+			Clock = 347,
+			GlowstoneDust = 348,
+			FishRaw = 349,
+			FishCooked = 350,
+			Dye = 551,
+			Bone = 352,
+			Sugar = 353,
+			Cake = 354,
+			Bed = 355,
+			RedstoneRepeater = 356,
+			Cookie = 357,
+			Map = 358,
+			Shears = 359,
+			GoldMusicDisc = 2256,
+			GreenMusicDisc = 2257
+		};
+		/// <summary>
+		/// Goes for wood types AND leaves
+		/// </summary>
+		enum Tree { Normal = 0, Spruce, Birch };
+		enum Coal { Coal = 0, Charcoal };
+		enum Jukebox { Nothing = 0, GoldDisk, GreenDisk };
+		enum Wool { White = 0, Orange, Magenta, LightBlue, Yellow, LightGreen, Pink, Gray, LightGray, Cyan, Purple, Blue, Brown, DarkGreen, Red, Black };
+		enum Dye { InkSac = 0, RoseRed, CactusGreen, CocoaBeans, LapisLazuli, PurpleDye, CyanDye, LightGrayDye, GrayDye, PinkDye, LimeDye, DandelionYellow, LightBlueDye, MagentaDye, OrangeDye, BoneMeal };
+		enum Torch { South = 0x1, North = 0x2, West = 0x3, East = 0x4, Standing = 0x5 };
+		enum Rail { EastWest = 0x0, NorthSouth = 0x1, AscendingSouth = 0x2, AscendingNorth = 0x3, AscendingEast = 0x4, AscendingWest = 0x5, CornerNorthEast = 0x6, CornerSouthEast = 0x7, CornerSouthWest = 0x8, CornerNorthWest = 0x9 };
+		enum Ladder { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
+		enum Stairs { South = 0x0, North = 0x1, West = 0x2, East = 0x3 };
+		enum Levers { WallSouth = 0x1, WallNorth = 0x2, WallWest = 0x3, WallEast = 0x4, GroundWest = 0x5, GroundSouth = 0x6, LeverOn = 0x8 };
+		enum Doors { NorthEast = 0x0, SouthEast = 0x1, SouthWest = 0x2, NorthWest = 0x3, TopHalf = 0x8, Open = 0x4 };
+		enum Buttons { Pressed = 0x8, West = 0x1, East = 0x2, South = 0x3, North = 0x4 };
+		enum SignPost { West = 0x0, West_NorthWest = 0x1, NorthWest = 0x2, North_NorthWest = 0x3, North = 0x4, North_NorthEast = 0x5, NorthEast = 0x6, East_NorthEast = 0x7, East = 0x8, East_SouthEast = 0x9, SouthEast = 0xA, South_SouthEast = 0xB, South = 0xC, South_SouthWest = 0xD, SouthWest = 0xE, West_SouthWest = 0xF };
+		enum WallSigns { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
+		enum Furnace { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
+		enum Dispenser { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
+		enum Pumpkin { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
+		enum PressurePlate { NotPressed = 0x0, Pressed = 0x1 };
+		enum Slab { Stone = 0x0, SandStone = 0x1, Wooden = 0x2, Cobblestone = 0x3 };
+		enum Bed { Isfoot = 0x8, West = 0x0, North = 0x1, East = 0x2, South = 0x3 };
+		enum Repeater { East = 0x0, South = 0x1, West = 0x2, North = 0x3, Tick1 = 0x5, Tick2 = 0x6, Tick3 = 0x7, Tick4 = 0x8 };
+		enum TallGrass { DeadShrub = 0x0, TallGrass = 0x1, Fern = 0x2 };
+		enum TrapDoors { West = 0x0, East = 0x1, South = 0x2, North = 0x3, Open = 0x4 };
+		enum Piston { Down = 0x0, Up = 0x1, East = 0x2, West = 0x3, North = 0x4, South = 0x5, On = 0x8 };
+		enum PistonExtension { Down = 0x0, Up = 0x1, East = 0x2, West = 0x3, North = 0x4, South = 0x5, Sticky = 0x8 };
 	}
 }
