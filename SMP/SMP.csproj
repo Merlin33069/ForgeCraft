@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SMP</RootNamespace>
     <AssemblyName>SMP</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -42,7 +42,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="zlib.net, Version=1.0.3.0, Culture=neutral, PublicKeyToken=47d7877cb3620160">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Downloads\zlib.NET_104\bin\zlib.net.dll</HintPath>
+      <HintPath>..\..\SilentCraft\SilentCraft\zlib.net.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -54,17 +54,25 @@
     <Compile Include="util\EBitConverter.cs" />
     <Compile Include="util\Endianness.cs" />
     <Compile Include="util\LittleEndianBitConverter.cs" />
-    <Compile Include="World\Level.cs" />
     <Compile Include="World\DataValues.cs" />
     <Compile Include="World\Chunck.cs" />
     <Compile Include="World\FCGenerator.cs" />
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\CommandList.cs" />
+    <Compile Include="Server\ConsolePlayer.cs" />
+    <Compile Include="Network\KnownPackets.cs" />
+    <Compile Include="World\World.cs" />
+    <Compile Include="Player\Player.Packets.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gui\" />
     <Folder Include="World\" />
     <Folder Include="..\" />
+    <Folder Include="Commands\" />
+    <Folder Include="Network\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

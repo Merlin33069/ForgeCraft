@@ -1,17 +1,14 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/World/Chunck.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" ctype="Workspace" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/Player/Player.cs" ctype="Workbench">
     <Files>
-      <File FileName="SMP/Player/Player.cs" Line="32" Column="18" />
-      <File FileName="SMP/Server/Server.cs" Line="19" Column="3" />
-      <File FileName="SMP/Program.cs" Line="1" Column="1" />
-      <File FileName="SMP/World/DataValues.cs" Line="1" Column="1" />
-      <File FileName="SMP/World/Level.cs" Line="1" Column="1" />
-      <File FileName="SMP/World/Chunck.cs" Line="144" Column="38" />
+      <File FileName="SMP/Player/Player.cs" Line="69" Column="3" />
+      <File FileName="SMP/Player/Player.Packets.cs" Line="11" Column="1" />
+      <File FileName="SMP/Commands/Command.cs" Line="11" Column="107" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches ctype="PinnedWatchStore" />
 </Properties>

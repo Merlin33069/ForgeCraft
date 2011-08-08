@@ -8,7 +8,7 @@ using System.Net.Sockets;
 
 namespace SMP
 {
-	class Player : System.IDisposable
+	public partial class Player : System.IDisposable
 	{
 		public static List<Player> players = new List<Player>();
 		Socket socket;
@@ -18,10 +18,10 @@ namespace SMP
 		byte[] tempbuffer = new byte[0xFF];
 		bool disconnected = false;
 
-		string ip;
+		public string ip;
 		int id;
-		string username;
-		byte dimension; //-1 for hell, 0 otherwise, 1 skyworld?
+		public string username;
+		byte dimension; //-1 for nether, 0 normal, 1 skyworld?
 
 		public Player(Socket s)
 		{
@@ -65,6 +65,16 @@ namespace SMP
 				Server.Log(e.Message);
 			}
 		}
+		
+		/// <summary>
+		/// Handles Incoming Packets 
+		/// </summary>
+		/// <param name="buffer">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.Byte[]"/>
+		/// </returns>
 		byte[] HandleMessage(byte[] buffer)
 		{
 			try
@@ -76,7 +86,7 @@ namespace SMP
 					case 0x00: length = 0; break; //Keep alive
 					case 0x01: Server.Log("auth start"); length = ((util.EndianBitConverter.Big.ToInt16(buffer, 5) * 2) + 15); break; //Login Request
 					case 0x02: length = ((util.EndianBitConverter.Big.ToInt16(buffer, 1) * 2) + 2); break; //Handshake
-					//case 0x03: length = 0; break; //Chat
+					case 0x03: length = ((util.EndianBitConverter.Big.ToInt16(buffer, 1) * 2) + 2); break; //
 					//case 0x04: length = 0; break;
 					//case 0x05: length = 0; break;
 					//case 0x06: length = 0; break;
@@ -108,6 +118,9 @@ namespace SMP
 							Server.Log("Handshake");
 							HandleHandshake(message);
 							break;
+						case 0x03:
+							Server.Log("Chat Message");
+							HandleChatMessagePacket() //needs to pass data still
 					}
 					if (buffer.Length > 0)
 						buffer = HandleMessage(buffer);
@@ -186,24 +199,23 @@ namespace SMP
 		}
 		#endregion
 		#region INCOMING
-		void HandleLogin(byte[] message)
+		
+		void HandleCommand(string cmd, string message)
 		{
-			int version = util.EndianBitConverter.Big.ToInt32(message, 0);
-			short length = util.EndianBitConverter.Big.ToInt16(message, 4);
-			username = Encoding.BigEndianUnicode.GetString(message, 6, (length * 2));
-			Server.Log(username);
-
-			SendLoginPass();
-		}
-		void HandleHandshake(byte[] message)
-		{
-			short length = util.EndianBitConverter.Big.ToInt16(message, 0);
-			Server.Log(length + "");
-			Server.Log(Encoding.BigEndianUnicode.GetString(message, 2, length * 2));
-
-			SendHandshake();
+		  	//TODO	
 		}
 		#endregion
+		
+		/// <summary>
+		/// Kicks a player with a reason 
+		/// </summary>
+		/// <param name="reason">
+		/// A <see cref="System.String"/>
+		/// </param>
+		public void Kick(string reason)
+		{
+			
+		}
 
 		public void Disconnect()
 		{
@@ -214,6 +226,5 @@ namespace SMP
 
 		}
 
-		
 	}
 }
