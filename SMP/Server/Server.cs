@@ -16,7 +16,8 @@ namespace SMP
 		public static int protocolversion = 14;
 		public static string name = "sc";
 		public static int port = 25565;
-
+		public static Logger ServerLogger = new Logger();
+		
 		public Server()
 		{
 			Log("Starting Server");
@@ -30,6 +31,13 @@ namespace SMP
 
 		public bool Setup()
 		{
+			//TODO: (in order)
+			//load configuration
+			Command.InitCore();
+			//load plugins
+			//load groups
+			//load whitelist, banlist, reservelist //ask Keith (Silent) if you need/want to know what that is
+			
 			try
 			{
 				IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, port);
@@ -76,9 +84,15 @@ namespace SMP
 			}
 		}
 
+		/// <summary>
+		/// To be depracted and replaced with ServerLogger 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.String"/>
+		/// </param>
 		public static void Log(string message)
 		{
-			Console.WriteLine(message);
+			ServerLogger.Log(message);
 		}
 	}
 }

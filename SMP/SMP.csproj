@@ -57,19 +57,26 @@
     <Compile Include="World\DataValues.cs" />
     <Compile Include="World\Chunck.cs" />
     <Compile Include="World\FCGenerator.cs" />
-    <Compile Include="Commands\Command.cs" />
-    <Compile Include="Commands\CommandList.cs" />
     <Compile Include="Server\ConsolePlayer.cs" />
     <Compile Include="Network\KnownPackets.cs" />
     <Compile Include="World\World.cs" />
+    <Compile Include="Command\Command.cs" />
+    <Compile Include="Command\CommandList.cs" />
     <Compile Include="Player\Player.Packets.cs" />
+    <Compile Include="util\Logger.cs" />
+    <Compile Include="Constants\Color.cs" />
+    <Compile Include="util\WordWrap.cs" />
+    <Compile Include="Command\Commands\CmdMe.cs" />
+    <Compile Include="Command\Commands\CmdSay.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gui\" />
     <Folder Include="World\" />
     <Folder Include="..\" />
-    <Folder Include="Commands\" />
     <Folder Include="Network\" />
+    <Folder Include="Command\" />
+    <Folder Include="Constants\" />
+    <Folder Include="Command\Commands\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

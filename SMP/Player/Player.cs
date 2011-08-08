@@ -199,13 +199,175 @@ namespace SMP
 			SendRaw(2, bytes);
 		}
 		#endregion
+		
 		#region INCOMING
 		
 		
 		void HandleCommand(string cmd, string message)
 		{
-		  	//TODO	
+		  	Command command = Command.all.Find(cmd);
+            if (command == null)
+            {
+                Server.ServerLogger.Log(LogLevel.Info, this.username + " tried using /" + cmd);
+                Server.ServerLogger.Log(LogLevel.Info, "Unrecognised command: " + cmd);
+                SendMessage(Color.Purple + "HelpBot V12: Command /" + cmd + " not recognized");
+                return;
+            }
+			
+			//TO BE REMOVED WHEN GROUPS ARE ADDED
+			List<string> args = new List<string>();
+			while (true)
+            {
+                if (message.IndexOf(' ') != -1)
+                {
+                    message = message.Substring(message.IndexOf(' ') + 1);
+                    if (message.IndexOf(' ') != -1)
+                    args.Add(message.Substring(0, message.IndexOf(' ')));
+                    else
+                    {
+                        args.Add(message);
+                        break;
+                    }
+                }
+                else if (message.IndexOf(' ') == -1)
+                    break;
+            }
+			
+			command.Use(this, args.ToArray());
+            Server.ServerLogger.Log(LogLevel.Info, this.username + " used /" + command.Name);
+			
+			//will uncomment when group system is added for now everybody can use every command ;)
+            /*if (Group.CheckPermission(this, command))
+            {
+            List<string> args = new List<string>();
+            while (true)
+            {
+                if (message.IndexOf(' ') != -1)
+                {
+                    message = message.Substring(message.IndexOf(' ') + 1);
+                    if (message.IndexOf(' ') != -1)
+                    args.Add(message.Substring(0, message.IndexOf(' ')));
+                    else
+                    {
+                        args.Add(message);
+                        break;
+                    }
+                }
+                else if (message.IndexOf(' ') == -1)
+                    break;
+            }
+
+            command.Use(this, args.ToArray());
+            Server.ServerLogger.Log(LogLevel.Info, this.username + " used /" + command.Name);
+            }
+            else if (!Group.CheckPermission(this, command))
+            {
+                Server.ServerLogger.Log(LogLevel.Info, this.username + " tried using /" + cmd + ", but doesn't have appropiate permissions.");
+                SendMessage(Color.Purple + "HelpBot V12: You don't have access to command /" + cmd + ".");
+            }*/	
 		}
+		#endregion
+		
+		#region MESSAGING
+		
+		#region GLOBAL
+		/// <summary>
+		/// Sends a message serverwide, mainly used for chat. 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.String"/>
+		/// </param>
+		public static void GlobalMessage(string message)
+        {
+            GlobalMessage(message, WrapMethod.Default);
+        }
+
+		/// <summary>
+		/// Sends a message serverwide, mainly used for chat.
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.String"/>
+		/// </param>
+		/// <param name="method">
+		/// A <see cref="WrapMethod"/>
+		/// </param>
+        public static void GlobalMessage(string message, WrapMethod method)
+        {
+            string[] lines = WordWrap.GetWrappedText(message, method);
+            for (int i = 0; i < lines.Length; i++)
+            {				
+				//somebody check if this is right please :s
+				byte[] bytes = new byte[(lines[i].Length * 2) + 2];
+				util.EndianBitConverter.Big.GetBytes((ushort)lines[i].Length).CopyTo(bytes, 0);
+				Encoding.BigEndianUnicode.GetBytes(lines[i]).CopyTo(bytes, 2);
+
+                for (int j = 0; j < players.Count; j++)
+                {
+                    if (!players[j].disconnected)
+                    {
+                        players[j].SendRaw((byte)KnownPackets.ChatMessage, bytes);
+                    }
+                }
+            }
+        }
+
+		/// <summary>
+		///Sends a message serverwide, mainly used for chat. 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.String"/>
+		/// </param>
+		/// <param name="method">
+		/// A <see cref="WrapMethod"/>
+		/// </param>
+		/// <param name="args">
+		/// A <see cref="System.Object[]"/>
+		/// </param>
+        public static void GlobalMessage(string message, WrapMethod method, params object[] args)
+        {
+            if (method == WrapMethod.None)
+                GlobalMessage(string.Format(message, args));
+            else
+                GlobalMessage(string.Format(message, args), method);
+        }
+		#endregion
+		
+		#region TARGETED
+		
+		protected virtual void SendMessageInternal(string message)
+        {
+            //once again please check			
+			byte[] bytes = new byte[(message.Length * 2) + 2];
+			util.EndianBitConverter.Big.GetBytes((ushort)message.Length).CopyTo(bytes, 0);
+			Encoding.BigEndianUnicode.GetBytes(message).CopyTo(bytes, 2);
+			this.SendRaw((byte)KnownPackets.ChatMessage, bytes);
+			
+        }
+
+        public void SendMessage(string message)
+        {
+            SendMessage(message, WrapMethod.Default);
+        }
+
+        public void SendMessage(string message, WrapMethod method)
+        {
+            string[] lines = WordWrap.GetWrappedText(message, method);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                SendMessageInternal(lines[i]);
+            }
+        }
+
+        public void SendMessage(string message, WrapMethod method, params object[] args)
+        {
+            if (method == WrapMethod.None)
+                SendMessageInternal(string.Format(message, args));
+            else
+                SendMessage(string.Format(message, args), method);
+        }
+		
+		#endregion
+		
 		#endregion
 		
 		/// <summary>
@@ -227,6 +389,34 @@ namespace SMP
 		{
 
 		}
+		
+		#region TOOLS
+		// <summary>
+        /// Finds a player by string or partial string
+        /// </summary>
+        /// <param name="name">username to search for</param>
+        /// <returns>Player</returns>
+        public static Player FindPlayer(string name)
+        {
+            List<Player> tempList = new List<Player>();
+            tempList.AddRange(players);
+            Player tempPlayer = null; bool returnNull = false;
+
+            foreach (Player p in tempList)
+            {
+                if (p.username.ToLower() == name.ToLower()) return p;
+                if (p.username.ToLower().IndexOf(name.ToLower()) != -1)
+                {
+                    if (tempPlayer == null) tempPlayer = p;
+                    else returnNull = true;
+                }
+            }
+
+            if (returnNull == true) return null;
+            if (tempPlayer != null) return tempPlayer;
+            return null;
+        }
+		#endregion
 
 	}
 }

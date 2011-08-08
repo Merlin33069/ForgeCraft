@@ -60,7 +60,7 @@ namespace SMP
         //  - string16, Message
         private void HandleChatMessagePacket()
         {
-            //string message = bigStream.ReadString16();
+            //string message = bigStream.ReadString16(); //relic code
 			string message = "HELLO!!!!"; // temp
             if (message.Length > 119)
             {
@@ -77,7 +77,7 @@ namespace SMP
             }
             
             // Test for commands
-            if (message[0] == '/') // in future use config defined character
+            if (message[0] == '/') //in future maybe use config defined character
             {
                 message = message.Remove(0, 1);
 
@@ -96,7 +96,7 @@ namespace SMP
 
             // TODO: Rank coloring
             //GlobalMessage(this.PlayerColor + "{1}§f: {2}", WrapMethod.Chat, this.Prefix, Username, message);
-            //Server.ServerLogger.Log(LogLevel.Info, Username + ": " + message);
+            Server.ServerLogger.Log(LogLevel.Info, username + ": " + message);
         }
 
 	}

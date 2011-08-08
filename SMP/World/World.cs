@@ -63,7 +63,7 @@ namespace SMP
 				tosend[4] = 127;
 				tosend[5] = 15;
 				tosend[6] = 0; //idk
-				tosend[7] = c.GetCompressedData();
+				tosend[7] = 10;  //just a hack fix to get it to compile
 				p.SendRaw(0x33, tosend);
 			});
 		}

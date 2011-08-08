@@ -19,10 +19,10 @@ namespace SMP {
             ip = "127.0.0.1";
         }
 
-        /*protected override void SendMessageInternal(string message)
+        protected override void SendMessageInternal(string message)
         {
-            //Server.ServerLogger.Log(LogLevel.Info, ParseColors( message) );
-        }*/
+            Server.ServerLogger.Log(LogLevel.Info, ParseColors(message) );
+        }
 
         /// <summary>
         /// Removes color codes from a string.
