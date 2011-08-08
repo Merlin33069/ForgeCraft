@@ -21,7 +21,7 @@ namespace SMP
 		{
 			Log("Starting Server");
 			s = this;
-
+			
 			//TODO update thread for pos
 			Setup();
 

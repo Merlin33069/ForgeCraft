@@ -1,4 +1,5 @@
 using System;
+using zlib;
 
 namespace SMP
 {
@@ -70,6 +71,32 @@ namespace SMP
 				return false;
 			return true;
 		}
+		/// <summary>
+        /// Returns a compressed copy of the chunk's block data.
+        /// </summary>
+        public byte[] GetCompressedData()
+        {
+            byte[] compressed;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (ZOutputStream zout = new ZOutputStream(ms, zlibConst.Z_BEST_COMPRESSION))
+                {
+                    // Write block types
+                    zout.Write(blockTypes, 0, blockTypes.Length);
+
+                    // Write metadata
+                    zout.Write(metaData, 0, metaData.Length);
+
+                    // Write block light
+                    zout.Write(blockLight, 0, blockLight.Length);
+
+                    // Write sky light
+                    zout.Write(skyLight, 0, skyLight.Length);
+                }
+                compressed = ms.ToArray();
+            }
+            return compressed;
+        }
 		/// <summary>
 		/// Places the block at a x, y, z.
 		/// </summary>
