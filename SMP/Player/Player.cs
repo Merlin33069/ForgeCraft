@@ -17,6 +17,7 @@ namespace SMP
 		byte[] buffer = new byte[0];
 		byte[] tempbuffer = new byte[0xFF];
 		bool disconnected = false;
+        public bool LoggedIn { get; protected set; }
 
 		public string ip;
 		int id;
@@ -87,15 +88,16 @@ namespace SMP
 					case 0x01: Server.Log("auth start"); length = ((util.EndianBitConverter.Big.ToInt16(buffer, 5) * 2) + 15); break; //Login Request
 					case 0x02: length = ((util.EndianBitConverter.Big.ToInt16(buffer, 1) * 2) + 2); break; //Handshake
 					case 0x03: length = ((util.EndianBitConverter.Big.ToInt16(buffer, 1) * 2) + 2); break; //Chat
-					//case 0x04: length = 0; break;
 					//case 0x05: length = 0; break;
-					//case 0x06: length = 0; break;
 					//case 0x07: length = 0; break;
-					//case 0x08: length = 0; break;
+					//case 0x09: length = 0; break;
+					//case 0x0a: length = 0; break;
 					case 0x0b: length = 33; break; //Pos incoming
-					case 0x0d: length = 41; break; //Pos incoming
+					//case 0x0c: length = 0; break;
+					case 0x0d: length = 41; break; //Pos and look incoming
 					default:
 						Server.Log("unhandled message id " + msg);
+					    Kick("Unknown Packet id: " + msg);
 						return new byte[0];
 				}
 				if (buffer.Length > length)
@@ -376,14 +378,55 @@ namespace SMP
 		/// <param name="reason">
 		/// A <see cref="System.String"/>
 		/// </param>
-		public void Kick(string reason)
+		public void Kick(string message)
 		{
+			if (disconnected) return;
 			
+			disconnected = true;
+			
+			if (message != null)
+			{
+				Server.ServerLogger.Log(LogLevel.Notice, "{0}{1} kicked: {2}",
+                	LoggedIn ? "" : "/", LoggedIn ? username : ip, message);
+			}
+			else
+			{
+				Server.ServerLogger.Log(LogLevel.Notice, "{0}{1} kicked: {2}",
+                	LoggedIn ? "" : "/", LoggedIn ? username : ip, Server.KickMessage);				
+			}
+            if (LoggedIn)
+                GlobalMessage("§5{0} §fhas been kicked from the server!", WrapMethod.None, username);
+            LoggedIn = false;
+			
+			try
+			{
+				//hopefully it is right
+				byte[] bytes = new byte[(message.Length * 2) + 2];
+				util.EndianBitConverter.Big.GetBytes((ushort)message.Length).CopyTo(bytes, 0);
+				Encoding.BigEndianUnicode.GetBytes(message).CopyTo(bytes, 2);
+				this.SendRaw((byte)KnownPackets.Disconnect, bytes);
+			}
+			catch{}
+			
+			//TODO: Despawn
+			this.Dispose();
 		}
 
 		public void Disconnect()
 		{
+			if (disconnected) return;
 			
+			disconnected = true;
+			
+			
+			Server.ServerLogger.Log(LogLevel.Notice, "{0}{1} kicked: {2}",
+            	LoggedIn ? "" : "/", LoggedIn ? username : ip);
+            if (LoggedIn)
+                GlobalMessage("§5{0} §fhas been kicked from the server!", WrapMethod.None, username);
+            LoggedIn = false;
+			
+			//TODO: Despawn
+			this.Dispose();
 		}
 		public void Dispose()
 		{

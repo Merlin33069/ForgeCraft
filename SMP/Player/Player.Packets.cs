@@ -31,6 +31,7 @@ namespace SMP
 			username = Encoding.BigEndianUnicode.GetString(message, 6, (length * 2));
 			Server.Log(username);
 
+			LoggedIn = true;
 			SendLoginPass();
 		}
 		

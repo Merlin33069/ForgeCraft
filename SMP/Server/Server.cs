@@ -18,6 +18,8 @@ namespace SMP
 		public static int port = 25565;
 		public static Logger ServerLogger = new Logger();
 		
+		public static string KickMessage = "You've been kicked!!";
+		
 		public Server()
 		{
 			Log("Starting Server");

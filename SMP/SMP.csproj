@@ -68,6 +68,10 @@
     <Compile Include="util\WordWrap.cs" />
     <Compile Include="Command\Commands\CmdMe.cs" />
     <Compile Include="Command\Commands\CmdSay.cs" />
+    <Compile Include="Command\Commands\CmdList.cs" />
+    <Compile Include="Command\Commands\CmdKick.cs" />
+    <Compile Include="Command\Commands\CmdHelp.cs" />
+    <Compile Include="Command\Commands\CmdDevs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gui\" />
