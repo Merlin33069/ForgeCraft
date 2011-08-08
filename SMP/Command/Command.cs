@@ -30,11 +30,11 @@ namespace SMP
         {
             //please put in alphabetical order and use core.add now not all.add
             //core.Add(new CmdBan());
-            //core.Add(new CmdDevs());
+            core.Add(new CmdDevs());
             //core.Add(new CmdGive());
-            //core.Add(new CmdHelp());
-            //core.Add(new CmdKick());
-            //core.Add(new CmdList());
+            core.Add(new CmdHelp());
+            core.Add(new CmdKick());
+            core.Add(new CmdList());
             //core.Add(new CmdMBan());
             core.Add(new CmdMe());
             //core.Add(new CmdMKick());
