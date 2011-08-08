@@ -1,0 +1,5 @@
+C:\Users\Owner\Desktop\CS projects\SMP\SMP\bin\Debug\SMP.exe
+C:\Users\Owner\Desktop\CS projects\SMP\SMP\bin\Debug\SMP.pdb
+C:\Users\Owner\Desktop\CS projects\SMP\SMP\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Owner\Desktop\CS projects\SMP\SMP\obj\x86\Debug\SMP.exe
+C:\Users\Owner\Desktop\CS projects\SMP\SMP\obj\x86\Debug\SMP.pdb
