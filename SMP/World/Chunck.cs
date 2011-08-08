@@ -141,7 +141,7 @@ namespace SMP
 		}*/
 		public static int PosToInt(int x, int y, int z)
         {
-            return (x * Depth + z) * Height + y;
+            return (x * 16 + z) * 128 + y;
         }
 			
 	}
