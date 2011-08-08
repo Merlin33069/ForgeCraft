@@ -10,6 +10,7 @@ namespace SMP
 {
 	class Player : System.IDisposable
 	{
+		public static List<Player> players = new List<Player>();
 		Socket socket;
 		public World level;
 		static Random random = new Random();
@@ -126,7 +127,7 @@ namespace SMP
 		{
 			SendRaw(id, new byte[0]);
 		}
-		void SendRaw(byte id, byte[] send)
+		public void SendRaw(byte id, byte[] send)
 		{
 			if (socket == null || !socket.Connected)
 				return;

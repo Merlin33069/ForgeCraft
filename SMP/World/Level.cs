@@ -43,9 +43,22 @@ namespace SMP
 		{
 			//TODO Save files
 		}
-		public void SendData()
+		//THIS WONT WORK...I need to fix it
+		public void SendData(Chunk c)
 		{
-			
+			Player.players.ForEach(delegate(Player p)
+			{
+				byte[] tosend;
+				tosend[0] = c.x;
+				tosend[1] = 0;
+				tosend[2] = c.z;
+				tosend[3] = 15;
+				tosend[4] = 127;
+				tosend[5] = 15;
+				tosend[6] = 0; //idk
+				tosend[7] = c.GetCompressedData();
+				p.SendRaw(0x33, tosend);
+			});
 		}
 	}
 }
