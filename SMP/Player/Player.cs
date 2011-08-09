@@ -25,6 +25,8 @@ namespace SMP
 		float[] rot = new float[2] { 0, 0 };
 		byte onground = 1; //really a bool, but were going to hold it as a byte (1 or 0 ONLY) so we can send it easier
 
+		bool hidden = false;
+
 		public string ip;
 		int id;
 		public string username;
@@ -43,6 +45,7 @@ namespace SMP
 			pos[1] = level.SpawnY;
 			pos[2] = level.SpawnZ;
 			dimension = 0;
+			players.Add(this);
 			socket.BeginReceive(tempbuffer, 0, tempbuffer.Length, SocketFlags.None, new AsyncCallback(Receive), this);
 		}
 
@@ -77,16 +80,6 @@ namespace SMP
 				Server.Log(e.Message);
 			}
 		}
-		
-		/// <summary>
-		/// Handles Incoming Packets 
-		/// </summary>
-		/// <param name="buffer">
-		/// A <see cref="System.Byte[]"/>
-		/// </param>
-		/// <returns>
-		/// A <see cref="System.Byte[]"/>
-		/// </returns>
 		byte[] HandleMessage(byte[] buffer)
 		{
 			try
@@ -99,13 +92,34 @@ namespace SMP
 					case 0x01: Server.Log("auth start"); length = ((util.EndianBitConverter.Big.ToInt16(buffer, 5) * 2) + 15); break; //Login Request
 					case 0x02: length = ((util.EndianBitConverter.Big.ToInt16(buffer, 1) * 2) + 2); break; //Handshake
 					case 0x03: length = ((util.EndianBitConverter.Big.ToInt16(buffer, 1) * 2) + 2); break; //Chat
-					//case 0x05: length = 0; break;
-					//case 0x07: length = 0; break;
-					//case 0x09: length = 0; break;
-					case 0x0a: length = 2; break; //OnGround incoming
-					case 0x0b: length = 33; break; //Pos incoming
-					case 0x0c: length = 10; break; //Look Incoming
-					case 0x0d: length = 41; break; //Pos and look incoming
+					case 0x07: length = 9; break; //Entity Use
+					case 0x09: length = 1; break; //respawn
+					
+					case 0x0A: length = 1; break; //OnGround incoming
+					case 0x0B: length = 33; break; //Pos incoming
+					case 0x0C: length = 9; break; //Look Incoming
+					case 0x0D: length = 41; break; //Pos and look incoming
+
+					case 0x0E: length = 11; break; //Digging
+					case 0x0F: if (util.EndianBitConverter.Big.ToInt16(buffer, 10) >= 0) length = 15; else length = 12; break; //Block Placement
+					case 0x10: length = 2; break; //Holding Change
+					case 0x12: length = 5; break; //Animation Change
+					case 0x13: length = 5; break; //Block Placement
+
+					case 0x65: length = 1; break; //Close Window
+					case 0x66:
+						length = 9;
+						if (util.EndianBitConverter.Big.ToInt16(buffer, 7) != -1) length += 3;
+						break; //Clicked window
+					case 0x82:
+						short a = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 10) * 2);
+						short b = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 12 + (a/2)) * 2);
+						short c = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 14 + (a/2)+(b/2)) * 2);
+						short d = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 16 + (a/2) + (b/2) + (c/2)) * 2);
+						length = 18 + a + b + c + d;
+						break;
+					case 0xFF: length = ((util.EndianBitConverter.Big.ToInt16(buffer, 1) * 2) + 2); break;
+
 					default:
 						Server.Log("unhandled message id " + msg);
 					    Kick("Unknown Packet id: " + msg);
@@ -456,6 +470,29 @@ namespace SMP
 		#endregion
 		
 		#endregion
+
+		public static void GlobalUpdate()
+		{
+			players.ForEach(delegate(Player p)
+			{
+				p.SendRaw(0);
+				if (!p.LoggedIn) return;
+				p.SendRaw(0);
+				p.SendTick();
+				if (!p.hidden)
+				{
+					p.UpdatePosition();
+				}
+			});
+		}
+		void UpdatePosition()
+		{
+
+		}
+		void SendTick()
+		{
+
+		}
 
 		/// <summary>
 		/// Kicks a player with a reason 

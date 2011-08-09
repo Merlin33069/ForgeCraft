@@ -38,8 +38,7 @@ namespace SMP
 			{
 				updateTimer.Elapsed += delegate
 				{
-					//Player.GlobalUpdate();
-					//PlayerBot.GlobalUpdatePosition();
+					Player.GlobalUpdate();
 				}; updateTimer.Start();
 			});
 			#endregion
