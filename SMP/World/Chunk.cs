@@ -13,6 +13,7 @@ namespace SMP
 		public byte[] meta;
 		public int x;
 		public int z;
+		public bool mountain = true;
 		/// <summary>
 		/// When a block is placed then this is called
 		/// </summary>
@@ -119,6 +120,12 @@ namespace SMP
 			if (BlockPlaced != null) { if (BlockPlaced(x, y, z, id)) return; }
 			if (InBound(x, y, z))
 				blocks[PosToInt(x, y, z)] = id;
+		}
+		public byte GetBlock(int x, int y, int z)
+		{
+			if (InBound(x, y, z))
+				return blocks[PosToInt(x, y, z)];
+			return 0;
 		}
 		/// <summary>
 		/// Places the block at a x, y, z.
