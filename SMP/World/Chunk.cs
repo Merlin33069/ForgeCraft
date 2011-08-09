@@ -111,8 +111,8 @@ namespace SMP
 			if (InBound(x, y, z))
 			{
 				// (y % 2 == 0) ? (data & 0x0F) : ((data >> 4) & 0x0F)
-				int index = PosToInt(x, y, z);
-				return getHalf(index, SkyL[index / 2]);
+				//int index = PosToInt(x, y, z);
+				return getHalf(index, SkyL[PosToInt(x, y, z) / 2]);
 			}
 			else
 			{
@@ -123,8 +123,8 @@ namespace SMP
 		{
 			if (InBound(x, y, z))
 			{
-				int index = PosToInt(x, y, z);
-				SetHalf(index, data, ref meta[index / 2]);
+				//int index = PosToInt(x, y, z);
+				SetHalf(index, data, ref meta[PosToInt(x, y, z) / 2]);
 			}
 		}
 		public byte GetMetaData(int x, int y, int z)
@@ -132,8 +132,7 @@ namespace SMP
 			if (InBound(x, y, z))
 			{
 				// (y % 2 == 0) ? (data & 0x0F) : ((data >> 4) & 0x0F)
-				int index = PosToInt(x, y, z);
-				return getHalf(index, meta[index / 2]);
+				return getHalf(index, meta[PosToInt(x, y, z) / 2]);
 			}
 			else
 			{

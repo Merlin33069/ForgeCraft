@@ -40,15 +40,6 @@ namespace SMP
 					chunkData.Add(new Point(x,z), c);
 				}
 			}
-			//for (int x = -20; x <= 20; x++)
-			//{
-			//	for (int z = -20; z <= 20; z++)
-			//	{
-			//		Chunk c = new Chunk(x, z);
-			//		chunkData.Add(i, generator.Rand(c, 100));
-			//		i++;
-			//	}
-			//}
 			this.SpawnX = spawnx; this.SpawnY = spawny; this.SpawnZ = spawnz;
 		}
 		public static World LoadLVL(string filename)
@@ -60,50 +51,6 @@ namespace SMP
 		{
 			//TODO Save files
 		}
-		#region Do not use
-		//THIS WONT WORK...I need to fix it
-		//public void SendData(Player p)
-		//{
-		//    for (int i = 0; i < chunkData.Count - 1; i++)
-		//    {
-		//        Chunk c = chunkData[i + 1];
-		//        byte[] tosend1 = new byte[2];
-		//        tosend1[0] = (byte)c.x;
-		//        tosend1[1] = (byte)c.z;
-		//        tosend1[2] = 1;
-		//        p.SendRaw(0x32, tosend1);
-		//        byte[] tosend = new byte[7];
-		//        tosend[0] = (byte)c.x;
-		//        tosend[1] = 0;
-		//        tosend[2] = (byte)c.z;
-		//        tosend[3] = 15;
-		//        tosend[4] = 127;
-		//        tosend[5] = 15;
-		//        tosend[6] = 0; //idk
-		//        tosend[7] = 10;  //just a hack fix to get it to compile
-		//        p.SendRaw(0x33, tosend);
-		//    }
-		//}
-		//public void SendChunk(Player p, Chunk c)
-		//{
-		//    Server.Log("Sending Chunk..");
-		//                    byte[] tosend1 = new byte[2];
-		//        tosend1[0] = (byte)c.x;
-		//        tosend1[1] = (byte)c.z;
-		//        tosend1[2] = 1;
-		//        p.SendRaw(0x32, tosend1);
-		//        byte[] tosend = new byte[7];
-		//        tosend[0] = (byte)c.x;
-		//        tosend[1] = 0;
-		//        tosend[2] = (byte)c.z;
-		//        tosend[3] = 15;
-		//        tosend[4] = 127;
-		//        tosend[5] = 15;
-		//        tosend[6] = 255; //idk
-		//        tosend[7] = 10;  //just a hack fix to get it to compile
-		//        p.SendRaw(0x33, tosend);
-		//}
-		#endregion
 	}
 	public struct Point : IEquatable<Point>
 	{
