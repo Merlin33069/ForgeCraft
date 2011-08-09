@@ -38,6 +38,7 @@ namespace SMP
 					generator.FlatChunk(c);
 					c.RecalculateLight();
 					chunkData.Add(i, c);
+					i++;
 				}
 			}
 			//for (int x = -20; x <= 20; x++)
@@ -46,7 +47,6 @@ namespace SMP
 			//	{
 			//		Chunk c = new Chunk(x, z);
 			//		chunkData.Add(i, generator.Rand(c, 100));
-
 			//		i++;
 			//	}
 			//}
