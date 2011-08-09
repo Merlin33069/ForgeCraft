@@ -68,8 +68,8 @@ namespace SMP
 				listen.BeginAccept(new AsyncCallback(Accept), null);
 				return true;
 			}
-			catch (SocketException e) { Log(e.Message); return false; }
-			catch (Exception e) { Log(e.Message); return false; }
+			catch (SocketException e) { Log(e.Message + e.StackTrace); return false; }
+			catch (Exception e) { Log(e.Message + e.StackTrace); return false; }
 		}
 
 		void Accept(IAsyncResult result)
@@ -80,11 +80,11 @@ namespace SMP
 				bool begin = false;
 				try
 				{
-					using (p = new Player())
-					{
+					p = new Player();
+					
 						p.socket = listen.EndAccept(result);
 						new Thread(new ThreadStart(p.Start)).Start();
-					}
+					
 					listen.BeginAccept(new AsyncCallback(Accept), null);
 					begin = true;
 				}

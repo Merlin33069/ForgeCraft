@@ -90,6 +90,7 @@ namespace SMP
 			catch (Exception e)
 			{
 				Server.Log(e.Message);
+				Server.Log(e.StackTrace);
 			}
 		}
 		byte[] HandleMessage(byte[] buffer)
@@ -178,6 +179,7 @@ namespace SMP
 			catch (Exception e)
 			{
 				Server.Log(e.Message);
+				Server.Log(e.StackTrace);
 			}
 			return buffer;
 		}
@@ -401,6 +403,13 @@ namespace SMP
 			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
 			SendRaw(0x05, bytes);
 		}
+
+		void SendDespawn(int id)
+		{
+			byte[] bytes = new byte[4];
+			util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+			SendRaw(0x1D, bytes);
+		}
 		#endregion
 		#region INCOMING
 		void HandleCommand(string cmd, string message)
@@ -480,6 +489,7 @@ namespace SMP
             for (int i = 0; i < lines.Length; i++)
             {				
 				//somebody check if this is right please :s
+				//LooksGood to me ~Merlin33069
 				byte[] bytes = new byte[(lines[i].Length * 2) + 2];
 				util.EndianBitConverter.Big.GetBytes((ushort)lines[i].Length).CopyTo(bytes, 0);
 				Encoding.BigEndianUnicode.GetBytes(lines[i]).CopyTo(bytes, 2);
@@ -661,9 +671,7 @@ namespace SMP
 		public void Disconnect()
 		{
 			if (disconnected) return;
-			
 			disconnected = true;
-			
 			
 			//Server.ServerLogger.Log(LogLevel.Notice, "{0}{1} kicked: {2}",
             //	LoggedIn ? "" : "/", LoggedIn ? username : ip);
@@ -676,7 +684,13 @@ namespace SMP
 		}
 		public void Dispose()
 		{
+			players.Remove(this);
+			e.CurrentChunk.Entities.Remove(e);
 
+			foreach (Player p in players)
+			{
+			    p.SendDespawn(id);
+			}
 		}
 		
 		#region TOOLS

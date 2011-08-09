@@ -15,7 +15,7 @@ namespace SMP
 		{
 			if (slot > 44 || slot < 0)
 				return;
-			items[slot] = item;
+			items[slot].item = item;
 		}
 		public void Add(Items item, int count, int slot)
 		{	
@@ -30,15 +30,16 @@ namespace SMP
 			try
 			{
 				int temp;
-				if (items.count % 2 == 0)
+				if (items.Length % 2 == 0)
 				{
-					temp = items.count / 2;
-					items.count = items.count / 2;
+					temp = items.Length / 2;
+					//THIS GENERATES AN ERROR, you cant edit an arrays length like this, you had array.count, but count didn't exist
+					//items.Length = items.Length / 2;
 				}
 				else
 				{
-					temp = items.count / 2;
-					items.count = items.count - temp;
+					temp = items.Length / 2;
+					//items.Length = items.Length - temp;
 				}
 				return temp;
 			}

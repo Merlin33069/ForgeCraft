@@ -47,9 +47,17 @@ namespace SMP
 		{
 			if (c != CurrentChunk)
 			{
-				CurrentChunk.Entities.Remove(this);
-				c.Entities.Add(this);
-				CurrentChunk = c;
+				if (c == null) { p.Kick("You dumbass >_>"); return; }
+				try
+				{
+					CurrentChunk.Entities.Remove(this);
+					c.Entities.Add(this);
+					CurrentChunk = c;
+				}
+				catch
+				{
+					p.Kick("You dumbass >_>");
+				}
 			}
 		}
 		public static int FreeId()

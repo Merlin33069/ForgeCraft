@@ -54,8 +54,11 @@ namespace SMP
 
 		public void BlockChange(int x, int y, int z, byte type, byte meta)
 		{
-			Chunk c = Chunk.GetChunk((int)(x / 16), (int)(z / 16));
-			c.PlaceBlock(x-(c.x*16), y, z-(c.z*16), type, 0);
+			//TODO generate chunk if not exist and... something else but idr what
+			int cx = x >> 4, cz = z >> 4;
+			Chunk chunk = Chunk.GetChunk(cx, cz);
+			chunk.PlaceBlock(x & 0xf, y, z & 0xf, type, meta);
+
 			foreach (Player p in Player.players)
 			{
 				//TODO CHECK TO SEE IF CHUNK IS IN PLAYER RANGE

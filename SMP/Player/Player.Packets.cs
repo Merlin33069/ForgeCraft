@@ -38,7 +38,7 @@ namespace SMP
 			}
 			if (message[0] == 2)
 			{
-				Server.Log("Blockchange");
+				//Server.Log("Blockchange");
 				//Player is done digging
 				int x = util.EndianBitConverter.Big.ToInt32(message, 1);
 				byte y = message[5];
@@ -242,9 +242,8 @@ namespace SMP
 		private void HandleDC(byte[] message)
 		{
 			Server.Log(username + " Disconnected.");
-			players.Remove(this);
 			GlobalMessage(username + " Left.");
-
+			Disconnect();
 			//TODO completely delete player.
 		}
 	}

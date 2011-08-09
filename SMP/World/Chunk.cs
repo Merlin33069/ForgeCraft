@@ -110,8 +110,8 @@ namespace SMP
 		{
 			if (InBound(x, y, z))
 			{
-				// (y % 2 == 0) ? (data & 0x0F) : ((data >> 4) & 0x0F)
-				//int index = PosToInt(x, y, z);
+				//(y % 2 == 0) ? (data & 0x0F) : ((data >> 4) & 0x0F)
+				int index = PosToInt(x, y, z);
 				return getHalf(index, SkyL[PosToInt(x, y, z) / 2]);
 			}
 			else
@@ -123,7 +123,7 @@ namespace SMP
 		{
 			if (InBound(x, y, z))
 			{
-				//int index = PosToInt(x, y, z);
+				int index = PosToInt(x, y, z);
 				SetHalf(index, data, ref meta[PosToInt(x, y, z) / 2]);
 			}
 		}
@@ -132,6 +132,7 @@ namespace SMP
 			if (InBound(x, y, z))
 			{
 				// (y % 2 == 0) ? (data & 0x0F) : ((data >> 4) & 0x0F)
+				int index = PosToInt(x, y, z);
 				return getHalf(index, meta[PosToInt(x, y, z) / 2]);
 			}
 			else
