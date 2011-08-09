@@ -4,3 +4,10 @@ SMP/bin/Debug/logs/2011-29-08_11-29-59_server.log
 *.log
 bin/*
 obj/*
+SMP/bin/Debug/zlib.net.dll
+
+SMP/bin/Debug/SMP.exe.mdb
+
+SMP/bin/Debug/SMP.exe
+
+SMP/SMP.pidb
