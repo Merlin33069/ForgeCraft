@@ -327,9 +327,9 @@ namespace SMP
 
 				Encoding.BigEndianUnicode.GetBytes(p.username).CopyTo(bytes, 6);
 
-				util.EndianBitConverter.Big.GetBytes((int)p.pos[0]).CopyTo(bytes, (22 + (length * 2)) - 16);
-				util.EndianBitConverter.Big.GetBytes((int)p.pos[1]).CopyTo(bytes, (22 + (length * 2)) - 12);
-				util.EndianBitConverter.Big.GetBytes((int)p.pos[2]).CopyTo(bytes, (22 + (length * 2)) - 8);
+				util.EndianBitConverter.Big.GetBytes((int)(p.pos[0] * 32)).CopyTo(bytes, (22 + (length * 2)) - 16);
+                util.EndianBitConverter.Big.GetBytes((int)(p.pos[1] * 32)).CopyTo(bytes, (22 + (length * 2)) - 12);
+                util.EndianBitConverter.Big.GetBytes((int)(p.pos[2] * 32)).CopyTo(bytes, (22 + (length * 2)) - 8);
 
 				bytes[(22 + (length * 2)) - 4] = 0;
 				bytes[(22 + (length * 2)) - 3] = 0;
