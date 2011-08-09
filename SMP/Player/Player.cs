@@ -39,9 +39,6 @@ namespace SMP
 			ip = socket.RemoteEndPoint.ToString().Split(':')[0];
 			Server.Log(ip + " connected to the server.");
 			level = Server.mainlevel;
-			pos[0] = level.SpawnX;
-			pos[1] = level.SpawnY;
-			pos[2] = level.SpawnZ;
 			dimension = 0;
 			socket.BeginReceive(tempbuffer, 0, tempbuffer.Length, SocketFlags.None, new AsyncCallback(Receive), this);
 		}
@@ -268,9 +265,9 @@ namespace SMP
 		void SendSpawnPoint()
 		{
 			byte[] bytes = new byte[12];
-			util.EndianBitConverter.Big.GetBytes((int)pos[0]).CopyTo(bytes, 0);
-			util.EndianBitConverter.Big.GetBytes((int)pos[1]).CopyTo(bytes, 4);
-			util.EndianBitConverter.Big.GetBytes((int)pos[2]).CopyTo(bytes, 8);
+			util.EndianBitConverter.Big.GetBytes((int)level.SpawnX).CopyTo(bytes, 0);
+			util.EndianBitConverter.Big.GetBytes((int)level.SpawnY).CopyTo(bytes, 4);
+			util.EndianBitConverter.Big.GetBytes((int)level.SpawnZ).CopyTo(bytes, 8);
 			SendRaw(0x06, bytes);
 		}
 		void SendLoginDone()
