@@ -11,3 +11,12 @@ SMP/bin/Debug/SMP.exe.mdb
 SMP/bin/Debug/SMP.exe
 
 SMP/SMP.pidb
+
+/SMP/SMP.csproj.user
+/SMP/bin/Debug/SMP.pdb
+/SMP/bin/Debug/SMP.vshost.exe
+/SMP/obj/x86/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+/SMP/obj/x86/Debug/ResolveAssemblyReference.cache
+/SMP/obj/x86/Debug/SMP.csproj.FileListAbsolute.txt
+/SMP/obj/x86/Debug/SMP.exe
+/SMP/obj/x86/Debug/SMP.pdb

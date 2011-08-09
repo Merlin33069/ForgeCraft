@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using MonoTorrent.Client;
+using System.Threading;
 
 namespace SMP
 {
@@ -79,10 +80,12 @@ namespace SMP
 				bool begin = false;
 				try
 				{
-					using (p = new Player(listen.EndAccept(result)))
+					using (p = new Player())
 					{
-						listen.BeginAccept(new AsyncCallback(Accept), null);
+						p.socket = listen.EndAccept(result);
+						new Thread(new ThreadStart(p.Start)).Start();
 					}
+					listen.BeginAccept(new AsyncCallback(Accept), null);
 					begin = true;
 				}
 				catch (SocketException e)

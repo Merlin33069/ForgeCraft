@@ -10,6 +10,7 @@ namespace SMP
 		public static Dictionary<int, Entity> Entities = new Dictionary<int, Entity>();
 
 		public Chunk c { get { return Chunk.GetChunk((int)(pos[0] / 16), (int)(pos[2] / 16)); } }
+		public Chunk CurrentChunk;
 		public Player p; //Only set if this entity is a player, and it referances the player it is
 
 		public static Random random = new Random();
@@ -19,6 +20,7 @@ namespace SMP
 		public byte dimension = 0;
 		public double Stance = 72;
 		public double[] pos = new double[3];
+		public double[] oldpos = new double[3];
 		public float[] rot = new float[2];
 		public byte OnGround = 1;
 
@@ -29,6 +31,7 @@ namespace SMP
 			rot = irot;
 			p = pl;
 			c.Entities.Add(this);
+			CurrentChunk = c;
 		}
 		public Entity(byte itype, double[] ipos, float[] irot)
 		{
@@ -37,6 +40,17 @@ namespace SMP
 			pos = ipos;
 			rot = irot;
 			c.Entities.Add(this);
+			CurrentChunk = c;
+		}
+
+		public void UpdateChunk()
+		{
+			if (c != CurrentChunk)
+			{
+				CurrentChunk.Entities.Remove(this);
+				c.Entities.Add(this);
+				CurrentChunk = c;
+			}
 		}
 		public static int FreeId()
 		{

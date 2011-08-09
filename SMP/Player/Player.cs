@@ -12,7 +12,7 @@ namespace SMP
 	public partial class Player : System.IDisposable
 	{
 		public static List<Player> players = new List<Player>();
-		Socket socket;
+		public Socket socket;
 		public World level;
 		static Random random = new Random();
 
@@ -23,10 +23,12 @@ namespace SMP
 
 		double Stance { get { return e.Stance; } set { e.Stance = value; } }
 		double[] pos { get { return e.pos; } set { e.pos = value; } }
+		double[] oldpos { get { return e.oldpos; } set { e.oldpos = value; } }
 		float[] rot { get { return e.rot; } set { e.rot = value; } }
 		byte onground { get { return e.OnGround; } set { e.OnGround = value; } } //really a bool, but were going to hold it as a byte (1 or 0 ONLY) so we can send it easier
 		int id { get { return e.id; } }
 		byte dimension { get { return e.dimension; } set { e.dimension = value; } } //-1 for nether, 0 normal, 1 skyworld?
+		public Chunk chunk { get { return e.CurrentChunk; } }
 
 		Entity e;
 		public string ip;
@@ -35,13 +37,16 @@ namespace SMP
 
 		bool MapSent = false;
 		
-
-		public Player(Socket s)
+		public Player()
+		{
+			
+		}
+		public void Start()
 		{
 			try
 			{
 				e = new Entity(new double[3] { 0, 72, 0 }, new float[2] { 0, 0 }, this);
-				socket = s;
+				//socket = s;
 				ip = socket.RemoteEndPoint.ToString().Split(':')[0];
 				Server.Log(ip + " connected to the server.");
 				level = Server.mainlevel;
@@ -125,7 +130,7 @@ namespace SMP
 						short d = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 16 + (a/2) + (b/2) + (c/2)) * 2);
 						length = 18 + a + b + c + d;
 						break;
-					case 0xFF: length = ((util.EndianBitConverter.Big.ToInt16(buffer, 1) * 2) + 2); break;
+					case 0xFF: length = ((util.EndianBitConverter.Big.ToInt16(buffer, 1) * 2) + 2); break; //DC
 
 					default:
 						Server.Log("unhandled message id " + msg);
@@ -142,7 +147,7 @@ namespace SMP
 
 					buffer = tempbuffer;
 
-					//Server.Log(msg + "");
+					//if(username!= "Merlin33069") Server.Log(msg + "");
 					switch (msg)
 					{
 						case 0x01:
@@ -154,13 +159,15 @@ namespace SMP
 							HandleHandshake(message);
 							break;
 						case 0x03:
-							Server.Log("Chat Message");
-							HandleChatMessagePacket(message); //needs to pass data still
+							//Server.Log("Chat Message");
+							HandleChatMessagePacket(message);
 							break;
-						case 0x0A: if (!MapSent) { MapSent = true; SendMap(); } break; //Player onground Incoming
-						case 0x0B: if (!MapSent) { MapSent = true; SendMap(); } break; //Pos incoming
-						case 0x0C: if (!MapSent) { MapSent = true; SendMap(); } break; //Look incoming
-						case 0x0D: if (!MapSent) { MapSent = true; SendMap(); } break; //Pos and look incoming
+						case 0x0A: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPacket(message); break; //Player onground Incoming
+						case 0x0B: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPositionPacket(message); break; //Pos incoming
+						case 0x0C: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerLookPacket(message); break; //Look incoming
+						case 0x0D: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPositionAndLookPacket(message); break; //Pos and look incoming
+						case 0x0E: HandleDigging(message); break; //Digging
+						case 0xFF: HandleDC(message); break; //DC
 					}
 					if (buffer.Length > 0)
 						buffer = HandleMessage(buffer);
@@ -228,6 +235,7 @@ namespace SMP
 		}
 		void SendHandshake()
 		{
+			Server.Log("Handshake out");
 			string st = "-";
 			byte[] bytes = new byte[(st.Length * 2) + 2];
 			util.EndianBitConverter.Big.GetBytes((ushort)st.Length).CopyTo(bytes, 0);
@@ -236,7 +244,9 @@ namespace SMP
 			//{
 			//    Server.Log(b + " <");
 			//}
+			Server.Log("Handshake out-1");
 			SendRaw(2, bytes);
+			Server.Log("Handshake out-2");
 		}
 
 		void SendInventory()
@@ -246,7 +256,7 @@ namespace SMP
 
 		void SendMap()
 		{
-			Server.Log("Sending");
+			//Server.Log("Sending");
 			int i = 0;
 			foreach (Chunk c in Server.mainlevel.chunkData.Values)
 			{
@@ -311,6 +321,17 @@ namespace SMP
 			//Server.Log(pos[0] + " " + pos[1] + " " + pos[2]);
 		}
 
+		public void SendBlockChange(int x, byte y, int z, byte type, byte meta)
+		{
+			byte[] bytes = new byte[11];
+			util.EndianBitConverter.Big.GetBytes(x).CopyTo(bytes, 0);
+			bytes[4] = y;
+			util.EndianBitConverter.Big.GetBytes(z).CopyTo(bytes, 5);
+			bytes[9] = type;
+			bytes[10] = meta;
+			SendRaw(0x35, bytes);
+		}
+
 		void SendNamedEntitySpawn(Player p)
 		{
 			try
@@ -327,18 +348,18 @@ namespace SMP
 
 				Encoding.BigEndianUnicode.GetBytes(p.username).CopyTo(bytes, 6);
 
-				util.EndianBitConverter.Big.GetBytes((int)p.pos[0]).CopyTo(bytes, (22 + (length * 2)) - 16);
-				util.EndianBitConverter.Big.GetBytes((int)p.pos[1]).CopyTo(bytes, (22 + (length * 2)) - 12);
-				util.EndianBitConverter.Big.GetBytes((int)p.pos[2]).CopyTo(bytes, (22 + (length * 2)) - 8);
+				util.EndianBitConverter.Big.GetBytes((int)(p.pos[0] * 32)).CopyTo(bytes, (22 + (length * 2)) - 16);
+				util.EndianBitConverter.Big.GetBytes((int)(p.pos[1] * 32)).CopyTo(bytes, (22 + (length * 2)) - 12);
+				util.EndianBitConverter.Big.GetBytes((int)(p.pos[2] * 32)).CopyTo(bytes, (22 + (length * 2)) - 8);
 
-				bytes[(22 + (length * 2)) - 4] = 0;
-				bytes[(22 + (length * 2)) - 3] = 0;
+				bytes[(22 + (length * 2)) - 4] = (byte)(rot[0] / 1.40625);
+				bytes[(22 + (length * 2)) - 3] = (byte)(rot[1] / 1.40625);
 
 				util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, (22 + (length * 2)) - 2);
 
 				SendRaw(0x14, bytes);
 
-				SendEntityEquipment(p.id, -1, -1, -1, -1, -1);
+				//SendEntityEquipment(p.id, -1, -1, -1, -1, -1);
 			}
 			catch (Exception e)
 			{
@@ -449,26 +470,10 @@ namespace SMP
 		#region MESSAGING
 		
 		#region GLOBAL
-		/// <summary>
-		/// Sends a message serverwide, mainly used for chat. 
-		/// </summary>
-		/// <param name="message">
-		/// A <see cref="System.String"/>
-		/// </param>
 		public static void GlobalMessage(string message)
         {
             GlobalMessage(message, WrapMethod.Default);
         }
-
-		/// <summary>
-		/// Sends a message serverwide, mainly used for chat.
-		/// </summary>
-		/// <param name="message">
-		/// A <see cref="System.String"/>
-		/// </param>
-		/// <param name="method">
-		/// A <see cref="WrapMethod"/>
-		/// </param>
         public static void GlobalMessage(string message, WrapMethod method)
         {
             string[] lines = WordWrap.GetWrappedText(message, method);
@@ -488,19 +493,6 @@ namespace SMP
                 }
             }
         }
-
-		/// <summary>
-		///Sends a message serverwide, mainly used for chat. 
-		/// </summary>
-		/// <param name="message">
-		/// A <see cref="System.String"/>
-		/// </param>
-		/// <param name="method">
-		/// A <see cref="WrapMethod"/>
-		/// </param>
-		/// <param name="args">
-		/// A <see cref="System.Object[]"/>
-		/// </param>
         public static void GlobalMessage(string message, WrapMethod method, params object[] args)
         {
             if (method == WrapMethod.None)
@@ -508,6 +500,31 @@ namespace SMP
             else
                 GlobalMessage(string.Format(message, args), method);
         }
+		void GlobalSpawn()
+		{
+			if (players.Count <= 1) return;
+			foreach (Player p in players)
+			{
+				if (p == this) return;
+				SendNamedEntitySpawn(p);
+				p.SendNamedEntitySpawn(this);
+			}
+		}
+		public static void GlobalUpdate()
+		{
+			players.ForEach(delegate(Player p)
+			{
+				p.e.UpdateChunk();
+				p.SendRaw(0);
+				if (!p.LoggedIn) return;
+				p.SendRaw(0);
+				p.SendTick();
+				if (!p.hidden)
+				{
+					p.UpdatePosition();
+				}
+			});
+		}
 		#endregion
 		
 		#region TARGETED
@@ -543,44 +560,71 @@ namespace SMP
 		
 		#endregion
 
-		void GlobalSpawn()
-		{
-			if (players.Count <= 1) return;
-			foreach (Player p in players)
-			{
-				SendNamedEntitySpawn(p);
-				p.SendNamedEntitySpawn(this);
-			}
-		}
-		public static void GlobalUpdate()
-		{
-			players.ForEach(delegate(Player p)
-			{
-				p.SendRaw(0);
-				if (!p.LoggedIn) return;
-				p.SendRaw(0);
-				p.SendTick();
-				if (!p.hidden)
-				{
-					p.UpdatePosition();
-				}
-			});
-		}
 		void UpdatePosition()
 		{
+			if (!LoggedIn) return;
 
+			int diffX = (int)(oldpos[0] * 32) - (int)(pos[0] * 32);
+			int diffY = (int)(oldpos[1] * 32) - (int)(pos[1] * 32);
+			int diffZ = (int)(oldpos[2] * 32) - (int)(pos[2] * 32);
+
+			if (Math.Abs(diffX) == 0 && Math.Abs(diffY) == 0 && Math.Abs(diffZ) == 0)
+			{
+				byte[] bytes = new byte[6];
+				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+				bytes[4] = (byte)(rot[0] / 1.40625);
+				bytes[5] = (byte)(rot[1] / 1.40625);
+				foreach (Player p in players)
+				{
+					if (p != this)
+					{
+						if (p.LoggedIn)
+						p.SendRaw(0x20, bytes);
+					}
+				}
+			}
+			else if (Math.Abs(diffX) <= 4 && Math.Abs(diffY) <= 4 && Math.Abs(diffZ) <= 4)
+			{
+				byte[] bytes = new byte[9];
+				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+				bytes[4] = (byte)diffX;
+				bytes[5] = (byte)diffY;
+				bytes[6] = (byte)diffZ;
+				bytes[7] = (byte)(rot[0] / 1.40625);
+				bytes[8] = (byte)(rot[1] / 1.40625);
+				foreach (Player p in players)
+				{
+					if (p != this)
+					{
+						if (p.LoggedIn)
+						p.SendRaw(0x21, bytes);
+					}
+				}
+			}
+			else
+			{
+				byte[] bytes = new byte[0x22];
+				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+				util.EndianBitConverter.Big.GetBytes((int)(pos[0] * 32)).CopyTo(bytes, 4);
+				util.EndianBitConverter.Big.GetBytes((int)(pos[1] * 32)).CopyTo(bytes, 8);
+				util.EndianBitConverter.Big.GetBytes((int)(pos[2] * 32)).CopyTo(bytes, 12);
+				bytes[16] = (byte)(rot[0] / 1.40625);
+				bytes[17] = (byte)(rot[1] / 1.40625);
+				foreach (Player p in players)
+				{
+					if (p != this)
+					{
+						if (p.LoggedIn)
+						p.SendRaw(0x22, bytes);
+					}
+				}
+			}
 		}
 		void SendTick()
 		{
 
 		}
 
-		/// <summary>
-		/// Kicks a player with a reason 
-		/// </summary>
-		/// <param name="reason">
-		/// A <see cref="System.String"/>
-		/// </param>
 		public void Kick(string message)
 		{
 			if (disconnected) return;

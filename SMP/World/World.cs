@@ -36,7 +36,7 @@ namespace SMP
 					Chunk c = new Chunk(x, z);
 					generator.FlatChunk(c);
 					c.RecalculateLight();
-					Server.Log(x + " " + z + " <Inserted");
+					//Server.Log(x + " " + z + " <Inserted");
 					chunkData.Add(new Point(x,z), c);
 				}
 			}
@@ -60,50 +60,17 @@ namespace SMP
 		{
 			//TODO Save files
 		}
-		#region Do not use
-		//THIS WONT WORK...I need to fix it
-		//public void SendData(Player p)
-		//{
-		//    for (int i = 0; i < chunkData.Count - 1; i++)
-		//    {
-		//        Chunk c = chunkData[i + 1];
-		//        byte[] tosend1 = new byte[2];
-		//        tosend1[0] = (byte)c.x;
-		//        tosend1[1] = (byte)c.z;
-		//        tosend1[2] = 1;
-		//        p.SendRaw(0x32, tosend1);
-		//        byte[] tosend = new byte[7];
-		//        tosend[0] = (byte)c.x;
-		//        tosend[1] = 0;
-		//        tosend[2] = (byte)c.z;
-		//        tosend[3] = 15;
-		//        tosend[4] = 127;
-		//        tosend[5] = 15;
-		//        tosend[6] = 0; //idk
-		//        tosend[7] = 10;  //just a hack fix to get it to compile
-		//        p.SendRaw(0x33, tosend);
-		//    }
-		//}
-		//public void SendChunk(Player p, Chunk c)
-		//{
-		//    Server.Log("Sending Chunk..");
-		//                    byte[] tosend1 = new byte[2];
-		//        tosend1[0] = (byte)c.x;
-		//        tosend1[1] = (byte)c.z;
-		//        tosend1[2] = 1;
-		//        p.SendRaw(0x32, tosend1);
-		//        byte[] tosend = new byte[7];
-		//        tosend[0] = (byte)c.x;
-		//        tosend[1] = 0;
-		//        tosend[2] = (byte)c.z;
-		//        tosend[3] = 15;
-		//        tosend[4] = 127;
-		//        tosend[5] = 15;
-		//        tosend[6] = 255; //idk
-		//        tosend[7] = 10;  //just a hack fix to get it to compile
-		//        p.SendRaw(0x33, tosend);
-		//}
-		#endregion
+
+		public void BlockChange(int x, int y, int z, byte type, byte meta)
+		{
+			Chunk c = Chunk.GetChunk((int)(x / 16), (int)(z / 16));
+			c.PlaceBlock(x-(c.x*16), y, z-(c.z*16), type, 0);
+			foreach (Player p in Player.players)
+			{
+				//TODO CHECK TO SEE IF CHUNK IS IN PLAYER RANGE
+				p.SendBlockChange(x, (byte)y, z, type, meta);
+			}
+		}
 	}
 	public struct Point : IEquatable<Point>
 	{

@@ -12,7 +12,7 @@ namespace SMP {
     {
 
         public ConsolePlayer(Server server)
-            : base(null)
+            : base()
         {
             //this.Group = new ConsoleGroup();
             username = "Console";

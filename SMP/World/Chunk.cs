@@ -209,9 +209,16 @@ namespace SMP
 		/// </param>
 		public void PlaceBlock(int x, int y, int z, byte id)
 		{
-			if (BlockPlaced != null) { if (BlockPlaced(x, y, z, id)) return; }
+			PlaceBlock(x, y, z, id, 0);
+		}
+		public void PlaceBlock(int x, int y, int z, byte id, byte meta)
+		{
+			//if (BlockPlaced != null) { if (BlockPlaced(x, y, z, id)) return; }
 			if (InBound(x, y, z))
+			{
 				blocks[PosToInt(x, y, z)] = id;
+				//TODO SET METADATA
+			}
 		}
 		public byte GetBlock(int x, int y, int z)
 		{
@@ -246,7 +253,14 @@ namespace SMP
         }
 		public static Chunk GetChunk(int x, int z)
 		{
-			return Server.mainlevel.chunkData[new Point(x,z)];
+			try
+			{
+				return Server.mainlevel.chunkData[new Point(x, z)];
+			}
+			catch
+			{
+				return null;
+			}
 		}
 	}
 }
