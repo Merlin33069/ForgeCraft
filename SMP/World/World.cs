@@ -29,12 +29,14 @@ namespace SMP
 			chunkData = new Dictionary<long, Chunk>();
 			generator = new FCGenerator(this);
 			int i = 0;
-			for (int x = -5; x <= 5; x++)
+			for (int x = -3; x <= 3; x++)
 			{
-				for (int z = -5; z <= 5; z++)
+				for (int z = -3; z <= 3; z++)
 				{
 					Chunk c = new Chunk(x, z);
-					chunkData.Add(i, generator.FlatChunk(c));
+					generator.FlatChunk(c);
+					c.RecalculateLight();
+					chunkData.Add(i, c);
 					i++;
 				}
 			}

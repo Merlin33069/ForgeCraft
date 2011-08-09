@@ -9,6 +9,7 @@ namespace SMP
 	{
 		Air = 0,
 		Stone = 1,
+		Grass = 2,
 		Dirt = 3,
 		CobbleStone = 4,
 		WoodenPlank = 5,

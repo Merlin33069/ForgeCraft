@@ -53,6 +53,7 @@
     <Compile Include="util\EBitConverter.cs" />
     <Compile Include="util\Endianness.cs" />
     <Compile Include="util\LittleEndianBitConverter.cs" />
+    <Compile Include="World\Chunk.Light.cs" />
     <Compile Include="World\DataValues.cs" />
     <Compile Include="World\Chunk.cs" />
     <Compile Include="World\FCGenerator.cs" />

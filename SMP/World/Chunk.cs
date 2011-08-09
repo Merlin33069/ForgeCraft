@@ -5,8 +5,12 @@ using zlib;
 
 namespace SMP
 {
-	public class Chunk
+	public partial class Chunk
 	{
+		static int Width = 16;
+		static int Depth = 16;
+		static int Height = 128;
+
 		public byte[] blocks;
 		public byte[] Light;
 		public byte[] SkyL;
@@ -42,9 +46,9 @@ namespace SMP
 		public Chunk (int x, int z)
 		{
 			blocks = new byte[32768];
-			Light = new byte[16348];
-			SkyL = new byte[16348];
-			meta = new byte[16348];
+			Light = new byte[16384];
+			SkyL = new byte[16384];
+			meta = new byte[16384];
 			this.x = x; this.z = z;
 		}
 		/// <summary>
@@ -67,6 +71,90 @@ namespace SMP
 			meta = new byte[BlockCount / 2];
 			this.x = x; this.z = z;
 		}
+
+		public void SetBlockLight(int x, int y, int z, byte light)
+		{
+			if (InBound(x, y, z))
+			{
+				int index = PosToInt(x, y, z);
+				SetHalf(index, light, ref Light[index / 2]);
+			}
+		}
+		public byte GetBlockLight(int x, int y, int z)
+		{
+			if (InBound(x, y, z))
+			{
+				// (y % 2 == 0) ? (data & 0x0F) : ((data >> 4) & 0x0F)
+				int index = PosToInt(x, y, z);
+				return getHalf(index, Light[index / 2]);
+			}
+			else
+			{
+				return 0xFF;
+			}
+		}
+		public void SetSkyLight(int x, int y, int z, byte light)
+		{
+			if (InBound(x, y, z))
+			{
+				int index = PosToInt(x, y, z);
+				SetHalf(index, light, ref SkyL[index / 2]);
+			}
+		}
+		public byte GetSkyLight(int x, int y, int z)
+		{
+			if (InBound(x, y, z))
+			{
+				// (y % 2 == 0) ? (data & 0x0F) : ((data >> 4) & 0x0F)
+				int index = PosToInt(x, y, z);
+				return getHalf(index, SkyL[index / 2]);
+			}
+			else
+			{
+				return 0xFF;
+			}
+		}
+		public void SetMetaData(int x, int y, int z, byte data)
+		{
+			if (InBound(x, y, z))
+			{
+				int index = PosToInt(x, y, z);
+				SetHalf(index, data, ref meta[index / 2]);
+			}
+		}
+		public byte GetMetaData(int x, int y, int z)
+		{
+			if (InBound(x, y, z))
+			{
+				// (y % 2 == 0) ? (data & 0x0F) : ((data >> 4) & 0x0F)
+				int index = PosToInt(x, y, z);
+				return getHalf(index, meta[index / 2]);
+			}
+			else
+			{
+				return 0xFF;
+			}
+		}
+		private void SetHalf(int index, byte value, ref byte data)
+		{
+			if (index % 2 == 0)
+			{
+				// Set the lower 4 bits
+				byte high = (byte)((data & 0xF0) >> 4);
+				data = (byte)((high << 4) | value);
+			}
+			else
+			{
+				// Set the upper 4 bits
+				byte low = (byte)(data & 0x0F);
+				data = (byte)((value << 4) | low);
+			}
+		}
+		private byte getHalf(int index, byte data)
+		{
+			return (index % 2 == 0) ? (byte)(data & 0x0F) : (byte)((data >> 4) & 0x0F);
+		}
+
 		public bool InBound(int x, int y, int z)
 		{
 			if (x < 0 || y < 0 || z < 0 || x >= 16 || z >= 16 || y >= 128)
@@ -143,9 +231,8 @@ namespace SMP
 		}*/
 		public static int PosToInt(int x, int y, int z)
         {
-            return (x * 16 + z) * 128 + y;
-        }
-			
+			return (x * Depth + z) * Height + y;
+        }	
 	}
 }
 

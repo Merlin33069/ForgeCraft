@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace SMP
 {
@@ -28,6 +29,8 @@ namespace SMP
 		int id;
 		public string username;
 		byte dimension; //-1 for nether, 0 normal, 1 skyworld?
+
+		bool MapSent = false;
 
 		public Player(Socket s)
 		{
@@ -96,9 +99,9 @@ namespace SMP
 					//case 0x05: length = 0; break;
 					//case 0x07: length = 0; break;
 					//case 0x09: length = 0; break;
-					//case 0x0a: length = 0; break;
+					case 0x0a: length = 2; break; //OnGround incoming
 					case 0x0b: length = 33; break; //Pos incoming
-					//case 0x0c: length = 0; break;
+					case 0x0c: length = 10; break; //Look Incoming
 					case 0x0d: length = 41; break; //Pos and look incoming
 					default:
 						Server.Log("unhandled message id " + msg);
@@ -129,6 +132,10 @@ namespace SMP
 							Server.Log("Chat Message");
 							HandleChatMessagePacket(); //needs to pass data still
 							break;
+						case 0x0A: if (!MapSent) { MapSent = true; SendMap(); } break; //Player onground Incoming
+						case 0x0B: if (!MapSent) { MapSent = true; SendMap(); } break; //Pos incoming
+						case 0x0C: if (!MapSent) { MapSent = true; SendMap(); } break; //Look incoming
+						case 0x0D: if (!MapSent) { MapSent = true; SendMap(); } break; //Pos and look incoming
 					}
 					if (buffer.Length > 0)
 						buffer = HandleMessage(buffer);
@@ -192,10 +199,7 @@ namespace SMP
 				Server.Log(e.Message);
 				Server.Log(e.StackTrace);
 			}
-
-			SendMap();
-			SendSpawnPoint();
-			SendLoginDone();
+			//SendMap();
 		}
 		void SendHandshake()
 		{
@@ -217,44 +221,53 @@ namespace SMP
 
 		void SendMap()
 		{
+			Server.Log("Sending");
 			int i = 0;
 			foreach (Chunk c in Server.mainlevel.chunkData.Values)
 			{
+				Server.Log(i + "");
 				SendChunk(c);
 				i++;
+				Thread.Sleep(100);
 			}
 			Server.Log(i + " Chunks sent");
+
+			SendSpawnPoint();
+			SendLoginDone();
 		}
 		void SendChunk(Chunk c)
 		{
 			//Send Chunk Init
 			byte[] tosend1 = new byte[9];
 			util.EndianBitConverter.Big.GetBytes(c.x).CopyTo(tosend1, 0);
-			util.EndianBitConverter.Big.GetBytes(c.z).CopyTo(tosend1, 3);
+			util.EndianBitConverter.Big.GetBytes(c.z).CopyTo(tosend1, 4);
 			tosend1[8] = 1;
 			SendRaw(0x32, tosend1);
 
-			Server.Log(c.x + " " + c.z + " " + c.x * 16 + " " + c.z * 16);
+			//Server.Log(c.x + " " + c.z + " " + c.x * 16 + " " + c.z * 16);
 
 			//Send Chunk Data
 			byte[] CompressedData = c.GetCompressedData();
 			byte[] bytes = new byte[17 + CompressedData.Length];
-			util.EndianBitConverter.Big.GetBytes((int)(c.x * 16)+8).CopyTo(bytes, 0);
+			util.EndianBitConverter.Big.GetBytes((int)(c.x * 16)).CopyTo(bytes, 0);
 			util.EndianBitConverter.Big.GetBytes((int)0).CopyTo(bytes, 4);
-			util.EndianBitConverter.Big.GetBytes((int)(c.z * 16)+8).CopyTo(bytes, 6);
+			util.EndianBitConverter.Big.GetBytes((int)(c.z * 16)).CopyTo(bytes, 6);
 			bytes[10] = 15;
 			bytes[11] = 127;
 			bytes[12] = 15;
+			//util.EndianBitConverter.Big.GetBytes((16 * 128 * 16 * 2.5)).CopyTo(bytes, 13);
 			util.EndianBitConverter.Big.GetBytes(CompressedData.Length).CopyTo(bytes, 13);
 			CompressedData.CopyTo(bytes, 17);
 			SendRaw(0x33, bytes);
+
+			//Server.Log((16 * 128 * 16 * 2.5) + " " + CompressedData.Length);
 		}
 		void SendSpawnPoint()
 		{
 			byte[] bytes = new byte[12];
-			util.EndianBitConverter.Big.GetBytes(0).CopyTo(bytes, 0);
-			util.EndianBitConverter.Big.GetBytes(72).CopyTo(bytes, 4);
-			util.EndianBitConverter.Big.GetBytes(0).CopyTo(bytes, 8);
+			util.EndianBitConverter.Big.GetBytes((int)pos[0]).CopyTo(bytes, 0);
+			util.EndianBitConverter.Big.GetBytes((int)pos[1]).CopyTo(bytes, 4);
+			util.EndianBitConverter.Big.GetBytes((int)pos[2]).CopyTo(bytes, 8);
 			SendRaw(0x06, bytes);
 		}
 		void SendLoginDone()
@@ -274,7 +287,6 @@ namespace SMP
 			Server.Log(pos[0] + " " + pos[1] + " " + pos[2]);
 		}
 		#endregion
-		
 		#region INCOMING
 		void HandleCommand(string cmd, string message)
 		{
@@ -340,7 +352,6 @@ namespace SMP
             }*/	
 		}
 		#endregion
-		
 		#region MESSAGING
 		
 		#region GLOBAL
@@ -442,7 +453,7 @@ namespace SMP
 		#endregion
 		
 		#endregion
-		
+
 		/// <summary>
 		/// Kicks a player with a reason 
 		/// </summary>

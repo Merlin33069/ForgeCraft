@@ -9,7 +9,7 @@ namespace SMP
 		{
 			this.l = l;
 		}
-		public Chunk FlatChunk(Chunk c)
+		public void FlatChunk(Chunk c)
 		{
 			for (int x = 0; x < 16; x++)
 			{
@@ -26,7 +26,7 @@ namespace SMP
 					}
 				}
 			}
-			return c;
+			return;
 		}
 	}
 }
