@@ -29,6 +29,7 @@ namespace SMP
 			chunkData = new Dictionary<long, Chunk>();
 			generator = new FCGenerator(this);
 			int i = 0;
+
 			for (int x = -3; x <= 3; x++)
 			{
 				for (int z = -3; z <= 3; z++)
@@ -37,9 +38,18 @@ namespace SMP
 					generator.FlatChunk(c);
 					c.RecalculateLight();
 					chunkData.Add(i, c);
-					i++;
 				}
 			}
+			//for (int x = -20; x <= 20; x++)
+			//{
+			//	for (int z = -20; z <= 20; z++)
+			//	{
+			//		Chunk c = new Chunk(x, z);
+			//		chunkData.Add(i, generator.Rand(c, 100));
+
+			//		i++;
+			//	}
+			//}
 			this.SpawnX = spawnx; this.SpawnY = spawny; this.SpawnZ = spawnz;
 		}
 		public static World LoadLVL(string filename)
