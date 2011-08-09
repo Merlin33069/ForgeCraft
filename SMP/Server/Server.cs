@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using MonoTorrent.Client;
 
 namespace SMP
 {
@@ -21,13 +22,28 @@ namespace SMP
 		public static Logger ServerLogger = new Logger();
 		
 		public static string KickMessage = "You've been kicked!!";
-		
+
+		public static System.Timers.Timer updateTimer = new System.Timers.Timer(100);
+		public static MainLoop ml;
+
 		public Server()
 		{
 			Log("Starting Server");
 			s = this;
 			mainlevel = new World(0, 66, 0);
-			//TODO update thread for pos
+
+			ml = new MainLoop("server");
+			#region updatetimer
+			ml.Queue(delegate
+			{
+				updateTimer.Elapsed += delegate
+				{
+					//Player.GlobalUpdate();
+					//PlayerBot.GlobalUpdatePosition();
+				}; updateTimer.Start();
+			});
+			#endregion
+
 			Setup();
 
 			Log("Server Started");
