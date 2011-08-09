@@ -156,7 +156,7 @@ namespace SMP
 				pos[2] = z;
 				onground = onGround;
 
-				//TODO Update player chunks
+				e.UpdateChunk();
 			}
 			catch (Exception e)
 			{
@@ -230,7 +230,7 @@ namespace SMP
 				rot[1] = pitch;
 				onground = onGround;
 
-				//TODO UPDATE CHUNKS
+				e.UpdateChunk();
 			}
 			catch (Exception e)
 			{

@@ -17,7 +17,7 @@ namespace SMP
 				return;
 			items[slot].item = item;
 		}
-		public void Add(Items item, int count, int slot)
+		public void Add(Items item, byte count, int slot)
 		{	
 			Item temp = new Item(item);
 			temp.count = count;

@@ -12,6 +12,7 @@ namespace SMP
 		public string Map_Name;
 		public FCGenerator generator;
 		public Dictionary<Point, Chunk> chunkData;
+		public List<Point> ToGenerate = new List<Point>();
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SMP.World"/> class and generates 49 chunks.
 		/// </summary>
@@ -33,11 +34,7 @@ namespace SMP
 			{
 				for (int z = -3; z <= 3; z++)
 				{
-					Chunk c = new Chunk(x, z);
-					generator.FlatChunk(c);
-					c.RecalculateLight();
-					//Server.Log(x + " " + z + " <Inserted");
-					chunkData.Add(new Point(x,z), c);
+					GenerateChunk(x, z);
 				}
 			}
 			this.SpawnX = spawnx; this.SpawnY = spawny; this.SpawnZ = spawnz;
@@ -52,6 +49,13 @@ namespace SMP
 			//TODO Save files
 		}
 
+		public void GenerateChunk(int x, int z)
+		{
+			Chunk c = new Chunk(x, z);
+			generator.FlatChunk(c);
+			c.RecalculateLight();
+			if(!chunkData.ContainsKey(new Point(x,z))) chunkData.Add(new Point(x,z), c);
+		}
 		public void BlockChange(int x, int y, int z, byte type, byte meta)
 		{
 			//TODO generate chunk if not exist and... something else but idr what
@@ -73,28 +77,28 @@ namespace SMP
 			get { return X; }
 			set { X = value; }
 		}
-		public int y
+		public int z
 		{
-			get { return Y; }
-			set { Y = value; }
+			get { return Z; }
+			set { Z = value; }
 		}
 		public int X;
-		public int Y;
+		public int Z;
 
 		public Point(int X, int Y)
 		{
 			this.X = X;
-			this.Y = Y;
+			this.Z = Y;
 		}
 
 		public static bool operator ==(Point a, Point b)
 		{
-			if (a.x == b.x && a.y == b.y) return true;
+			if (a.x == b.x && a.z == b.z) return true;
 			return false;
 		}
 		public static bool operator !=(Point a, Point b)
 		{
-			if (a.x != b.x || a.y != b.y) return true;
+			if (a.x != b.x || a.z != b.z) return true;
 			return false;
 		}
 		public static Point operator *(Point a, int b)
@@ -102,7 +106,7 @@ namespace SMP
 			try
 			{
 				a.x = (int)(a.x * b);
-				a.y = (int)(a.y * b);
+				a.z = (int)(a.z * b);
 				return a;
 			}
 			catch
@@ -115,7 +119,7 @@ namespace SMP
 			try
 			{
 				a.x = (int)(a.x / b);
-				a.y = (int)(a.y / b);
+				a.z = (int)(a.z / b);
 				return a;
 			}
 			catch
