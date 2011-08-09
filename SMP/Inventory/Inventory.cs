@@ -47,6 +47,14 @@ namespace SMP
 				return 0;
 			}
 		}
+		public void SetSlot(int slot, byte window)
+		{
+			byte[] tosend;
+			if (items[slot].item != Item.Nothing)
+				tosend = new byte[9];
+			else
+				tosend = new byte[6];
+ 		}
 	}
 }
 
