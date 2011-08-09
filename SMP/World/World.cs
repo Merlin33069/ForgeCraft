@@ -11,7 +11,7 @@ namespace SMP
 		public float SpawnPitch;
 		public string Map_Name;
 		public FCGenerator generator;
-		public Dictionary<long, Chunk> chunkData;
+		public Dictionary<Point, Chunk> chunkData;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SMP.World"/> class and generates 49 chunks.
 		/// </summary>
@@ -26,9 +26,8 @@ namespace SMP
 		/// </param>
 		public World (double spawnx, double spawny, double spawnz)
 		{
-			chunkData = new Dictionary<long, Chunk>();
+			chunkData = new Dictionary<Point, Chunk>();
 			generator = new FCGenerator(this);
-			int i = 0;
 
 			for (int x = -3; x <= 3; x++)
 			{
@@ -37,8 +36,8 @@ namespace SMP
 					Chunk c = new Chunk(x, z);
 					generator.FlatChunk(c);
 					c.RecalculateLight();
-					chunkData.Add(i, c);
-					i++;
+					Server.Log(x + " " + z + " <Inserted");
+					chunkData.Add(new Point(x,z), c);
 				}
 			}
 			//for (int x = -20; x <= 20; x++)
@@ -105,6 +104,90 @@ namespace SMP
 		//        p.SendRaw(0x33, tosend);
 		//}
 		#endregion
+	}
+	public struct Point : IEquatable<Point>
+	{
+		public int x
+		{
+			get { return X; }
+			set { X = value; }
+		}
+		public int y
+		{
+			get { return Y; }
+			set { Y = value; }
+		}
+		public int X;
+		public int Y;
+
+		public Point(int X, int Y)
+		{
+			this.X = X;
+			this.Y = Y;
+		}
+
+		public static bool operator ==(Point a, Point b)
+		{
+			if (a.x == b.x && a.y == b.y) return true;
+			return false;
+		}
+		public static bool operator !=(Point a, Point b)
+		{
+			if (a.x != b.x || a.y != b.y) return true;
+			return false;
+		}
+		public static Point operator *(Point a, int b)
+		{
+			try
+			{
+				a.x = (int)(a.x * b);
+				a.y = (int)(a.y * b);
+				return a;
+			}
+			catch
+			{
+				return Zero;
+			}
+		}
+		public static Point operator /(Point a, int b)
+		{
+			try
+			{
+				a.x = (int)(a.x / b);
+				a.y = (int)(a.y / b);
+				return a;
+			}
+			catch
+			{
+				return Zero;
+			}
+		}
+
+		public static Point Zero
+		{
+			get
+			{
+				return new Point(0, 0);
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj);
+		}
+		public bool Equals(Point other)
+		{
+			if (this == other) return true;
+			return false;
+		}
+		public override string ToString()
+		{
+			return base.ToString();
+		}
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 	}
 }
 

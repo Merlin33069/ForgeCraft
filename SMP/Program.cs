@@ -8,10 +8,14 @@ namespace SMP
 {
 	class Program
 	{
+		static bool exit = false;
 		static void Main(string[] args)
 		{
 			new Thread(new ThreadStart(StartServer)).Start();
-			Console.ReadLine();
+			while (!exit)
+			{
+				Console.ReadLine();
+			}
 		}
 		public static void StartServer()
 		{

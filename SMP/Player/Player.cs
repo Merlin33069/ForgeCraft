@@ -15,35 +15,45 @@ namespace SMP
 		Socket socket;
 		public World level;
 		static Random random = new Random();
+
 		byte[] buffer = new byte[0];
 		byte[] tempbuffer = new byte[0xFF];
 		bool disconnected = false;
         public bool LoggedIn { get; protected set; }
 
-		double Stance = 72;
-		double[] pos = new double[3] { 0, 72, 0 };
-		float[] rot = new float[2] { 0, 0 };
-		byte onground = 1; //really a bool, but were going to hold it as a byte (1 or 0 ONLY) so we can send it easier
+		double Stance { get { return e.Stance; } set { e.Stance = value; } }
+		double[] pos { get { return e.pos; } set { e.pos = value; } }
+		float[] rot { get { return e.rot; } set { e.rot = value; } }
+		byte onground { get { return e.OnGround; } set { e.OnGround = value; } } //really a bool, but were going to hold it as a byte (1 or 0 ONLY) so we can send it easier
+		int id { get { return e.id; } }
+		byte dimension { get { return e.dimension; } set { e.dimension = value; } } //-1 for nether, 0 normal, 1 skyworld?
 
+		Entity e;
+		public string ip;
+		public string username;
 		bool hidden = false;
 
-		public string ip;
-		int id;
-		public string username;
-		byte dimension; //-1 for nether, 0 normal, 1 skyworld?
-
 		bool MapSent = false;
+		
 
 		public Player(Socket s)
 		{
-			id = random.Next();
-			socket = s;
-			ip = socket.RemoteEndPoint.ToString().Split(':')[0];
-			Server.Log(ip + " connected to the server.");
-			level = Server.mainlevel;
-			dimension = 0;
-			players.Add(this);
-			socket.BeginReceive(tempbuffer, 0, tempbuffer.Length, SocketFlags.None, new AsyncCallback(Receive), this);
+			try
+			{
+				e = new Entity(new double[3] { 0, 72, 0 }, new float[2] { 0, 0 }, this);
+				socket = s;
+				ip = socket.RemoteEndPoint.ToString().Split(':')[0];
+				Server.Log(ip + " connected to the server.");
+				level = Server.mainlevel;
+				dimension = 0;
+				players.Add(this);
+				socket.BeginReceive(tempbuffer, 0, tempbuffer.Length, SocketFlags.None, new AsyncCallback(Receive), this);
+			}
+			catch (Exception e)
+			{
+				Server.Log(e.Message);
+				Server.Log(e.StackTrace);
+			}
 		}
 
 		static void Receive(IAsyncResult result)
@@ -86,7 +96,7 @@ namespace SMP
 				switch (msg)
 				{
 					case 0x00: length = 0; break; //Keep alive
-					case 0x01: Server.Log("auth start"); length = ((util.EndianBitConverter.Big.ToInt16(buffer, 5) * 2) + 15); break; //Login Request
+					case 0x01: /*Server.Log("auth start");*/ length = ((util.EndianBitConverter.Big.ToInt16(buffer, 5) * 2) + 15); break; //Login Request
 					case 0x02: length = ((util.EndianBitConverter.Big.ToInt16(buffer, 1) * 2) + 2); break; //Handshake
 					case 0x03: length = ((util.EndianBitConverter.Big.ToInt16(buffer, 1) * 2) + 2); break; //Chat
 					case 0x07: length = 9; break; //Entity Use
@@ -98,15 +108,15 @@ namespace SMP
 					case 0x0D: length = 41; break; //Pos and look incoming
 
 					case 0x0E: length = 11; break; //Digging
-					case 0x0F: if (util.EndianBitConverter.Big.ToInt16(buffer, 10) >= 0) length = 15; else length = 12; break; //Block Placement
+					case 0x0F: if (util.EndianBitConverter.Big.ToInt16(buffer, 11) >= 0) length = 15; else length = 12; break; //Block Placement
 					case 0x10: length = 2; break; //Holding Change
 					case 0x12: length = 5; break; //Animation Change
-					case 0x13: length = 5; break; //Block Placement
+					case 0x13: length = 5; break; //Entity Action
 
 					case 0x65: length = 1; break; //Close Window
 					case 0x66:
 						length = 9;
-						if (util.EndianBitConverter.Big.ToInt16(buffer, 7) != -1) length += 3;
+						if (util.EndianBitConverter.Big.ToInt16(buffer, 8) != -1) length += 3;
 						break; //Clicked window
 					case 0x82:
 						short a = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 10) * 2);
@@ -132,6 +142,7 @@ namespace SMP
 
 					buffer = tempbuffer;
 
+					//Server.Log(msg + "");
 					switch (msg)
 					{
 						case 0x01:
@@ -144,7 +155,7 @@ namespace SMP
 							break;
 						case 0x03:
 							Server.Log("Chat Message");
-							HandleChatMessagePacket(); //needs to pass data still
+							HandleChatMessagePacket(message); //needs to pass data still
 							break;
 						case 0x0A: if (!MapSent) { MapSent = true; SendMap(); } break; //Player onground Incoming
 						case 0x0B: if (!MapSent) { MapSent = true; SendMap(); } break; //Pos incoming
@@ -217,14 +228,14 @@ namespace SMP
 		}
 		void SendHandshake()
 		{
-			string st = "+";
+			string st = "-";
 			byte[] bytes = new byte[(st.Length * 2) + 2];
 			util.EndianBitConverter.Big.GetBytes((ushort)st.Length).CopyTo(bytes, 0);
 			Encoding.BigEndianUnicode.GetBytes(st).CopyTo(bytes, 2);
-			foreach (byte b in bytes)
-			{
-			    Server.Log(b + " <");
-			}
+			//foreach (byte b in bytes)
+			//{
+			//    Server.Log(b + " <");
+			//}
 			SendRaw(2, bytes);
 		}
 
@@ -239,15 +250,14 @@ namespace SMP
 			int i = 0;
 			foreach (Chunk c in Server.mainlevel.chunkData.Values)
 			{
-				Server.Log(i + "");
 				SendChunk(c);
 				i++;
-				Thread.Sleep(100);
 			}
-			Server.Log(i + " Chunks sent");
+			//Server.Log(i + " Chunks sent");
 
 			SendSpawnPoint();
 			SendLoginDone();
+			GlobalSpawn();
 		}
 		void SendChunk(Chunk c)
 		{
@@ -298,7 +308,77 @@ namespace SMP
 			bytes[40] = onground;
 			SendRaw(0x0D, bytes);
 
-			Server.Log(pos[0] + " " + pos[1] + " " + pos[2]);
+			//Server.Log(pos[0] + " " + pos[1] + " " + pos[2]);
+		}
+
+		void SendNamedEntitySpawn(Player p)
+		{
+			try
+			{
+				//byte[] bytes2 = new byte[4];
+				//util.EndianBitConverter.Big.GetBytes(p.id).CopyTo(bytes2, 0);
+				//SendRaw(0x1E, bytes2);
+
+				short length = (short)p.username.Length;
+				byte[] bytes = new byte[22 + (length * 2)];
+
+				util.EndianBitConverter.Big.GetBytes(p.id).CopyTo(bytes, 0);
+				util.EndianBitConverter.Big.GetBytes(length).CopyTo(bytes, 4);
+
+				Encoding.BigEndianUnicode.GetBytes(p.username).CopyTo(bytes, 6);
+
+				util.EndianBitConverter.Big.GetBytes((int)p.pos[0]).CopyTo(bytes, (22 + (length * 2)) - 16);
+				util.EndianBitConverter.Big.GetBytes((int)p.pos[1]).CopyTo(bytes, (22 + (length * 2)) - 12);
+				util.EndianBitConverter.Big.GetBytes((int)p.pos[2]).CopyTo(bytes, (22 + (length * 2)) - 8);
+
+				bytes[(22 + (length * 2)) - 4] = 0;
+				bytes[(22 + (length * 2)) - 3] = 0;
+
+				util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, (22 + (length * 2)) - 2);
+
+				SendRaw(0x14, bytes);
+
+				SendEntityEquipment(p.id, -1, -1, -1, -1, -1);
+			}
+			catch (Exception e)
+			{
+				Server.Log(e.Message);
+				Server.Log(e.StackTrace);
+			}
+		}
+		void SendEntityPosVelocity()
+		{
+
+		}
+		void SendEntityEquipment(int id, short hand, short a1, short a2, short a3, short a4)
+		{
+			byte[] bytes = new byte[10];
+
+			util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 4);
+			util.EndianBitConverter.Big.GetBytes(hand).CopyTo(bytes, 6);
+			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
+			SendRaw(0x05, bytes);
+
+			util.EndianBitConverter.Big.GetBytes((short)1).CopyTo(bytes, 4);
+			util.EndianBitConverter.Big.GetBytes(a1).CopyTo(bytes, 6);
+			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
+			SendRaw(0x05, bytes);
+
+			util.EndianBitConverter.Big.GetBytes((short)2).CopyTo(bytes, 4);
+			util.EndianBitConverter.Big.GetBytes(a2).CopyTo(bytes, 6);
+			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
+			SendRaw(0x05, bytes);
+
+			util.EndianBitConverter.Big.GetBytes((short)3).CopyTo(bytes, 4);
+			util.EndianBitConverter.Big.GetBytes(a3).CopyTo(bytes, 6);
+			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
+			SendRaw(0x05, bytes);
+
+			util.EndianBitConverter.Big.GetBytes((short)4).CopyTo(bytes, 4);
+			util.EndianBitConverter.Big.GetBytes(a4).CopyTo(bytes, 6);
+			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
+			SendRaw(0x05, bytes);
 		}
 		#endregion
 		#region INCOMING
@@ -431,7 +511,6 @@ namespace SMP
 		#endregion
 		
 		#region TARGETED
-		
 		protected virtual void SendMessageInternal(string message)
         {
             //once again please check			
@@ -441,12 +520,10 @@ namespace SMP
 			this.SendRaw((byte)KnownPackets.ChatMessage, bytes);
 			
         }
-
         public void SendMessage(string message)
         {
             SendMessage(message, WrapMethod.Default);
         }
-
         public void SendMessage(string message, WrapMethod method)
         {
             string[] lines = WordWrap.GetWrappedText(message, method);
@@ -455,7 +532,6 @@ namespace SMP
                 SendMessageInternal(lines[i]);
             }
         }
-
         public void SendMessage(string message, WrapMethod method, params object[] args)
         {
             if (method == WrapMethod.None)
@@ -463,11 +539,19 @@ namespace SMP
             else
                 SendMessage(string.Format(message, args), method);
         }
-		
 		#endregion
 		
 		#endregion
 
+		void GlobalSpawn()
+		{
+			if (players.Count <= 1) return;
+			foreach (Player p in players)
+			{
+				SendNamedEntitySpawn(p);
+				p.SendNamedEntitySpawn(this);
+			}
+		}
 		public static void GlobalUpdate()
 		{
 			players.ForEach(delegate(Player p)

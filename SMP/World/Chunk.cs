@@ -18,6 +18,9 @@ namespace SMP
 		public int x;
 		public int z;
 		public bool mountain = true;
+
+		public List<Entity> Entities = new List<Entity>();
+
 		/// <summary>
 		/// When a block is placed then this is called
 		/// </summary>
@@ -35,6 +38,7 @@ namespace SMP
 		/// </param>
 		public delegate bool OnBlockPlaced(int x, int y, int z, byte id);
 		public event OnBlockPlaced BlockPlaced;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SMP.Chunck"/> class with the default Block Count (32768)
 		/// </summary>
@@ -239,7 +243,11 @@ namespace SMP
 		public static int PosToInt(int x, int y, int z)
         {
 			return (x * Depth + z) * Height + y;
-        }	
+        }
+		public static Chunk GetChunk(int x, int z)
+		{
+			return Server.mainlevel.chunkData[new Point(x,z)];
+		}
 	}
 }
 

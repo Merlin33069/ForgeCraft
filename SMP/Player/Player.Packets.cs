@@ -28,6 +28,7 @@ namespace SMP
 		{
 			int version = util.EndianBitConverter.Big.ToInt32(message, 0);
 			short length = util.EndianBitConverter.Big.ToInt16(message, 4);
+			if (length > 32) { Kick("Username too long"); return; }
 			username = Encoding.BigEndianUnicode.GetString(message, 6, (length * 2));
 			Server.Log(username);
 
@@ -45,7 +46,7 @@ namespace SMP
 		private void HandleHandshake(byte[] message)
 		{
 			short length = util.EndianBitConverter.Big.ToInt16(message, 0);
-			Server.Log(length + "");
+			//Server.Log(length + "");
 			Server.Log(Encoding.BigEndianUnicode.GetString(message, 2, length * 2));
 
 			SendHandshake();
@@ -59,16 +60,17 @@ namespace SMP
         // message has over 119 characters in it.
         // --Payload-----------------------------
         //  - string16, Message
-        private void HandleChatMessagePacket()
+        private void HandleChatMessagePacket(byte[] message)
         {
-            //string message = bigStream.ReadString16(); //relic code
-			string message = "HELLO!!!!"; // temp
-            if (message.Length > 119)
+			short length = util.EndianBitConverter.Big.ToInt16(message, 0);
+			string m = Encoding.BigEndianUnicode.GetString(message, 2, length * 2);
+
+            if (m.Length > 119)
             {
                 Kick("Too many characters in message!");
                 return;
             }
-            foreach (char ch in message)
+            foreach (char ch in m)
             {
                 if (ch < 32 || ch >= 127)
                 {
@@ -78,26 +80,30 @@ namespace SMP
             }
             
             // Test for commands
-            if (message[0] == '/') //in future maybe use config defined character
+            if (m[0] == '/') //in future maybe use config defined character
             {
-                message = message.Remove(0, 1);
+                m = m.Remove(0, 1);
 
-                int pos = message.IndexOf(' ');
+                int pos = m.IndexOf(' ');
                 if (pos == -1)
                 {
-                    HandleCommand(message.ToLower(), "");
+                    HandleCommand(m.ToLower(), "");
                     return;
                 }
 
-                string cmd = message.Substring(0, pos).ToLower();
+                string cmd = m.Substring(0, pos).ToLower();
 
-                HandleCommand(cmd, message);
+                HandleCommand(cmd, m);
                 return;
             }
 
             // TODO: Rank coloring
             //GlobalMessage(this.PlayerColor + "{1}§f: {2}", WrapMethod.Chat, this.Prefix, Username, message);
-            Server.ServerLogger.Log(LogLevel.Info, username + ": " + message);
+            Server.ServerLogger.Log(LogLevel.Info, username + ": " + m);
+			foreach (Player p in players)
+			{
+				p.SendMessage(username + ": " + m);
+			}
         }
 
 
