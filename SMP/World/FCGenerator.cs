@@ -58,7 +58,7 @@ namespace SMP
 							{
 								if (rand.Next(249) <= 100 && tempinfo[Chunk.PosToInt(x, y, z)] != 2)
 								{
-									if (c.GetBlock(x - 1, y, z) == 1 || c.GetBlock(x, y, z - 1) == 1 || c.GetBlock(x, y - 1, z) == 1 || c.GetBlock(x - 1, y, z) == 2 || c.GetBlock(x, y - 1, z) == 2 || c.GetBlock(x, y, z - 1) == 2)
+									if (c.GetBlock(x - 1, y, z) != 0 && c.GetBlock(x, y - 1, z) != 0 && c.GetBlock(x, y, z - 1) != 0)
 									{
 										if (rand.Next(2) == 1)
 											c.PlaceBlock(x, y, z, 1);
@@ -74,7 +74,7 @@ namespace SMP
 									if (c.GetBlock(x - 1, y, z) == 1 || c.GetBlock(x, y, z - 1) == 1 || c.GetBlock(x, y - 1, z) == 1 || c.GetBlock(x - 1, y, z) == 2 || c.GetBlock(x, y - 1, z) == 2 || c.GetBlock(x, y, z - 1) == 2)
 									{
 										byte id = 2;
-										if (c.GetBlock(x - 1, y, z) == 1 || c.GetBlock(x, y, z - 1) == 1 || c.GetBlock(x, y - 1, z) == 1 || c.GetBlock(x - 1, y, z) == 2 || c.GetBlock(x, y - 1, z) == 2 || c.GetBlock(x, y, z - 1) == 2)
+										if (c.GetBlock(x - 1, y, z) != 0 && c.GetBlock(x, y - 1, z) != 0 && c.GetBlock(x, y, z - 1) != 0)
 											id = 1;
 										//WATER
 										//if (rand.Next(300) < 50 && y > 70 && (c.GetBlock(x - 1, y, z) != 1 || c.GetBlock(x, y, z - 1) != 1 || c.GetBlock(x, y - 1, z) != 1 || c.GetBlock(x - 1, y, z) != 2 || c.GetBlock(x, y - 1, z) != 2 || c.GetBlock(x, y, z - 1) != 2))
@@ -86,7 +86,7 @@ namespace SMP
 										int i = 1;
 										while (c.GetBlock(x, y, z - i) == 0 && y - i > 64 && c.mountain)
 										{
-											if (c.GetBlock(x - 1, y, z) == 1 || c.GetBlock(x, y, z - 1) == 1 || c.GetBlock(x, y - 1, z) == 1 || c.GetBlock(x - 1, y, z) == 2 || c.GetBlock(x, y - 1, z) == 2 || c.GetBlock(x, y, z - 1) == 2)
+											if (c.GetBlock(x - 1, y, z) != 0 && c.GetBlock(x, y - 1, z) != 0 && c.GetBlock(x, y, z - 1) != 0)
 												id = 1;
 											//WATER	
 											//else if (rand.Next(50) < 10)
@@ -103,6 +103,7 @@ namespace SMP
 											if (c.GetBlock(x, y - 1, z) == 0)
 												c.PlaceBlock(x, y - 1, z, 0);
 										}
+										tempinfo[Chunk.PosToInt(x, y, z)] = 2;
 									}
 									else
 										c.PlaceBlock(x, y, z, 0);
