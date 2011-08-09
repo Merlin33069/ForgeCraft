@@ -40,15 +40,6 @@ namespace SMP
 					chunkData.Add(new Point(x,z), c);
 				}
 			}
-			//for (int x = -20; x <= 20; x++)
-			//{
-			//	for (int z = -20; z <= 20; z++)
-			//	{
-			//		Chunk c = new Chunk(x, z);
-			//		chunkData.Add(i, generator.Rand(c, 100));
-			//		i++;
-			//	}
-			//}
 			this.SpawnX = spawnx; this.SpawnY = spawny; this.SpawnZ = spawnz;
 		}
 		public static World LoadLVL(string filename)
