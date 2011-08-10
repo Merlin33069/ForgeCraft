@@ -59,8 +59,9 @@ namespace SMP
 			this.SpawnX = spawnx; this.SpawnY = spawny; this.SpawnZ = spawnz;
 			timeupdate.Elapsed += delegate {
 				time += 20;
-				for (int i = 0; i < Player.players.Count; i++)
-					Player.players[i].SendTime();
+				if (time > 24000)
+					time = 0;
+				Player.players.ForEach(delegate(Player p) { p.SendTime(); });
 			};
 			timeupdate.Start();
 		}
