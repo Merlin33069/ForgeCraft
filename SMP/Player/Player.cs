@@ -15,7 +15,8 @@ namespace SMP
 		public Socket socket;
 		public World level;
 		static Random random = new Random();
-
+		public short current_slot_holding;
+		public byte current_block_holding { get { return inventory.items[current_slot_holding]; } set { inventory.items[current_slot_holding] = value; } }
 		byte[] buffer = new byte[0];
 		byte[] tempbuffer = new byte[0xFF];
 		bool disconnected = false;
@@ -29,7 +30,7 @@ namespace SMP
 		int id { get { return e.id; } }
 		byte dimension { get { return e.dimension; } set { e.dimension = value; } } //-1 for nether, 0 normal, 1 skyworld?
 		public Chunk chunk { get { return e.CurrentChunk; } }
-
+		public Inventory inventory;
 		public List<Point> VisibleChunks = new List<Point>();
 		public List<int> VisibleEntities = new List<int>();
 
@@ -56,6 +57,7 @@ namespace SMP
 				Server.Log(ip + " connected to the server.");
 				level = Server.mainlevel;
 				dimension = 0;
+				inventory = new Inventory();
 				players.Add(this);
 				socket.BeginReceive(tempbuffer, 0, tempbuffer.Length, SocketFlags.None, new AsyncCallback(Receive), this);
 			}
