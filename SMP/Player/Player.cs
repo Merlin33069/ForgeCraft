@@ -21,7 +21,7 @@ namespace SMP
 		byte[] tempbuffer = new byte[0xFF];
 		bool disconnected = false;
         public bool LoggedIn { get; protected set; }
-
+		public short health { get { return e.meta; } set { e.meta = value; } }
 		double Stance { get { return e.Stance; } set { e.Stance = value; } }
 		double[] pos { get { return e.pos; } set { e.pos = value; } }
 		double[] oldpos { get { return e.oldpos; } set { e.oldpos = value; } }
@@ -39,6 +39,8 @@ namespace SMP
 		public delegate void OnPlayerAuth(Player p);
 		public event OnPlayerConnect PlayerConnect;
 		public event OnPlayerAuth PlayerAuth;
+		public delegate void OnPlayerChat(string message, Player p);
+		public delegate void OnPlayerCommand(string cmd, string message, Player p);
 		//Events for Custom Command and Plugins -------------------------------------
 		#endregion
 		Entity e;
@@ -235,6 +237,12 @@ namespace SMP
 			byte[] tosend = new byte[9];
 			util.EndianBitConverter.Big.GetBytes(level.time).CopyTo(tosend, 0);
 			SendRaw(0x04, tosend);
+		}
+		public void SendHealth()
+		{
+			byte[] tosend = new byte[3];
+			util.EndianBitConverter.Big.GetBytes(e.meta).CopyTo(tosend, 0);
+			SendRaw(0x08, tosend);
 		}
 		void SendLoginPass()
 		{
@@ -475,7 +483,7 @@ namespace SMP
 				p.SendRaw(0);
 				if (!p.LoggedIn) return;
 				p.SendRaw(0);
-				p.SendTick();
+				p.SendTime();
 				if (!p.hidden)
 				{
 					p.UpdatePosition();
@@ -543,10 +551,6 @@ namespace SMP
 					}
 				}
 			}
-		}
-		void SendTick()
-		{
-
 		}
 		#endregion
 		#region INCOMING
