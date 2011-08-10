@@ -10,10 +10,27 @@ namespace SMP
 		public float SpawnYaw;
 		public float SpawnPitch;
 		public string Map_Name;
+		public long time;
+		public System.Timers.Timer timeupdate = new System.Timers.Timer(1000);
 		public FCGenerator generator;
 		public Dictionary<Point, Chunk> chunkData;
 		public Dictionary<int, Item> items_on_ground;
 		public List<Point> ToGenerate = new List<Point>();
+		#region Custom Command / Plugin Events
+		//Custom Command / Plugin Events -------------------------------------------------------------------
+		public delegate void OnWorldLoad(World w); //TODO When loading levels is finished, add this event
+		public static event OnWorldLoad WorldLoad;
+		public delegate void OnWorldSave(World w);
+		public static event OnWorldLoad OnSave;
+		public event OnWorldLoad Save;
+		public delegate void OnGenerateChunk(World w, Chunk c, int x, int z);
+		public static event OnGenerateChunk WorldGenerateChunk;
+		public event OnGenerateChunk GeneratedChunk;
+		public delegate void OnBlockChange(int x, int y, int z, byte type, byte meta);
+		public event OnBlockChange BlockChanged;
+		//Custom Command / Plugin Events -------------------------------------------------------------------
+		#endregion
+		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SMP.World"/> class and generates 49 chunks.
 		/// </summary>
@@ -40,14 +57,26 @@ namespace SMP
 				}
 			}
 			this.SpawnX = spawnx; this.SpawnY = spawny; this.SpawnZ = spawnz;
+			timeupdate.Elapsed += delegate {
+				time += 20;
+				for (int i = 0; i < Player.players.Count; i++)
+					Player.players[i].SendTime();
+			};
+			timeupdate.Start();
 		}
 		public static World LoadLVL(string filename)
 		{
 			//TODO Load files
+			//if (WorldLoad != null)
+			//	WorldLoad(this);
 			return null;
 		}
 		public void SaveLVL(World  w)
 		{
+			if (Save != null)
+				Save(this);
+			if (OnSave != null)
+				OnSave(this);
 			//TODO Save files
 		}
 
@@ -57,6 +86,10 @@ namespace SMP
 			generator.FlatChunk(c);
 			//generator.PerlinChunk(c);
 			c.RecalculateLight();
+			if (GeneratedChunk != null)
+				GeneratedChunk(this, c, x, z);
+			if (WorldGenerateChunk != null)
+				WorldGenerateChunk(this, c, x, z);
 			if(!chunkData.ContainsKey(new Point(x,z))) chunkData.Add(new Point(x,z), c);
 		}
 		public void BlockChange(int x, int y, int z, byte type, byte meta)
@@ -65,7 +98,8 @@ namespace SMP
 			int cx = x >> 4, cz = z >> 4;
 			Chunk chunk = Chunk.GetChunk(cx, cz);
 			chunk.PlaceBlock(x & 0xf, y, z & 0xf, type, meta);
-
+			if (BlockChanged != null)
+				BlockChanged(x, y, z, type, meta);
 			foreach (Player p in Player.players)
 			{
 				//TODO CHECK TO SEE IF CHUNK IS IN PLAYER RANGE

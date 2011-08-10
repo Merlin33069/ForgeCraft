@@ -33,7 +33,14 @@ namespace SMP
 		public Inventory inventory;
 		public List<Point> VisibleChunks = new List<Point>();
 		public List<int> VisibleEntities = new List<int>();
-
+		#region Custom Command / Plugin Event
+		//Events for Custom Command and Plugins ------------------------------------
+		public delegate void OnPlayerConnect(Player p);
+		public delegate void OnPlayerAuth(Player p);
+		public event OnPlayerConnect PlayerConnect;
+		public event OnPlayerAuth PlayerAuth;
+		//Events for Custom Command and Plugins -------------------------------------
+		#endregion
 		Entity e;
 		public string ip;
 		public string username;
@@ -59,6 +66,10 @@ namespace SMP
 				dimension = 0;
 				inventory = new Inventory();
 				players.Add(this);
+				//Event --------------------
+				if (PlayerConnect != null)
+					PlayerConnect(this);
+				//Event --------------------
 				socket.BeginReceive(tempbuffer, 0, tempbuffer.Length, SocketFlags.None, new AsyncCallback(Receive), this);
 			}
 			catch (Exception e)
@@ -218,6 +229,12 @@ namespace SMP
 				buffer = null;
 				Disconnect();
 			}
+		}
+		public void SendTime()
+		{
+			byte[] tosend = new byte[9];
+			util.EndianBitConverter.Big.GetBytes(level.time).CopyTo(tosend, 0);
+			SendRaw(0x04, tosend);
 		}
 		void SendLoginPass()
 		{

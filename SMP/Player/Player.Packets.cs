@@ -19,6 +19,9 @@ namespace SMP
 			Player.GlobalMessage(username + " has joined the game!");
 			LoggedIn = true;
 			SendLoginPass();
+			//OnPlayerConnect Event
+			if (PlayerAuth != null)
+				PlayerAuth(this);
 		}
 		private void HandleHandshake(byte[] message)
 		{
@@ -106,7 +109,6 @@ namespace SMP
         }
 		public void HandleHoldingChange(byte[] message)
 		{
-			Server.Log("SLOT CHANGED");
 			try
 			{
 				current_slot_holding = util.EndianBitConverter.Big.ToInt16(message, 0);
