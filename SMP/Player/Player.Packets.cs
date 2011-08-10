@@ -16,13 +16,13 @@ namespace SMP
 			if (length > 32) { Kick("Username too long"); return; }
 			username = Encoding.BigEndianUnicode.GetString(message, 6, (length * 2));
 			Server.Log(ip + " Logged in as " + username);
-
+			Player.GlobalMessage(username + " has joined the game!");
 			LoggedIn = true;
 			SendLoginPass();
 		}
 		private void HandleHandshake(byte[] message)
 		{
-			Server.Log("handshake-2");
+			//Server.Log("handshake-2");
 			//short length = util.EndianBitConverter.Big.ToInt16(message, 0);
 			//Server.Log(length + "");
 			//Server.Log(Encoding.BigEndianUnicode.GetString(message, 2, length * 2));

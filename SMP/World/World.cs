@@ -54,7 +54,8 @@ namespace SMP
 		public void GenerateChunk(int x, int z)
 		{
 			Chunk c = new Chunk(x, z);
-			generator.FlatChunk(c);
+			//generator.FlatChunk(c);
+			generator.PerlinChunk(c);
 			c.RecalculateLight();
 			if(!chunkData.ContainsKey(new Point(x,z))) chunkData.Add(new Point(x,z), c);
 		}

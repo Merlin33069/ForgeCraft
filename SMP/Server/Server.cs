@@ -18,7 +18,7 @@ namespace SMP
 		public static int protocolversion = 14;
 		public static string Version = "0.1";
 		public static string name = "sc";
-		public static int port = 1338; //DEBUGGING CHANGE BACK TO 25565
+		public static int port = 25565; //DEBUGGING CHANGE BACK TO 25565
 		public static bool unsafe_plugin = false;
 		public static Logger ServerLogger = new Logger();
 		
@@ -31,7 +31,7 @@ namespace SMP
 		{
 			Log("Starting Server");
 			s = this;
-			mainlevel = new World(0, 66, 0);
+			mainlevel = new World(0, 127, 0);
 
 			ml = new MainLoop("server");
 			#region updatetimer

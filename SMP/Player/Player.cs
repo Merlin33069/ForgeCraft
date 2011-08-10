@@ -48,7 +48,9 @@ namespace SMP
 		{
 			try
 			{
-				e = new Entity(new double[3] { 0, 72, 0 }, new float[2] { 0, 0 }, this);
+				e = new Entity(new double[3] { 0, 18, 0 }, new float[2] { 0, 0 }, this);
+				pos[1] = 128;
+				Stance = 128;
 				//socket = s;
 				ip = socket.RemoteEndPoint.ToString().Split(':')[0];
 				Server.Log(ip + " connected to the server.");
@@ -155,11 +157,11 @@ namespace SMP
 					switch (msg)
 					{
 						case 0x01:
-							Server.Log("Authentication");
+							//Server.Log("Authentication");
 							HandleLogin(message);
 							break;
 						case 0x02:
-							Server.Log("Handshake");
+							//Server.Log("Handshake");
 							HandleHandshake(message);
 							break;
 						case 0x03:
@@ -240,7 +242,7 @@ namespace SMP
 		}
 		void SendHandshake()
 		{
-			Server.Log("Handshake out");
+			//Server.Log("Handshake out");
 			string st = "-";
 			byte[] bytes = new byte[(st.Length * 2) + 2];
 			util.EndianBitConverter.Big.GetBytes((ushort)st.Length).CopyTo(bytes, 0);
@@ -249,9 +251,9 @@ namespace SMP
 			//{
 			//    Server.Log(b + " <");
 			//}
-			Server.Log("Handshake out-1");
+			//Server.Log("Handshake out-1");
 			SendRaw(2, bytes);
-			Server.Log("Handshake out-2");
+			//Server.Log("Handshake out-2");
 		}
 
 		void SendInventory()
@@ -312,7 +314,7 @@ namespace SMP
 		}
 		void SendLoginDone()
 		{
-			Server.Log("Login Done");
+			//Server.Log("Login Done");
 
 			byte[] bytes = new byte[41];
 			util.EndianBitConverter.Big.GetBytes(pos[0]).CopyTo(bytes, 0);
