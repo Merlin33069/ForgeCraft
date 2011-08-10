@@ -29,6 +29,7 @@ namespace SMP
 		int id { get { return e.id; } }
 		byte dimension { get { return e.dimension; } set { e.dimension = value; } } //-1 for nether, 0 normal, 1 skyworld?
 		public Chunk chunk { get { return e.CurrentChunk; } }
+		public List<Point> VisibleChunks = new List<Point>();
 
 		Entity e;
 		public string ip;
@@ -260,7 +261,7 @@ namespace SMP
 		{
 			//Server.Log("Sending");
 			int i = 0;
-			foreach (Chunk c in Server.mainlevel.chunkData.Values)
+			foreach (Chunk c in Server.mainlevel.chunkData.Values.ToArray())
 			{
 				SendChunk(c);
 				i++;
@@ -271,16 +272,17 @@ namespace SMP
 			SendLoginDone();
 			GlobalSpawn();
 		}
-		void SendChunk(Chunk c)
+		public void SendPreChunk(Chunk c, byte load)
 		{
-			//Send Chunk Init
-			byte[] tosend1 = new byte[9];
-			util.EndianBitConverter.Big.GetBytes(c.x).CopyTo(tosend1, 0);
-			util.EndianBitConverter.Big.GetBytes(c.z).CopyTo(tosend1, 4);
-			tosend1[8] = 1;
-			SendRaw(0x32, tosend1);
-
-			//Server.Log(c.x + " " + c.z + " " + c.x * 16 + " " + c.z * 16);
+			byte[] bytes = new byte[9];
+			util.EndianBitConverter.Big.GetBytes(c.x).CopyTo(bytes, 0);
+			util.EndianBitConverter.Big.GetBytes(c.z).CopyTo(bytes, 4);
+			bytes[8] = load;
+			SendRaw(0x32, bytes);
+		}
+		public void SendChunk(Chunk c)
+		{
+			SendPreChunk(c, 1);
 
 			//Send Chunk Data
 			byte[] CompressedData = c.GetCompressedData();
@@ -291,12 +293,11 @@ namespace SMP
 			bytes[10] = 15;
 			bytes[11] = 127;
 			bytes[12] = 15;
-			//util.EndianBitConverter.Big.GetBytes((16 * 128 * 16 * 2.5)).CopyTo(bytes, 13);
 			util.EndianBitConverter.Big.GetBytes(CompressedData.Length).CopyTo(bytes, 13);
 			CompressedData.CopyTo(bytes, 17);
 			SendRaw(0x33, bytes);
 
-			//Server.Log((16 * 128 * 16 * 2.5) + " " + CompressedData.Length);
+			VisibleChunks.Add(c.point);
 		}
 		void SendSpawnPoint()
 		{
@@ -515,7 +516,8 @@ namespace SMP
 			if (players.Count <= 1) return;
 			foreach (Player p in players)
 			{
-				if (p == this) return;
+				if (!p.LoggedIn) continue;
+				if (p == this) continue;
 				SendNamedEntitySpawn(p);
 				p.SendNamedEntitySpawn(this);
 			}
@@ -524,7 +526,6 @@ namespace SMP
 		{
 			players.ForEach(delegate(Player p)
 			{
-				p.e.UpdateChunk();
 				p.SendRaw(0);
 				if (!p.LoggedIn) return;
 				p.SendRaw(0);
@@ -676,7 +677,7 @@ namespace SMP
 			//Server.ServerLogger.Log(LogLevel.Notice, "{0}{1} kicked: {2}",
             //	LoggedIn ? "" : "/", LoggedIn ? username : ip);
             if (LoggedIn)
-                GlobalMessage("§5{0} §fhas been kicked from the server!", WrapMethod.None, username);
+                GlobalMessage("§5{0} §fhas disconnected.", WrapMethod.None, username);
             LoggedIn = false;
 			
 			//TODO: Despawn

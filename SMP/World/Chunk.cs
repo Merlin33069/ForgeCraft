@@ -19,6 +19,8 @@ namespace SMP
 		public int z;
 		public bool mountain = true;
 
+		public Point point { get { return new Point(x, z); } }
+
 		public List<Entity> Entities = new List<Entity>();
 
 		/// <summary>
