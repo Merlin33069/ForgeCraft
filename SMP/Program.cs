@@ -12,7 +12,7 @@ namespace SMP
 		static void Main(string[] args)
 		{
 			//Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
-			//AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
 			new Thread(new ThreadStart(StartServer)).Start();
 			while (!exit)
@@ -27,7 +27,7 @@ namespace SMP
 
 		static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
-			
+			Console.WriteLine((e.ExceptionObject).ToString());
 		}
 	}
 }

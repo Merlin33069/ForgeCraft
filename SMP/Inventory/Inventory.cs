@@ -50,7 +50,7 @@ namespace SMP
 		public void SetSlot(int slot, byte window)
 		{
 			byte[] tosend;
-			if (items[slot].item != Item.Nothing)
+			if (items[slot].item != null)
 				tosend = new byte[9];
 			else
 				tosend = new byte[6];

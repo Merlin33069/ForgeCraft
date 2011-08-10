@@ -45,6 +45,7 @@ namespace SMP
 			p = pl;
 			c.Entities.Add(this);
 			CurrentChunk = c;
+			Entities.Add(id, this);
 		}
 		public Entity(byte itype, double[] ipos, float[] irot)
 		{
@@ -55,6 +56,7 @@ namespace SMP
 			rot = irot;
 			c.Entities.Add(this);
 			CurrentChunk = c;
+			Entities.Add(id, this);
 		}
 		public Entity(Items iitem, byte icount, short imeta, double[] ipos, byte[] irot2)
 		{
@@ -70,13 +72,14 @@ namespace SMP
 				c.Entities.Add(this);
 				CurrentChunk = c;
 			}
+			Entities.Add(id, this);
 		}
 
-		public void UpdateChunk()
+		public void UpdateChunks(bool force)
 		{
-			if (c != CurrentChunk)
+			if (c != CurrentChunk || force)
 			{
-				if (c == null) { p.Kick("You dumbass >_>"); return; }
+				//if (c == null) { p.Kick("You dumbass >_>"); return; }
 				try
 				{
 					CurrentChunk.Entities.Remove(this);
@@ -85,11 +88,12 @@ namespace SMP
 				}
 				catch
 				{
-					p.Kick("You dumbass >_>");
+					p.Kick("Error Updating Chunk.");
 				}
-				if (isPlayer)
+				if (isPlayer || force)
 				{
 					List<Point> templist = new List<Point>();
+
 					int sx = CurrentChunk.point.x - 3; //StartX
 					int ex = CurrentChunk.point.x + 3; //EndX
 					int sz = CurrentChunk.point.z - 3; //StartZ
@@ -124,6 +128,66 @@ namespace SMP
 				}
 			}
 		}
+		public void UpdateEntities()
+		{
+			List<int> tempelist = new List<int>();
+
+			int sx = CurrentChunk.point.x - 3; //StartX
+			int ex = CurrentChunk.point.x + 3; //EndX
+			int sz = CurrentChunk.point.z - 3; //StartZ
+			int ez = CurrentChunk.point.z + 3; //EndZ
+			for (int x = sx; x <= ex; x++)
+			{
+				for (int z = sz; z <= ez; z++)
+				{
+					if (!Server.mainlevel.chunkData.ContainsKey(new Point(x, z))) { continue; }
+
+					foreach (Entity e in Server.mainlevel.chunkData[new Point(x, z)].Entities)
+					{
+						tempelist.Add(e.id);
+						if (p.VisibleEntities.Contains(e.id))
+						{
+							continue; //Continue if the player already has this entity
+						}
+						if (e.isPlayer)
+						{
+							if (e.p == p) continue;
+							p.VisibleEntities.Add(e.id);
+							p.SendNamedEntitySpawn(e.p);
+							if (!e.p.VisibleEntities.Contains(id))
+							{
+								e.p.VisibleEntities.Add(id);
+								e.p.SendNamedEntitySpawn(p);
+							}
+							continue;
+						}
+						else if (e.isItem)
+						{
+							p.SendPickupSpawn(e);
+							continue;
+						}
+						else if (e.isMob)
+						{
+							//TODO Spawn mob
+							continue;
+						}
+					}
+				}
+			}
+			foreach (int i in p.VisibleEntities.ToArray())
+			{
+				if (!tempelist.Contains(i))
+				{
+					p.VisibleEntities.Remove(i);
+					p.SendDespawn(i);
+				}
+			}
+		}
+		//public void UpdateEntitiesAndChunks()
+		//{
+		//	if (c != CurrentChunk) UpdateChunks();
+		//	if (isPlayer) UpdateEntities();
+		//}
 		public static int FreeId()
 		{
 			int i = 0;

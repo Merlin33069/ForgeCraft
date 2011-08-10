@@ -98,6 +98,7 @@ namespace SMP
 				catch (Exception e)
 				{
 					Log(e.Message);
+					Log(e.StackTrace);
 					if (p != null)
 						p.Disconnect();
 					if (!begin)

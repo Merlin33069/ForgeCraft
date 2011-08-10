@@ -255,14 +255,7 @@ namespace SMP
         }
 		public static Chunk GetChunk(int x, int z)
 		{
-			try
-			{
 				return Server.mainlevel.chunkData[new Point(x, z)];
-			}
-			catch
-			{
-				return null;
-			}
 		}
 	}
 }

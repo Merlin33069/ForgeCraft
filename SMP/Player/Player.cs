@@ -29,7 +29,9 @@ namespace SMP
 		int id { get { return e.id; } }
 		byte dimension { get { return e.dimension; } set { e.dimension = value; } } //-1 for nether, 0 normal, 1 skyworld?
 		public Chunk chunk { get { return e.CurrentChunk; } }
+
 		public List<Point> VisibleChunks = new List<Point>();
+		public List<int> VisibleEntities = new List<int>();
 
 		Entity e;
 		public string ip;
@@ -260,17 +262,18 @@ namespace SMP
 		void SendMap()
 		{
 			//Server.Log("Sending");
-			int i = 0;
-			foreach (Chunk c in Server.mainlevel.chunkData.Values.ToArray())
-			{
-				SendChunk(c);
-				i++;
-			}
+			//int i = 0;
+			//foreach (Chunk c in Server.mainlevel.chunkData.Values.ToArray())
+			//{
+			//	SendChunk(c);
+			//	i++;
+			//}
 			//Server.Log(i + " Chunks sent");
 
+			e.UpdateChunks(true);
 			SendSpawnPoint();
 			SendLoginDone();
-			GlobalSpawn();
+			//GlobalSpawn();
 		}
 		public void SendPreChunk(Chunk c, byte load)
 		{
@@ -299,12 +302,12 @@ namespace SMP
 
 			VisibleChunks.Add(c.point);
 		}
-		void SendSpawnPoint()
+		public void SendSpawnPoint()
 		{
 			byte[] bytes = new byte[12];
-			util.EndianBitConverter.Big.GetBytes((int)level.SpawnX).CopyTo(bytes, 0);
-			util.EndianBitConverter.Big.GetBytes((int)level.SpawnY).CopyTo(bytes, 4);
-			util.EndianBitConverter.Big.GetBytes((int)level.SpawnZ).CopyTo(bytes, 8);
+			util.EndianBitConverter.Big.GetBytes((int)pos[0]).CopyTo(bytes, 0);
+			util.EndianBitConverter.Big.GetBytes((int)pos[1]).CopyTo(bytes, 4);
+			util.EndianBitConverter.Big.GetBytes((int)pos[2]).CopyTo(bytes, 8);
 			SendRaw(0x06, bytes);
 		}
 		void SendLoginDone()
@@ -335,14 +338,26 @@ namespace SMP
 			SendRaw(0x35, bytes);
 		}
 
-		void SendNamedEntitySpawn(Player p)
+		public void SendNamedEntitySpawn(Player p)
 		{
 			try
 			{
-				//byte[] bytes2 = new byte[4];
-				//util.EndianBitConverter.Big.GetBytes(p.id).CopyTo(bytes2, 0);
-				//SendRaw(0x1E, bytes2);
-
+				if (p == null)
+				{
+					if(VisibleEntities.Contains(p.id)) VisibleEntities.Remove(p.id);
+					return;
+				}
+				if (!LoggedIn)
+				{
+					if(VisibleEntities.Contains(p.id)) VisibleEntities.Remove(p.id);
+					return;
+				}
+				if (!p.LoggedIn)
+				{
+					if(VisibleEntities.Contains(p.id)) VisibleEntities.Remove(p.id);
+					return;
+				}
+				
 				short length = (short)p.username.Length;
 				byte[] bytes = new byte[22 + (length * 2)];
 
@@ -370,12 +385,32 @@ namespace SMP
 				Server.Log(e.StackTrace);
 			}
 		}
-		void SendEntityPosVelocity()
+		public void SendPickupSpawn(Entity e)
 		{
+			if (!LoggedIn) return;
 
+			byte[] bytes = new byte[24];
+			util.EndianBitConverter.Big.GetBytes(e.id).CopyTo(bytes, 0);
+			util.EndianBitConverter.Big.GetBytes((short)e.itype).CopyTo(bytes, 4);
+			bytes[6] = e.count;
+			util.EndianBitConverter.Big.GetBytes(e.meta).CopyTo(bytes, 7);
+			util.EndianBitConverter.Big.GetBytes((int)e.pos[0]).CopyTo(bytes, 9);
+			util.EndianBitConverter.Big.GetBytes((int)e.pos[1]).CopyTo(bytes, 13);
+			util.EndianBitConverter.Big.GetBytes((int)e.pos[2]).CopyTo(bytes, 17);
+			bytes[21] = e.irot[0];
+			bytes[22] = e.irot[1];
+			bytes[23] = e.irot[2];
+			SendRaw(0x15, bytes);
 		}
-		void SendEntityEquipment(int id, short hand, short a1, short a2, short a3, short a4)
+
+		public void SendEntityPosVelocity()
 		{
+			if (!LoggedIn) return;
+		}
+		public void SendEntityEquipment(int id, short hand, short a1, short a2, short a3, short a4)
+		{
+			if (!LoggedIn) return;
+
 			byte[] bytes = new byte[10];
 
 			util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
@@ -404,12 +439,93 @@ namespace SMP
 			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
 			SendRaw(0x05, bytes);
 		}
-
-		void SendDespawn(int id)
+		public void SendDespawn(int id) //Despawn ALL types of Entities (player mod item)
 		{
+			//if (!LoggedIn) return;
 			byte[] bytes = new byte[4];
 			util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
 			SendRaw(0x1D, bytes);
+		}
+
+		public static void GlobalUpdate()
+		{
+			players.ForEach(delegate(Player p)
+			{
+				p.SendRaw(0);
+				if (!p.LoggedIn) return;
+				p.SendRaw(0);
+				p.SendTick();
+				if (!p.hidden)
+				{
+					p.UpdatePosition();
+				}
+			});
+		}
+		void UpdatePosition()
+		{
+			e.UpdateEntities();
+			if (!LoggedIn) return;
+
+			int diffX = (int)(oldpos[0] * 32) - (int)(pos[0] * 32);
+			int diffY = (int)(oldpos[1] * 32) - (int)(pos[1] * 32);
+			int diffZ = (int)(oldpos[2] * 32) - (int)(pos[2] * 32);
+
+			if (Math.Abs(diffX) == 0 && Math.Abs(diffY) == 0 && Math.Abs(diffZ) == 0)
+			{
+				byte[] bytes = new byte[6];
+				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+				bytes[4] = (byte)(rot[0] / 1.40625);
+				bytes[5] = (byte)(rot[1] / 1.40625);
+				foreach (Player p in players.ToArray())
+				{
+					if (p != this)
+					{
+						if (p.LoggedIn)
+							p.SendRaw(0x20, bytes);
+					}
+				}
+			}
+			else if (Math.Abs(diffX) <= 4 && Math.Abs(diffY) <= 4 && Math.Abs(diffZ) <= 4)
+			{
+				byte[] bytes = new byte[9];
+				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+				bytes[4] = (byte)diffX;
+				bytes[5] = (byte)diffY;
+				bytes[6] = (byte)diffZ;
+				bytes[7] = (byte)(rot[0] / 1.40625);
+				bytes[8] = (byte)(rot[1] / 1.40625);
+				foreach (Player p in players.ToArray())
+				{
+					if (p != this)
+					{
+						if(VisibleEntities.Contains(p.id))
+							if (p.LoggedIn)
+								p.SendRaw(0x21, bytes);
+					}
+				}
+			}
+			else
+			{
+				byte[] bytes = new byte[0x22];
+				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+				util.EndianBitConverter.Big.GetBytes((int)(pos[0] * 32)).CopyTo(bytes, 4);
+				util.EndianBitConverter.Big.GetBytes((int)(pos[1] * 32)).CopyTo(bytes, 8);
+				util.EndianBitConverter.Big.GetBytes((int)(pos[2] * 32)).CopyTo(bytes, 12);
+				bytes[16] = (byte)(rot[0] / 1.40625);
+				bytes[17] = (byte)(rot[1] / 1.40625);
+				foreach (Player p in players.ToArray())
+				{
+					if (p != this)
+					{
+						if (p.LoggedIn)
+							p.SendRaw(0x22, bytes);
+					}
+				}
+			}
+		}
+		void SendTick()
+		{
+
 		}
 		#endregion
 		#region INCOMING
@@ -477,8 +593,7 @@ namespace SMP
             }*/	
 		}
 		#endregion
-		#region MESSAGING
-		
+		#region Messaging
 		#region GLOBAL
 		public static void GlobalMessage(string message)
         {
@@ -511,33 +626,7 @@ namespace SMP
             else
                 GlobalMessage(string.Format(message, args), method);
         }
-		void GlobalSpawn()
-		{
-			if (players.Count <= 1) return;
-			foreach (Player p in players)
-			{
-				if (!p.LoggedIn) continue;
-				if (p == this) continue;
-				SendNamedEntitySpawn(p);
-				p.SendNamedEntitySpawn(this);
-			}
-		}
-		public static void GlobalUpdate()
-		{
-			players.ForEach(delegate(Player p)
-			{
-				p.SendRaw(0);
-				if (!p.LoggedIn) return;
-				p.SendRaw(0);
-				p.SendTick();
-				if (!p.hidden)
-				{
-					p.UpdatePosition();
-				}
-			});
-		}
 		#endregion
-		
 		#region TARGETED
 		protected virtual void SendMessageInternal(string message)
         {
@@ -568,73 +657,10 @@ namespace SMP
                 SendMessage(string.Format(message, args), method);
         }
 		#endregion
-		
 		#endregion
 
-		void UpdatePosition()
-		{
-			if (!LoggedIn) return;
-
-			int diffX = (int)(oldpos[0] * 32) - (int)(pos[0] * 32);
-			int diffY = (int)(oldpos[1] * 32) - (int)(pos[1] * 32);
-			int diffZ = (int)(oldpos[2] * 32) - (int)(pos[2] * 32);
-
-			if (Math.Abs(diffX) == 0 && Math.Abs(diffY) == 0 && Math.Abs(diffZ) == 0)
-			{
-				byte[] bytes = new byte[6];
-				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
-				bytes[4] = (byte)(rot[0] / 1.40625);
-				bytes[5] = (byte)(rot[1] / 1.40625);
-				foreach (Player p in players)
-				{
-					if (p != this)
-					{
-						if (p.LoggedIn)
-						p.SendRaw(0x20, bytes);
-					}
-				}
-			}
-			else if (Math.Abs(diffX) <= 4 && Math.Abs(diffY) <= 4 && Math.Abs(diffZ) <= 4)
-			{
-				byte[] bytes = new byte[9];
-				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
-				bytes[4] = (byte)diffX;
-				bytes[5] = (byte)diffY;
-				bytes[6] = (byte)diffZ;
-				bytes[7] = (byte)(rot[0] / 1.40625);
-				bytes[8] = (byte)(rot[1] / 1.40625);
-				foreach (Player p in players)
-				{
-					if (p != this)
-					{
-						if (p.LoggedIn)
-						p.SendRaw(0x21, bytes);
-					}
-				}
-			}
-			else
-			{
-				byte[] bytes = new byte[0x22];
-				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
-				util.EndianBitConverter.Big.GetBytes((int)(pos[0] * 32)).CopyTo(bytes, 4);
-				util.EndianBitConverter.Big.GetBytes((int)(pos[1] * 32)).CopyTo(bytes, 8);
-				util.EndianBitConverter.Big.GetBytes((int)(pos[2] * 32)).CopyTo(bytes, 12);
-				bytes[16] = (byte)(rot[0] / 1.40625);
-				bytes[17] = (byte)(rot[1] / 1.40625);
-				foreach (Player p in players)
-				{
-					if (p != this)
-					{
-						if (p.LoggedIn)
-						p.SendRaw(0x22, bytes);
-					}
-				}
-			}
-		}
-		void SendTick()
-		{
-
-		}
+		
+		
 
 		public void Kick(string message)
 		{
@@ -695,7 +721,7 @@ namespace SMP
 		}
 		
 		#region TOOLS
-		// <summary>
+		/// <summary>
         /// Finds a player by string or partial string
         /// </summary>
         /// <param name="name">username to search for</param>

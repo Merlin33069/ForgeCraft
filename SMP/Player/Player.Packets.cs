@@ -156,7 +156,7 @@ namespace SMP
 				pos[2] = z;
 				onground = onGround;
 
-				e.UpdateChunk();
+				e.UpdateChunks(false);
 			}
 			catch (Exception e)
 			{
@@ -230,7 +230,7 @@ namespace SMP
 				rot[1] = pitch;
 				onground = onGround;
 
-				e.UpdateChunk();
+				e.UpdateChunks(false);
 			}
 			catch (Exception e)
 			{
