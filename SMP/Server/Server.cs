@@ -18,7 +18,7 @@ namespace SMP
 		public static int protocolversion = 14;
 		public static string Version = "0.1";
 		public static string name = "sc";
-		public static int port = 25565;
+		public static int port = 1338; //DEBUGGING CHANGE BACK TO 25565
 		public static bool unsafe_plugin = false;
 		public static Logger ServerLogger = new Logger();
 		
@@ -54,7 +54,7 @@ namespace SMP
 			//TODO: (in order)
 			//load configuration
 			Command.InitCore();
-			//load plugins
+			Plugin.Load();
 			//load groups
 			//load whitelist, banlist, reservelist //ask Keith (Silent) if you need/want to know what that is
 			
