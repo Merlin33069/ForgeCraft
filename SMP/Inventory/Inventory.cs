@@ -35,12 +35,12 @@ namespace SMP
 				if (items.Length % 2 == 0)
 				{
 					temp = items.Length / 2;
-					items[slot].count = items[slot].count / 2;
+					items[slot].count = (byte)(items[slot].count / 2);
 				}
 				else
 				{
 					temp = items.Length / 2;
-					items[slot].count = items[slot].count - temp;
+					items[slot].count = (byte)(items[slot].count - temp);
 				}
 				return temp;
 			}
@@ -48,7 +48,7 @@ namespace SMP
 				return 0;
 			}
 		}
-		public void SetSlot(int slot, byte window)
+		public void SetSlot(short slot, byte window)
 		{
 			byte[] tosend;
 			if (items[slot].item != Items.Nothing)
