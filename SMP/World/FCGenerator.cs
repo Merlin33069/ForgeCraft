@@ -39,15 +39,15 @@ namespace SMP
 				for (int z = 0; z < 16; z++)
 				{
 					double v = //perlinNoise.Noise(x * 16, z * 16, 0.1);
-						perlinNoise.Noise(x * 16, z * 16, 0.065) +
-						perlinNoise.Noise(x * 16, z * 16, -0.065);
+						perlinNoise.Noise(x * 16, z * 16, 1);
+						//perlinNoise.Noise(x * 16, z * 16, -0.065);
 			            //(perlinNoise.Noise(x * 16, z * 16, -0.5) + 1) / 2 * 0.7 +
 			            //(perlinNoise.Noise(x * 16, z * 16, 0) + 1) / 2 * 0.2 +
 			            //(perlinNoise.Noise(x * 16, z * 16, +0.5) + 1) / 2 * 0.1;
 
 			        v = Math.Min(1, Math.Max(0, v));
 			        byte y = (byte)(v * 128);
-					c.PlaceBlock(x, y, z, 1);
+					c.PlaceBlock(x, y, z, 2);
 				}
 			}
 			return;
