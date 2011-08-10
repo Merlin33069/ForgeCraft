@@ -43,12 +43,19 @@ namespace SMP
 				int x = util.EndianBitConverter.Big.ToInt32(message, 1);
 				byte y = message[5];
 				int z = util.EndianBitConverter.Big.ToInt32(message, 6);
-				Server.Log(x + " " + y + " " + z);
+				//Adds the item that the player was digging to the "ground"
+				byte id = e.CurrentChunk.GetBlock(x, y, z);
+				Item temp = new Item((Items)id);
+				temp.count = 1;
+				level.items_on_ground[Chunk.PosToInt(x, y, z)] = temp;
+				//Server.Log(x + " " + y + " " + z);
+				//Server.Log("ITEM DROPPED " + temp.item);
 				Server.mainlevel.BlockChange(x, y, z, 0, 0);
 			}
 			if (message[0] == 4)
 			{
 				//Player dropped item
+				
 			}
 		}
 

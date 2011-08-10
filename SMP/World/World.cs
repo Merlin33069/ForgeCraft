@@ -12,6 +12,7 @@ namespace SMP
 		public string Map_Name;
 		public FCGenerator generator;
 		public Dictionary<Point, Chunk> chunkData;
+		public Dictionary<int, Item> items_on_ground;
 		public List<Point> ToGenerate = new List<Point>();
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SMP.World"/> class and generates 49 chunks.
@@ -28,6 +29,7 @@ namespace SMP
 		public World (double spawnx, double spawny, double spawnz)
 		{
 			chunkData = new Dictionary<Point, Chunk>();
+			items_on_ground = new Dictionary<int, Item>();
 			generator = new FCGenerator(this);
 
 			for (int x = -3; x <= 3; x++)

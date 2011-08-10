@@ -107,6 +107,7 @@ namespace SMP
 	};
 	public enum Items
 	{
+		Nothing = -1,
 		IronShovel = 256,
 		IronPickaxe = 257,
 		IronAxe = 258,
