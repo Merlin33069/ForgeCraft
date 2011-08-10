@@ -104,7 +104,16 @@ namespace SMP
 				p.SendMessage(username + ": " + m);
 			}
         }
-		
+		public void HandleHoldingChange(byte[] message)
+		{
+			Server.Log("SLOT CHANGED");
+			try
+			{
+				current_slot_holding = util.EndianBitConverter.Big.ToInt16(message, 0);
+				current_block_holding = inventory.items[current_slot_holding];
+			}
+			catch { }
+		}
 		private void HandlePlayerPacket(byte[] message)
 		{
 			try

@@ -7,9 +7,13 @@ namespace SMP
 	{
 		public Item[] items;
 		public int current_index;
-		public Item current_item { get; set; }
+		public Item current_item;
 		public Inventory () {
 			items = new Item[44];
+			//Prevent null
+			for (int i = 0; i < items.Length; i++)
+				items[i] = new Item(Items.Nothing);
+			current_item = items[36];
 		}
 		public void Add(Items item, int slot)
 		{

@@ -16,7 +16,7 @@ namespace SMP
 		public World level;
 		static Random random = new Random();
 		public short current_slot_holding;
-		public byte current_block_holding { get { return inventory.items[current_slot_holding]; } set { inventory.items[current_slot_holding] = value; } }
+		public Item current_block_holding { get { return inventory.current_item; } set { inventory.current_item = value; } }
 		byte[] buffer = new byte[0];
 		byte[] tempbuffer = new byte[0xFF];
 		bool disconnected = false;
@@ -176,6 +176,7 @@ namespace SMP
 						case 0x0D: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPositionAndLookPacket(message); break; //Pos and look incoming
 						case 0x0E: HandleDigging(message); break; //Digging
 						case 0xFF: HandleDC(message); break; //DC
+						case 0x10: HandleHoldingChange(message); break; //Holding Change
 					}
 					if (buffer.Length > 0)
 						buffer = HandleMessage(buffer);
@@ -218,7 +219,6 @@ namespace SMP
 				Disconnect();
 			}
 		}
-
 		void SendLoginPass()
 		{
 			try
