@@ -104,7 +104,7 @@ namespace SMP
             Server.ServerLogger.Log(LogLevel.Info, username + ": " + m);
 			foreach (Player p in players)
 			{
-				p.SendMessage(username + ": " + m);
+				p.SendMessage(Color.DarkBlue + "<" + level + "> " + Color.White + username + ": " + m);
 			}
         }
 		public void HandleHoldingChange(byte[] message)
