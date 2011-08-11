@@ -45,7 +45,7 @@ namespace SMP
 				Random rand = new Random();
 				long seed = new Random().Next();
 				p.SendMessage("Creating world with seed: " + seed);
-				double x = rand.Next(50); double y = 64; double z = rand.Next(50);
+				double x = 0; double y = 127; double z = 0;
 				World temp = new World(x, y, z, args[0]);
 				//while (Chunk.GetChunk((int)x, (int)z, temp).GetBlock((int)x, (int)(y - 1), (int)z) == 0)
 				//	y--;
