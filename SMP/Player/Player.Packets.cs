@@ -127,7 +127,7 @@ namespace SMP
 			{
 				GlobalMessage(username + ": " + m, WrapMethod.Chat);
             	Server.ServerLogger.Log(LogLevel.Info, username + ": " + m);
-				p.SendMessage(Color.DarkBlue + "<" + level + "> " + Color.White + username + ": " + m);
+				SendMessage(Color.DarkBlue + "<" + level + "> " + Color.White + username + ": " + m);
 			}
         }
 		public void HandleHoldingChange(byte[] message)

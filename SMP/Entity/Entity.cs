@@ -140,8 +140,8 @@ namespace SMP
 			{
 				for (int z = sz; z <= ez; z++)
 				{
-					if (!level.chunkData.ContainsKey(new Point(x, z))) { continue; } 
-					if (!level.chunkData.ContainsKey(new Point(x, z))) { continue; }
+					if (!p.level.chunkData.ContainsKey(new Point(x, z))) { continue; } 
+					if (!p.level.chunkData.ContainsKey(new Point(x, z))) { continue; }
 
 					foreach (Entity e in p.level.chunkData[new Point(x, z)].Entities)
 					{

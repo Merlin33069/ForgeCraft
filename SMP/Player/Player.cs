@@ -57,11 +57,16 @@ namespace SMP
 		bool hidden = false;
 
 		bool MapSent = false;
-		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SMP.Player"/> class.
+		/// </summary>
 		public Player()
 		{
 			
 		}
+		/// <summary>
+		/// Start this instance.
+		/// </summary>
 		public void Start()
 		{
 			try
@@ -88,7 +93,6 @@ namespace SMP
 				Server.Log(e.StackTrace);
 			}
 		}
-
 		static void Receive(IAsyncResult result)
 		{
 			Player p = (Player)result.AsyncState;
@@ -218,6 +222,15 @@ namespace SMP
 		{
 			SendRaw(id, new byte[0]);
 		}
+		/// <summary>
+		/// Send Data over to the client
+		/// </summary>
+		/// <param name='id'>
+		/// Identifier. The packet ID that you want to send
+		/// </param>
+		/// <param name='send'>
+		/// Send. The byte[] information you want to send
+		/// </param>
 		public void SendRaw(byte id, byte[] send)
 		{
 			if (socket == null || !socket.Connected)
@@ -240,38 +253,39 @@ namespace SMP
 				Disconnect();
 			}
 		}
+		/// <summary>
+		/// Update the players time
+		/// </summary>
 		public void SendTime()
 		{
 			byte[] tosend = new byte[9];
 			util.EndianBitConverter.Big.GetBytes(level.time).CopyTo(tosend, 0);
 			SendRaw(0x04, tosend);
 		}
+		/// <summary>
+		/// Update the players health
+		/// </summary>
 		public void SendHealth()
 		{
 			byte[] tosend = new byte[3];
 			util.EndianBitConverter.Big.GetBytes(e.meta).CopyTo(tosend, 0);
 			SendRaw(0x08, tosend);
 		}
-		public void Teleport_Player(int x, int y, int z)
+		public void Teleport_Player(double x, double y, double z)
 		{
-			Teleport_Player(x, y, z, 0, 0);
+			Teleport_Player(x, y, z, rot[0], rot[1]);
 		}
-		public void Teleport_Player(int x, int y, int z, byte yaw, byte pitch)
+		public void Teleport_Player(double x, double y, double z, float yaw, float pitch)
 		{
-			byte[] tosend = new byte[19];
-			//INT ID
-			util.EndianBitConverter.Big.GetBytes(id).CopyTo(tosend, 0);
-			//INT X
-			util.EndianBitConverter.Big.GetBytes(x).CopyTo(tosend, 4);
-			//INT Y
-			util.EndianBitConverter.Big.GetBytes(y).CopyTo(tosend, 8);
-			//INT Z
-			util.EndianBitConverter.Big.GetBytes(z).CopyTo(tosend, 12);
-			//BYTE YAW
-			tosend[17] = yaw;
-			//BYTE PITCH
-		 	tosend[18] = pitch;
-			SendRaw(0x22, tosend);
+			byte[] tosend = new byte[42];
+			util.EndianBitConverter.Big.GetBytes(x).CopyTo(tosend, 0);
+			util.EndianBitConverter.Big.GetBytes(y + 1.65).CopyTo(tosend, 8);
+			util.EndianBitConverter.Big.GetBytes(y).CopyTo(tosend, 16);
+			util.EndianBitConverter.Big.GetBytes(z).CopyTo(tosend, 24);
+			util.EndianBitConverter.Big.GetBytes(yaw).CopyTo(tosend, 32);
+			util.EndianBitConverter.Big.GetBytes(pitch).CopyTo(tosend, 36);
+			tosend[41] = 0;
+			SendRaw(0x0D, tosend);
 		}
 		void SendLoginPass()
 		{
@@ -333,10 +347,28 @@ namespace SMP
 			SendLoginDone();
 			//GlobalSpawn();
 		}
+		/// <summary>
+		/// Updates players chunks.
+		/// </summary>
+		/// <param name='force'>
+		/// Force. Force it to update the current chunk
+		/// </param>
+		/// <param name='forcesend'>
+		/// Forcesend. For it to send all the chunk, even if the player already see's it (Good for map switching)
+		/// </param>
 		public void UpdateChunks(bool force, bool forcesend)
 		{
 			e.UpdateChunks(force, forcesend);
 		}
+		/// <summary>
+		/// Prepare the client before sending the chunk
+		/// </summary>
+		/// <param name='c'>
+		/// C. The chunk to send
+		/// </param>
+		/// <param name='load'>
+		/// Load. Weather to unload or load the chunk (0 is unload otherwise it will load)
+		/// </param>
 		public void SendPreChunk(Chunk c, byte load)
 		{
 			byte[] bytes = new byte[9];
@@ -345,6 +377,12 @@ namespace SMP
 			bytes[8] = load;
 			SendRaw(0x32, bytes);
 		}
+		/// <summary>
+		/// Sends a player a Chunk
+		/// </summary>
+		/// <param name='c'>
+		/// C. The chunk to send
+		/// </param>
 		public void SendChunk(Chunk c)
 		{
 			SendPreChunk(c, 1);
@@ -364,6 +402,9 @@ namespace SMP
 
 			VisibleChunks.Add(c.point);
 		}
+		/// <summary>
+		/// Send the player the spawn point (Only usable after login)
+		/// </summary>
 		public void SendSpawnPoint()
 		{
 			byte[] bytes = new byte[12];
@@ -388,7 +429,24 @@ namespace SMP
 
 			//Server.Log(pos[0] + " " + pos[1] + " " + pos[2]);
 		}
-
+		/// <summary>
+		/// Sends a player a blockchange
+		/// </summary>
+		/// <param name='x'>
+		/// X. The x cords of the block
+		/// </param>
+		/// <param name='y'>
+		/// Y. The y cords of the block
+		/// </param>
+		/// <param name='z'>
+		/// Z. The z cords of the block
+		/// </param>
+		/// <param name='type'>
+		/// Type. The ID of the block
+		/// </param>
+		/// <param name='meta'>
+		/// Meta. The meta data of the block
+		/// </param>
 		public void SendBlockChange(int x, byte y, int z, byte type, byte meta)
 		{
 			byte[] bytes = new byte[11];

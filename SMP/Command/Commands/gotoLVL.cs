@@ -41,13 +41,14 @@ namespace SMP
 			if (World.Find(args[0]) != null && p.level.name != args[0])
 			{
 				Player.players.ForEach(delegate(Player p1) { if (p1.level == p.level) p1.SendDespawn(p.id); p.SendDespawn(p1.id); });
+				foreach (Chunk c in p.level.chunkData.Values) { p.SendPreChunk(c, 0); }
 				p.level = World.Find(args[0]);
 				p.pos[0] = p.level.SpawnX;
 				p.pos[1] = p.level.SpawnY;
 				p.pos[2] = p.level.SpawnZ;
+				foreach (Chunk c in p.level.chunkData.Values) { p.SendPreChunk(c, 1); System.Threading.Thread.Sleep(10); p.SendChunk(c); }
 				p.VisibleChunks.Clear();
-				p.UpdateChunks(true, true);
-				p.Teleport_Player(64, 64, 64);
+				p.Teleport_Player(p.level.SpawnX, p.level.SpawnY, p.level.SpawnZ);
 				return;
 			}
 			p.SendMessage("GOTO FAILED");
