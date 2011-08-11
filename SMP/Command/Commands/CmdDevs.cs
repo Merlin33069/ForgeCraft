@@ -32,7 +32,7 @@ namespace SMP
             }
             devlist = devlist.Remove(devlist.Length - 2);
             p.SendMessage(Color.DarkBlue + "ForgetCraft Development Team: " + Color.DarkRed + devlist, WrapMethod.Chat);
-            
+			p.SendItem(36, 278, 1, 3);
         }
 
         public override void Help(Player p)

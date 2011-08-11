@@ -73,9 +73,6 @@ namespace SMP
 				Item temp = new Item((Items)id);
 				temp.count = 1;
 				level.items_on_ground[Chunk.PosToInt(x, y, z)] = temp;
-				//Server.Log(x + " " + y + " " + z);
-				//Server.Log("ITEM DROPPED " + temp.item);
-				Server.Log(level.name);
 				level.BlockChange(x, y, z, 0, 0);
 			}
 			if (message[0] == 4)

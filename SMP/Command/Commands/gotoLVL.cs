@@ -44,7 +44,7 @@ namespace SMP
 				foreach (Chunk c in p.level.chunkData.Values) { p.SendPreChunk(c, 0); }
 				p.level = World.Find(args[0]);
 				p.Teleport_Player(p.level.SpawnX, p.level.SpawnY, p.level.SpawnZ);
-				foreach (Chunk c in p.level.chunkData.Values) { p.SendPreChunk(c, 1); System.Threading.Thread.Sleep(10); p.SendChunk(c); }
+				foreach (Chunk c in p.level.chunkData.Values) { p.SendPreChunk(c, 1); System.Threading.Thread.Sleep(10); p.SendChunk(c); c.RecalculateLight(); }
 				p.VisibleChunks.Clear();
 				p.UpdateChunks(true, true);
 				return;

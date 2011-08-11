@@ -106,9 +106,9 @@ namespace SMP
 		public void GenerateChunk(int x, int z)
 		{
 			Chunk c = new Chunk(x, z);
-			//generator.FlatChunk(c);
+			generator.FlatChunk(c);
 			//generator.PerlinChunk(c);
-			generator.RandMap(c, seed);
+			//generator.RandMap(c, seed);
 			c.RecalculateLight();
 			if (GeneratedChunk != null)
 				GeneratedChunk(this, c, x, z);

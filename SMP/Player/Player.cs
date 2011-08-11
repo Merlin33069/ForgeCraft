@@ -377,6 +377,22 @@ namespace SMP
 			bytes[8] = load;
 			SendRaw(0x32, bytes);
 		}
+		public void SendItem(short slot, short Item){ SendItem(slot, Item, 1, 3); }
+		public void SendItem(short slot, short Item, byte count, short use)
+		{
+			byte[] tosend;
+			if (Item == -1)
+				tosend = new byte[5];
+			else
+				tosend = new byte[8];
+			tosend[0] = 0;
+			util.EndianBitConverter.Big.GetBytes(slot).CopyTo(tosend, 1);
+			util.EndianBitConverter.Big.GetBytes(Item).CopyTo(tosend, 3);
+			tosend[5] = count;
+			if (Item != -1)
+				util.EndianBitConverter.Big.GetBytes(use).CopyTo(tosend, 6);
+			SendRaw(0x67, tosend);
+		}
 		/// <summary>
 		/// Sends a player a Chunk
 		/// </summary>
