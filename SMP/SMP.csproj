@@ -224,6 +224,9 @@
     <Compile Include="Inventory\Item.cs" />
     <Compile Include="Inventory\Windows.cs" />
     <Compile Include="Player\Groups.cs" />
+    <Compile Include="Command\Commands\SetTime.cs" />
+    <Compile Include="Command\Commands\NewLVL.cs" />
+    <Compile Include="Command\Commands\goto.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gui\" />

@@ -9,7 +9,7 @@ namespace SMP
 	{
 		public static Dictionary<int, Entity> Entities = new Dictionary<int, Entity>();
 
-		public Chunk c { get { return Chunk.GetChunk((int)(pos[0] / 16), (int)(pos[2] / 16)); } }
+		public Chunk c { get { return Chunk.GetChunk((int)(pos[0] / 16), (int)(pos[2] / 16), p.level); } }
 		public Chunk CurrentChunk;
 
 		public Player p; //Only set if this entity is a player, and it referances the player it is
@@ -75,7 +75,7 @@ namespace SMP
 			Entities.Add(id, this);
 		}
 
-		public void UpdateChunks(bool force)
+		public void UpdateChunks(bool force, bool forcesend)
 		{
 			if (c != CurrentChunk || force)
 			{
@@ -104,15 +104,15 @@ namespace SMP
 						{
 							Point po = new Point(x, z);
 							templist.Add(po);
-							if (p.VisibleChunks.Contains(po))
+							if (p.VisibleChunks.Contains(po) || forcesend)
 							{
 								continue; //Continue if the player already has this chunk
 							}
-							if (!Server.mainlevel.chunkData.ContainsKey(po))
+							if (!p.level.chunkData.ContainsKey(po))
 							{
-								Server.mainlevel.GenerateChunk(po.x, po.z);
+								p.level.GenerateChunk(po.x, po.z);
 							}
-							p.SendChunk(Server.mainlevel.chunkData[po]);
+							p.SendChunk(p.level.chunkData[po]);
 						}
 					}
 
@@ -121,7 +121,7 @@ namespace SMP
 					{
 						if (!templist.Contains(point))
 						{
-							p.SendPreChunk(Server.mainlevel.chunkData[point], 0);
+							p.SendPreChunk(p.level.chunkData[point], 0);
 							p.VisibleChunks.Remove(point);
 						}
 					}
@@ -140,9 +140,9 @@ namespace SMP
 			{
 				for (int z = sz; z <= ez; z++)
 				{
-					if (!Server.mainlevel.chunkData.ContainsKey(new Point(x, z))) { continue; }
+					if (!level.chunkData.ContainsKey(new Point(x, z))) { continue; }
 
-					foreach (Entity e in Server.mainlevel.chunkData[new Point(x, z)].Entities)
+					foreach (Entity e in level.chunkData[new Point(x, z)].Entities)
 					{
 						tempelist.Add(e.id);
 						if (p.VisibleEntities.Contains(e.id))

@@ -53,7 +53,7 @@ namespace SMP
 				level.items_on_ground[Chunk.PosToInt(x, y, z)] = temp;
 				//Server.Log(x + " " + y + " " + z);
 				//Server.Log("ITEM DROPPED " + temp.item);
-				Server.mainlevel.BlockChange(x, y, z, 0, 0);
+				level.BlockChange(x, y, z, 0, 0);
 			}
 			if (message[0] == 4)
 			{
@@ -174,7 +174,7 @@ namespace SMP
 				pos[2] = z;
 				onground = onGround;
 
-				e.UpdateChunks(false);
+				e.UpdateChunks(false, false);
 			}
 			catch (Exception e)
 			{
@@ -248,7 +248,7 @@ namespace SMP
 				rot[1] = pitch;
 				onground = onGround;
 
-				e.UpdateChunks(false);
+				e.UpdateChunks(false, false);
 			}
 			catch (Exception e)
 			{

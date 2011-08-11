@@ -1,20 +1,44 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/Player/Player.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/Command/Commands/goto.cs">
     <Files>
-      <File FileName="SMP/Player/Player.cs" Line="238" Column="7" />
-      <File FileName="SMP/World/World.cs" Line="40" Column="14" />
-      <File FileName="SMP/Command/Command.cs" Line="1" Column="1" />
+      <File FileName="SMP/Player/Player.cs" Line="187" Column="83" />
+      <File FileName="SMP/World/World.cs" Line="214" Column="1" />
+      <File FileName="SMP/Command/Command.cs" Line="35" Column="28" />
       <File FileName="SMP/Command/CommandList.cs" Line="1" Column="1" />
       <File FileName="SMP/Plugins/Plugin_Manager.cs" Line="1" Column="1" />
-      <File FileName="SMP/Server/Server.cs" Line="1" Column="1" />
+      <File FileName="SMP/Server/Server.cs" Line="42" Column="18" />
       <File FileName="SMP/Server/ConsolePlayer.cs" Line="1" Column="1" />
       <File FileName="SMP/World/FCGenerator.cs" Line="1" Column="1" />
-      <File FileName="SMP/World/DataValues.cs" Line="216" Column="15" />
-      <File FileName="SMP/World/Chunk.cs" Line="113" Column="21" />
+      <File FileName="SMP/World/DataValues.cs" Line="1" Column="1" />
+      <File FileName="SMP/World/Chunk.cs" Line="258" Column="12" />
       <File FileName="SMP/Inventory/Windows.cs" Line="10" Column="16" />
-      <File FileName="SMP/Inventory/Inventory.cs" Line="55" Column="26" />
+      <File FileName="SMP/Inventory/Inventory.cs" Line="13" Column="18" />
       <File FileName="SMP/Inventory/Item.cs" Line="1" Column="1" />
+      <File FileName="SMP/Entity/Entity.cs" Line="156" Column="11" />
+      <File FileName="SMP/Player/Player.Packets.cs" Line="138" Column="16" />
+      <File FileName="SMP/Substrate/Source/Core/RegionFile.cs" Line="5" Column="7" />
+      <File FileName="SMP/Player/Groups.cs" Line="6" Column="3" />
+      <File FileName="SMP/Constants/Color.cs" Line="1" Column="1" />
+      <File FileName="SMP/NBToolkit/BlockFilter.cs" Line="1" Column="1" />
+      <File FileName="SMP/NBToolkit/GenOres.cs" Line="104" Column="77" />
+      <File FileName="SMP/NBToolkit/FilteredChunkManager.cs" Line="1" Column="1" />
+      <File FileName="SMP/NBToolkit/Dump.cs" Line="1" Column="1" />
+      <File FileName="SMP/NBToolkit/ChunkFilter.cs" Line="1" Column="1" />
+      <File FileName="SMP/Network/KnownPackets.cs" Line="1" Column="1" />
+      <File FileName="SMP/World/Noise.cs" Line="1" Column="1" />
+      <File FileName="SMP/NBToolkit/Purge.cs" Line="1" Column="1" />
+      <File FileName="SMP/Substrate/Source/Core/UnboundedBlockInterface.cs" Line="332" Column="27" />
+      <File FileName="SMP/Substrate/Source/Chunk.cs" Line="281" Column="22" />
+      <File FileName="SMP/Command/Commands/CmdHelp.cs" Line="1" Column="1" />
+      <File FileName="SMP/Command/Commands/SetTime.cs" Line="82" Column="11" />
+      <File FileName="SMP/Command/Commands/CmdDevs.cs" Line="1" Column="1" />
+      <File FileName="SMP/Command/Commands/CmdSay.cs" Line="27" Column="9" />
+      <File FileName="SMP/Command/Commands/NewLVL.cs" Line="51" Column="7" />
+      <File FileName="SMP/Command/Commands/goto.cs" Line="50" Column="5" />
+      <File FileName="SMP/Command/Commands/CmdList.cs" Line="1" Column="1" />
+      <File FileName="SMP/util/EBitConverter.cs" Line="426" Column="1" />
+      <File FileName="SMP/util/BigEndianBitConverter.cs" Line="51" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

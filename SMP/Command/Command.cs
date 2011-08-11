@@ -32,14 +32,17 @@ namespace SMP
             //core.Add(new CmdBan());
             core.Add(new CmdDevs());
             //core.Add(new CmdGive());
+			core.Add(new gotoLVL());
             core.Add(new CmdHelp());
             core.Add(new CmdKick());
             core.Add(new CmdList());
             //core.Add(new CmdMBan());
             core.Add(new CmdMe());
             //core.Add(new CmdMKick());
+			core.Add(new NewLVL());
             //core.Add(new CmdReserveList());
             core.Add(new CmdSay());
+			core.Add(new SetTime());
             //core.Add(new CmdSpawn());
             //core.Add(new CmdTime());
             //core.Add(new CmdUnban());

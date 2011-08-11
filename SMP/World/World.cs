@@ -4,12 +4,14 @@ namespace SMP
 {
 	public class World
 	{
+		public static List<World> worlds = new List<World>();
 		public double SpawnX;
 		public double SpawnY;
 		public double SpawnZ;
 		public float SpawnYaw;
 		public float SpawnPitch;
 		public string Map_Name;
+		public string name;
 		public long time;
 		public System.Timers.Timer timeupdate = new System.Timers.Timer(1000);
 		public FCGenerator generator;
@@ -43,7 +45,7 @@ namespace SMP
 		/// <param name='spawnz'>
 		/// Spawnz. The z spawn pos.
 		/// </param>
-		public World (double spawnx, double spawny, double spawnz)
+		public World (double spawnx, double spawny, double spawnz, string name)
 		{
 			chunkData = new Dictionary<Point, Chunk>();
 			items_on_ground = new Dictionary<int, Item>();
@@ -61,9 +63,28 @@ namespace SMP
 				time += 20;
 				if (time > 24000)
 					time = 0;
-				Player.players.ForEach(delegate(Player p) { p.SendTime(); });
+				Player.players.ForEach(delegate(Player p) { if (p.level == this) p.SendTime(); });
 			};
 			timeupdate.Start();
+			this.name = name;
+		}
+		public static World Find(string name)
+		{
+			World tempLevel = null; bool returnNull = false;
+
+            foreach (World world in worlds)
+            {
+                if (world.name.ToLower() == name) return world;
+                if (world.name.ToLower().IndexOf(name.ToLower()) != -1)
+                {
+                    if (tempLevel == null) tempLevel = world;
+                    else returnNull = true;
+                }
+            }
+
+            if (returnNull == true) return null;
+            if (tempLevel != null) return tempLevel;
+            return null;
 		}
 		public static World LoadLVL(string filename)
 		{
@@ -104,7 +125,8 @@ namespace SMP
 			foreach (Player p in Player.players)
 			{
 				//TODO CHECK TO SEE IF CHUNK IS IN PLAYER RANGE
-				p.SendBlockChange(x, (byte)y, z, type, meta);
+				if (p.level == this)
+					p.SendBlockChange(x, (byte)y, z, type, meta);
 			}
 		}
 	}

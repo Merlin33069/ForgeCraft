@@ -257,6 +257,10 @@ namespace SMP
 		{
 				return Server.mainlevel.chunkData[new Point(x, z)];
 		}
+		public static Chunk GetChunk(int x, int z, World world)
+		{
+			return world.chunkData[new Point(x, z)];
+		}
 	}
 }
 

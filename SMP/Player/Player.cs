@@ -16,18 +16,18 @@ namespace SMP
 		public World level;
 		static Random random = new Random();
 		public short current_slot_holding;
-		public Item current_block_holding { get { return inventory.current_item; } set { inventory.current_item = value; } }
+		public Item current_block_holding { get { return inventory.current_item; } set { inventory.current_item = value; SendHealth(); } }
 		byte[] buffer = new byte[0];
 		byte[] tempbuffer = new byte[0xFF];
 		bool disconnected = false;
         public bool LoggedIn { get; protected set; }
 		public short health { get { return e.meta; } set { e.meta = value; } }
 		double Stance { get { return e.Stance; } set { e.Stance = value; } }
-		double[] pos { get { return e.pos; } set { e.pos = value; } }
+		public double[] pos { get { return e.pos; } set { e.pos = value; } }
 		double[] oldpos { get { return e.oldpos; } set { e.oldpos = value; } }
 		float[] rot { get { return e.rot; } set { e.rot = value; } }
 		byte onground { get { return e.OnGround; } set { e.OnGround = value; } } //really a bool, but were going to hold it as a byte (1 or 0 ONLY) so we can send it easier
-		int id { get { return e.id; } }
+		public int id { get { return e.id; } }
 		byte dimension { get { return e.dimension; } set { e.dimension = value; } } //-1 for nether, 0 normal, 1 skyworld?
 		public Chunk chunk { get { return e.CurrentChunk; } }
 		public Inventory inventory;
@@ -58,13 +58,13 @@ namespace SMP
 		{
 			try
 			{
+				level = Server.mainlevel;
 				e = new Entity(new double[3] { 0, 18, 0 }, new float[2] { 0, 0 }, this);
 				pos[1] = 128;
 				Stance = 128;
 				//socket = s;
 				ip = socket.RemoteEndPoint.ToString().Split(':')[0];
 				Server.Log(ip + " connected to the server.");
-				level = Server.mainlevel;
 				dimension = 0;
 				inventory = new Inventory();
 				players.Add(this);
@@ -299,10 +299,14 @@ namespace SMP
 			//}
 			//Server.Log(i + " Chunks sent");
 
-			e.UpdateChunks(true);
+			e.UpdateChunks(true, false);
 			SendSpawnPoint();
 			SendLoginDone();
 			//GlobalSpawn();
+		}
+		public void UpdateChunks(bool force, bool forcesend)
+		{
+			e.UpdateChunks(force, forcesend);
 		}
 		public void SendPreChunk(Chunk c, byte load)
 		{
@@ -334,9 +338,9 @@ namespace SMP
 		public void SendSpawnPoint()
 		{
 			byte[] bytes = new byte[12];
-			util.EndianBitConverter.Big.GetBytes((int)pos[0]).CopyTo(bytes, 0);
-			util.EndianBitConverter.Big.GetBytes((int)pos[1]).CopyTo(bytes, 4);
-			util.EndianBitConverter.Big.GetBytes((int)pos[2]).CopyTo(bytes, 8);
+			util.EndianBitConverter.Big.GetBytes((int)level.SpawnX).CopyTo(bytes, 0);
+			util.EndianBitConverter.Big.GetBytes((int)level.SpawnY).CopyTo(bytes, 4);
+			util.EndianBitConverter.Big.GetBytes((int)level.SpawnZ).CopyTo(bytes, 8);
 			SendRaw(0x06, bytes);
 		}
 		void SendLoginDone()
@@ -507,7 +511,7 @@ namespace SMP
 				bytes[5] = (byte)(rot[1] / 1.40625);
 				foreach (Player p in players.ToArray())
 				{
-					if (p != this)
+					if (p != this && p.level == level)
 					{
 						if (p.LoggedIn)
 							p.SendRaw(0x20, bytes);
@@ -525,7 +529,7 @@ namespace SMP
 				bytes[8] = (byte)(rot[1] / 1.40625);
 				foreach (Player p in players.ToArray())
 				{
-					if (p != this)
+					if (p != this && p.level == level)
 					{
 						if(VisibleEntities.Contains(p.id))
 							if (p.LoggedIn)
@@ -544,7 +548,7 @@ namespace SMP
 				bytes[17] = (byte)(rot[1] / 1.40625);
 				foreach (Player p in players.ToArray())
 				{
-					if (p != this)
+					if (p != this && p.level == level)
 					{
 						if (p.LoggedIn)
 							p.SendRaw(0x22, bytes);

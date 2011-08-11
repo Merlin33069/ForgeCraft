@@ -31,8 +31,8 @@ namespace SMP
 		{
 			Log("Starting Server");
 			s = this;
-			mainlevel = new World(0, 127, 0);
-
+			mainlevel = new World(0, 127, 0, "main");
+			World.worlds.Add(mainlevel);
 			ml = new MainLoop("server");
 			#region updatetimer
 			ml.Queue(delegate
