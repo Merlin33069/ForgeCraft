@@ -252,6 +252,27 @@ namespace SMP
 			util.EndianBitConverter.Big.GetBytes(e.meta).CopyTo(tosend, 0);
 			SendRaw(0x08, tosend);
 		}
+		public void Teleport_Player(int x, int y, int z)
+		{
+			Teleport_Player(x, y, z, 0, 0);
+		}
+		public void Teleport_Player(int x, int y, int z, byte yaw, byte pitch)
+		{
+			byte[] tosend = new byte[19];
+			//INT ID
+			util.EndianBitConverter.Big.GetBytes(id).CopyTo(tosend, 0);
+			//INT X
+			util.EndianBitConverter.Big.GetBytes(x).CopyTo(tosend, 4);
+			//INT Y
+			util.EndianBitConverter.Big.GetBytes(y).CopyTo(tosend, 8);
+			//INT Z
+			util.EndianBitConverter.Big.GetBytes(z).CopyTo(tosend, 12);
+			//BYTE YAW
+			tosend[17] = yaw;
+			//BYTE PITCH
+		 	tosend[18] = pitch;
+			SendRaw(0x22, tosend);
+		}
 		void SendLoginPass()
 		{
 			try

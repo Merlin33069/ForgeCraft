@@ -38,7 +38,7 @@ namespace SMP
 		}
 		public override void Use (Player p, params string[] args)
 		{
-			if (World.Find(args[0]) != null)
+			if (World.Find(args[0]) != null && p.level.name != args[0])
 			{
 				Player.players.ForEach(delegate(Player p1) { if (p1.level == p.level) p1.SendDespawn(p.id); p.SendDespawn(p1.id); });
 				p.level = World.Find(args[0]);
@@ -47,8 +47,10 @@ namespace SMP
 				p.pos[2] = p.level.SpawnZ;
 				p.VisibleChunks.Clear();
 				p.UpdateChunks(true, true);
-				
+				p.Teleport_Player(64, 64, 64);
+				return;
 			}
+			p.SendMessage("GOTO FAILED");
 		}
 		public override void Help (Player p)
 		{

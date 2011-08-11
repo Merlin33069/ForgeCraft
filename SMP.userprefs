@@ -1,8 +1,17 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" ctype="Workspace" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/Groups/Group.cs" ctype="Workbench">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/Entity/Entity.cs" ctype="Workbench">
     <Files>
-      <File FileName="SMP/Groups/Group.cs" Line="4" Column="14" />
+      <File FileName="SMP/Groups/Group.cs" Line="33" Column="60" />
+      <File FileName="SMP/Player/Player.cs" Line="581" Column="4" />
+      <File FileName="SMP/Groups/ConsoleGroup.cs" Line="12" Column="60" />
+      <File FileName="SMP/Command/Commands/CmdHelp.cs" Line="106" Column="16" />
+      <File FileName="SMP/Player/Player.Packets.cs" Line="130" Column="92" />
+      <File FileName="SMP/Server/Server.cs" Line="26" Column="54" />
+      <File FileName="SMP/Command/Commands/CmdDND.cs" Line="21" Column="4" />
+      <File FileName="SMP/Command/Command.cs" Line="48" Column="40" />
+      <File FileName="SMP/Command/Commands/CmdGod.cs" Line="34" Column="101" />
+      <File FileName="SMP/Entity/Entity.cs" Line="150" Column="6" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
