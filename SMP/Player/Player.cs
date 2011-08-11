@@ -277,14 +277,14 @@ namespace SMP
 		}
 		public void Teleport_Player(double x, double y, double z, float yaw, float pitch)
 		{
-			byte[] tosend = new byte[42];
+			byte[] tosend = new byte[41];
 			util.EndianBitConverter.Big.GetBytes(x).CopyTo(tosend, 0);
 			util.EndianBitConverter.Big.GetBytes(y + 1.65).CopyTo(tosend, 8);
 			util.EndianBitConverter.Big.GetBytes(y).CopyTo(tosend, 16);
 			util.EndianBitConverter.Big.GetBytes(z).CopyTo(tosend, 24);
 			util.EndianBitConverter.Big.GetBytes(yaw).CopyTo(tosend, 32);
 			util.EndianBitConverter.Big.GetBytes(pitch).CopyTo(tosend, 36);
-			tosend[41] = 0;
+			tosend[40] = onground;
 			SendRaw(0x0D, tosend);
 		}
 		void SendLoginPass()
