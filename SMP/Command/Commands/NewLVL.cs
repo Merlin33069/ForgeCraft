@@ -43,10 +43,10 @@ namespace SMP
 			else if (args.Length == 1)
 			{
 				Random rand = new Random();
-				long seed = new Random().Next();
+				int seed = new Random().Next();
 				p.SendMessage("Creating world with seed: " + seed);
 				double x = 0; double y = 127; double z = 0;
-				World temp = new World(x, y, z, args[0]);
+				World temp = new World(x, y, z, args[0], seed);
 				//while (Chunk.GetChunk((int)x, (int)z, temp).GetBlock((int)x, (int)(y - 1), (int)z) == 0)
 				//	y--;
 				temp.SpawnY = y;

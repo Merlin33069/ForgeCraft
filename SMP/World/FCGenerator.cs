@@ -52,6 +52,46 @@ namespace SMP
 			}
 			return;
 		}
+		public void RandMap(Chunk c, int seed)
+		{
+			Random rand = new Random(seed);
+			for (int x = 0; x < 16; x++)
+			{
+				for (int y = 0; y < 128; y++)
+				{
+					for (int z = 0; z < 16; z++)
+					{
+						if (y < 64)
+						{
+							if (rand.Next(200) < 50)
+							{
+								if ((c.GetBlock(x - 1, y, z) == 0 || c.GetBlock(x, y - 1, z) == 0 || c.GetBlock(x, y, z - 1) == 0) && rand.Next(100) < 25)
+								{
+									c.PlaceBlock(x, y, z, 0);
+									continue;
+								}
+								else if (rand.Next(50) < 5)
+								{
+									double v = (perlinNoise.Noise(x * 16, z * 16, -0.5) + 1) / 2 * 0.7 + (perlinNoise.Noise(x * 16, z * 16, 0) + 1) / 2 * 0.2 +  (perlinNoise.Noise(x * 16, z * 16, +0.5) + 1) / 2 * 0.1;
+			       					v = Math.Min(1, Math.Max(0, v));
+			        				int yy = (int)v * 128;
+									c.PlaceBlock(x, yy, z, 0);
+								}
+								else
+									c.PlaceBlock(x, y, z, 1);
+							}
+							else
+								c.PlaceBlock(x, y, z, 1);
+						}
+						else if (y == 64)
+							c.PlaceBlock(x, y, z, 2);
+						else
+							c.PlaceBlock(x, y, z, 0);
+					}
+				}
+			}
+			return;
+		}
 	}
 }
 

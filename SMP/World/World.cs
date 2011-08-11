@@ -12,6 +12,7 @@ namespace SMP
 		public float SpawnPitch;
 		public string Map_Name;
 		public string name;
+		public int seed;
 		public long time;
 		public System.Timers.Timer timeupdate = new System.Timers.Timer(1000);
 		public FCGenerator generator;
@@ -45,7 +46,7 @@ namespace SMP
 		/// <param name='spawnz'>
 		/// Spawnz. The z spawn pos.
 		/// </param>
-		public World (double spawnx, double spawny, double spawnz, string name)
+		public World (double spawnx, double spawny, double spawnz, string name, int seed)
 		{
 			chunkData = new Dictionary<Point, Chunk>();
 			items_on_ground = new Dictionary<int, Item>();
@@ -105,8 +106,9 @@ namespace SMP
 		public void GenerateChunk(int x, int z)
 		{
 			Chunk c = new Chunk(x, z);
-			generator.FlatChunk(c);
+			//generator.FlatChunk(c);
 			//generator.PerlinChunk(c);
+			generator.RandMap(c, seed);
 			c.RecalculateLight();
 			if (GeneratedChunk != null)
 				GeneratedChunk(this, c, x, z);
@@ -118,7 +120,7 @@ namespace SMP
 		{
 			//TODO generate chunk if not exist and... something else but idr what
 			int cx = x >> 4, cz = z >> 4;
-			Chunk chunk = Chunk.GetChunk(cx, cz);
+			Chunk chunk = Chunk.GetChunk(cx, cz, this);
 			chunk.PlaceBlock(x & 0xf, y, z & 0xf, type, meta);
 			if (BlockChanged != null)
 				BlockChanged(x, y, z, type, meta);

@@ -35,7 +35,7 @@ namespace SMP
 			Log("Starting Server");
 			s = this;
 			consolePlayer = new ConsolePlayer(s);
-			mainlevel = new World(0, 127, 0, "main");
+			mainlevel = new World(0, 127, 0, "main", new Random().Next());
 			World.worlds.Add(mainlevel);
 			ml = new MainLoop("server");
 			#region updatetimer
