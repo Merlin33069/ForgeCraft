@@ -230,6 +230,7 @@
     <Compile Include="Groups\ConsoleGroup.cs" />
     <Compile Include="Command\Commands\CmdDND.cs" />
     <Compile Include="Command\Commands\CmdGod.cs" />
+    <Compile Include="Command\Commands\CmdHackz.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gui\" />

@@ -21,6 +21,7 @@ namespace SMP
 		public static int port = 25565; //DEBUGGING CHANGE BACK TO 25565
 		public static bool unsafe_plugin = false;
 		public static Logger ServerLogger = new Logger();
+		internal ConsolePlayer consolePlayer;
 		
 		public static string KickMessage = "You've been kicked!!";
 		public static string Motd = "Powered By ForgeCraft.";
@@ -33,6 +34,7 @@ namespace SMP
 		{
 			Log("Starting Server");
 			s = this;
+			consolePlayer = new ConsolePlayer(s);
 			mainlevel = new World(0, 127, 0, "main");
 			World.worlds.Add(mainlevel);
 			ml = new MainLoop("server");
@@ -46,7 +48,7 @@ namespace SMP
 			});
 			#endregion
 
-			Setup();
+			//Setup();
 
 			Log("Server Started");
 		}
@@ -118,6 +120,22 @@ namespace SMP
 		public static void Log(string message)
 		{
 			ServerLogger.Log(message);
+		}
+		
+		public void Stop()
+		{
+			List<Player> templist = Player.players;
+			Thread.Sleep(200);
+			foreach (Player p in templist)
+			{
+				p.Kick("Server Shutting Down!");
+			}
+			Thread.Sleep(200);
+			if (listen != null)
+            {
+                listen.Close();
+                listen = null;
+            }
 		}
 	}
 }

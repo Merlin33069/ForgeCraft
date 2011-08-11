@@ -24,12 +24,12 @@ namespace SMP
             }
 
             StringBuilder sb = new StringBuilder();
-            /*lock (Player.GetPlayerLock())
-            {
+            //lock (Player.GetPlayerLock())
+            //{
                 if (Player.players.Count > 0)
                     for (int i = 0; i < Player.players.Count; i++)
                     {
-                        sb.Append(Player.players[i].Username);
+                        sb.Append(Player.players[i].username);
 
                         if (i != Player.players.Count - 1)
                             sb.Append(", ");
@@ -37,7 +37,7 @@ namespace SMP
                 else
                     p.SendMessage("No body is minecrafting right now.");
                 
-            }*/
+            //}
 
             p.SendMessage("Currently Online: " + sb.ToString());
         }

@@ -125,9 +125,8 @@ namespace SMP
             //GlobalMessage(this.PlayerColor + "{1}§f: {2}", WrapMethod.Chat, this.Prefix, Username, message);
 			if (!DoNotDisturb)
 			{
-				GlobalMessage(username + ": " + m, WrapMethod.Chat);
+				GlobalMessage(Color.DarkBlue + "<" + level.name + "> " + Color.White + username + ": " + m);
             	Server.ServerLogger.Log(LogLevel.Info, username + ": " + m);
-				p.SendMessage(Color.DarkBlue + "<" + level + "> " + Color.White + username + ": " + m);
 			}
         }
 		public void HandleHoldingChange(byte[] message)
