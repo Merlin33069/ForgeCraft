@@ -13,7 +13,7 @@ namespace SMP
         public string Prefix = "";
         public string Suffix = "";
         public string GroupColor = Color.Gray;
-        public List<Command> CommandList = new List<Command>();
+        public List<string> PermissionList = new List<string>();
         public List<Group> InheritanceList = new List<Group>();
         public List<string> tempInheritanceList = new List<string>();
 
@@ -23,14 +23,14 @@ namespace SMP
         /// <param name="p"></param>
         /// <param name="c"></param>
         /// <returns></returns>
-        public static bool CheckPermission(Player p, Command c)
+        public static bool CheckPermission(Player p, String perm)
         {
 
-            if (p.AdditionalCommands.Contains(c))
+            if (p.AdditionalPermissions.Contains(perm))
             {
                 return true;
             }
-            else if (p.Group.CommandList.Contains(c))
+            else if (p.Group.PermissionList.Contains(perm))
             {
                 return true;
             }

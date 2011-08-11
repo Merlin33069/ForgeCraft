@@ -5,7 +5,7 @@ namespace SMP
 {
     public class CmdDevs : Command
     {
-        List<string> devs = new List<string> { "Silentneeb", "BizarreCake - some code from SilentCraft was used", "GamezGalaxy (hypereddie10)" }; //add your names here
+        List<string> devs = new List<string> { "Silentneeb", "BizarreCake", "GamezGalaxy (hypereddie10)" }; //add your names here
 
         public override string Name { get { return "devs"; } }
         public override List<string> Shortcuts { get { return new List<string> {"developers", "authors"}; } }

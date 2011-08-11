@@ -45,7 +45,7 @@
     </Reference>
     <Reference Include="Ionic.Zlib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Downloads\Substrate-0.6.2\Ionic.Zlib.dll</HintPath>
+      <HintPath>Ionic.Zlib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -223,14 +223,18 @@
     <Compile Include="Inventory\Inventory.cs" />
     <Compile Include="Inventory\Item.cs" />
     <Compile Include="Inventory\Windows.cs" />
-    <Compile Include="Player\Groups.cs" />
     <Compile Include="Command\Commands\SetTime.cs" />
     <Compile Include="Command\Commands\NewLVL.cs" />
-    <Compile Include="Command\Commands\goto.cs" />
+    <Compile Include="Command\Commands\gotoLVL.cs" />
+    <Compile Include="Groups\Group.cs" />
+    <Compile Include="Groups\ConsoleGroup.cs" />
+    <Compile Include="Command\Commands\CmdDND.cs" />
+    <Compile Include="Command\Commands\CmdGod.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gui\" />
     <Folder Include="Substrate\Source\Experimental\" />
+    <Folder Include="Groups\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NBToolkit\app.config" />

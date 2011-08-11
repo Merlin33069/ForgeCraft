@@ -15,7 +15,8 @@ namespace SMP
 		public override string PermissionNode { get { return "core.info.help"; } }
 			
         public override void Use(Player p, params string[] args)
-        {            
+        {   
+			p.SendMessage("TODO: Uncomment");
             /*bool cmdsFound = false;
             bool catFound = false;
 
@@ -40,7 +41,7 @@ namespace SMP
                 {
                     foreach (Command c in Command.core.commands)
                     {
-                        if (Group.CheckPermission(p, Command.all.Find(c.Name)))
+                        if (Group.CheckPermission(p, c.PermissionNode))
                         p.SendMessage("/" + c.Name + " - " + c.Description);
                     }
                 }
@@ -48,7 +49,7 @@ namespace SMP
                 {
                     foreach (Command c in Command.all.commands)
                     {
-                        if (c.Shortcuts.Count > 0 && Group.CheckPermission(p, Command.all.Find(c.Name)))
+                        if (c.Shortcuts.Count > 0 && Group.CheckPermission(p, c.PermissionNode))
                         {
                             StringBuilder shorts = new StringBuilder();
                             shorts.Append(c.Shortcuts[0] + ", ");
@@ -71,7 +72,7 @@ namespace SMP
                             catFound = true;
                             foreach (Command c in Command.all.commands)
                             {
-                                if (c.Category.ToLower() == categoryArg && Group.CheckPermission(p, Command.all.Find(c.Name)))
+                                if (c.Category.ToLower() == categoryArg && Group.CheckPermission(p, c.PermissionNode))
                                 {
                                     p.SendMessage("/" + c.Name + " - " + c.Description);
                                     cmdsFound = true;
@@ -89,12 +90,12 @@ namespace SMP
                     else if (!catFound)
                     {
                         Command cmd = Command.all.Find(categoryArg);
-                        if (cmd != null && Group.CheckPermission(p, Command.all.Find(cmd.Name)))
+                        if (cmd != null && Group.CheckPermission(p, cmd.PermissionNode))
                         {
                             cmd.Help(p);
                             return;
                         }
-                        if (cmd != null && !Group.CheckPermission(p, Command.all.Find(cmd.Name)))
+                        if (cmd != null && !Group.CheckPermission(p, cmd.PermissionNode))
                         {
                             p.SendMessage(Color.Purple + "HelpBot V12: You can't use /" + categoryArg + ", so no sense in showing you.", WrapMethod.Chat);
                             return;

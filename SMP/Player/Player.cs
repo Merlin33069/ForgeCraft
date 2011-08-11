@@ -43,6 +43,14 @@ namespace SMP
 		public delegate void OnPlayerCommand(string cmd, string message, Player p);
 		//Events for Custom Command and Plugins -------------------------------------
 		#endregion
+		//Groups and Permissions
+		public Group Group;
+		public List<string> AdditionalPermissions;
+		
+		//Other Player settings Donotdisturb, god mode etc.
+		public bool DoNotDisturb = false; //blocks all incoming chat except pm's
+		public bool GodMode = false; //obvious, but not used anywhere yet
+		
 		Entity e;
 		public string ip;
 		public string username;
@@ -592,7 +600,7 @@ namespace SMP
             Server.ServerLogger.Log(LogLevel.Info, this.username + " used /" + command.Name);
 			
 			//will uncomment when group system is added for now everybody can use every command ;)
-            /*if (Group.CheckPermission(this, command))
+            /*if (Group.CheckPermission(this, command.PermissionNode))
             {
             List<string> args = new List<string>();
             while (true)
@@ -615,11 +623,11 @@ namespace SMP
             command.Use(this, args.ToArray());
             Server.ServerLogger.Log(LogLevel.Info, this.username + " used /" + command.Name);
             }
-            else if (!Group.CheckPermission(this, command))
+            else if (!Group.CheckPermission(this, command.PermissionNode))
             {
                 Server.ServerLogger.Log(LogLevel.Info, this.username + " tried using /" + cmd + ", but doesn't have appropiate permissions.");
                 SendMessage(Color.Purple + "HelpBot V12: You don't have access to command /" + cmd + ".");
-            }*/	
+            }*/
 		}
 		#endregion
 		#region Messaging
@@ -643,7 +651,10 @@ namespace SMP
                 {
                     if (!players[j].disconnected)
                     {
-                        players[j].SendRaw((byte)KnownPackets.ChatMessage, bytes);
+						if (!players[j].DoNotDisturb)
+						{
+                        	players[j].SendRaw((byte)KnownPackets.ChatMessage, bytes);
+						}
                     }
                 }
             }

@@ -23,7 +23,9 @@ namespace SMP
 		public static Logger ServerLogger = new Logger();
 		
 		public static string KickMessage = "You've been kicked!!";
-
+		public static string Motd = "Powered By ForgeCraft.";
+		public static int MaxPlayers = 16;
+		
 		public static System.Timers.Timer updateTimer = new System.Timers.Timer(100);
 		public static MainLoop ml;
 
@@ -55,8 +57,8 @@ namespace SMP
 			//load configuration
 			Command.InitCore();
 			Plugin.Load();
-			//load groups
-			//load whitelist, banlist, reservelist //ask Keith (Silent) if you need/want to know what that is
+			//load groups			
+			//load whitelist, banlist, VIPlist
 			
 			try
 			{

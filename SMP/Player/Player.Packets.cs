@@ -17,6 +17,28 @@ namespace SMP
 			username = Encoding.BigEndianUnicode.GetString(message, 6, (length * 2));
 			Server.Log(ip + " Logged in as " + username);
 			Player.GlobalMessage(username + " has joined the game!");
+			
+			if (version > Server.protocolversion)
+	            {
+	                Kick("Outdated server");
+	                return;
+	            }
+	            else if (version < Server.protocolversion)
+	            {
+	                Kick("Outdated client");
+	                return;
+	            }
+			
+			if (Player.players.Count >= Server.MaxPlayers)
+			{
+				//TODO: Add VIPList checking here
+				Kick("Server is Full");	
+			}
+			
+			//TODO: Check ban list, and whitelist
+			
+			//TODO: load Player attributes like group, and other settings
+			
 			LoggedIn = true;
 			SendLoginPass();
 			//OnPlayerConnect Event
@@ -101,10 +123,10 @@ namespace SMP
 
             // TODO: Rank coloring
             //GlobalMessage(this.PlayerColor + "{1}§f: {2}", WrapMethod.Chat, this.Prefix, Username, message);
-            Server.ServerLogger.Log(LogLevel.Info, username + ": " + m);
-			foreach (Player p in players)
+			if (!DoNotDisturb)
 			{
-				p.SendMessage(username + ": " + m);
+				GlobalMessage(username + ": " + m, WrapMethod.Chat);
+            	Server.ServerLogger.Log(LogLevel.Info, username + ": " + m);
 			}
         }
 		public void HandleHoldingChange(byte[] message)

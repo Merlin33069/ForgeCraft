@@ -35,6 +35,9 @@ namespace SMP
         public static string CommandError = DarkRed;
         public static string ServerDefaultColor = White;
 
+		/// <summary>
+        /// Removes color codes from a string.
+        /// </summary>
         public static string ParseColors(string text)
         {
             StringBuilder sb = new StringBuilder();
@@ -53,6 +56,9 @@ namespace SMP
             return sb.ToString();
         }
 
+		/// <summary>
+		/// Makes sure a colour code is vaild. Doesn't check preceding character just the value.
+		/// </summary>
         public static bool IsColorValid(char ch)
         {
             if ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'))
