@@ -9,6 +9,10 @@ namespace SMP
     /// </summary>
 	public partial class Player : System.IDisposable
 	{
+		/// <summary>
+		/// 0x01 
+		/// </summary>
+		/// </param>
 		private void HandleLogin(byte[] message)
 		{
 			int version = util.EndianBitConverter.Big.ToInt32(message, 0);
@@ -45,6 +49,13 @@ namespace SMP
 			if (PlayerAuth != null)
 				PlayerAuth(this);
 		}
+		
+		/// <summary>
+		/// 0x02 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
 		private void HandleHandshake(byte[] message)
 		{
 			//Server.Log("handshake-2");
@@ -55,38 +66,12 @@ namespace SMP
 			SendHandshake();
 		}
 
-		private void HandleDigging(byte[] message)
-		{
-			if (message[0] == 0)
-			{
-				// Send an animation to all nearby players.
-                foreach( Player p in Player.players ) {
-                    //TODO CHECK TO SEE IF CHUNK IS IN PLAYER RANGE
-                    if( p.level == level && p != this )
-                        p.SendAnimation( id, 1 );
-                }
-			}
-			if (message[0] == 2)
-			{
-				//Server.Log("Blockchange");
-				//Player is done digging
-				int x = util.EndianBitConverter.Big.ToInt32(message, 1);
-				byte y = message[5];
-				int z = util.EndianBitConverter.Big.ToInt32(message, 6);
-				//Adds the item that the player was digging to the "ground"
-				byte id = e.CurrentChunk.GetBlock(x, y, z);
-				Item temp = new Item((Items)id);
-				temp.count = 1;
-				level.items_on_ground[Chunk.PosToInt(x, y, z)] = temp;
-				level.BlockChange(x, y, z, 0, 0);
-			}
-			if (message[0] == 4)
-			{
-				//Player dropped item
-				
-			}
-		}
-
+		/// <summary>
+		/// 0x03 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
         private void HandleChatMessagePacket(byte[] message)
         {
 			short length = util.EndianBitConverter.Big.ToInt16(message, 0);
@@ -132,15 +117,24 @@ namespace SMP
             	Server.ServerLogger.Log(LogLevel.Info, username + ": " + m);
 			}
         }
-		public void HandleHoldingChange(byte[] message)
+		
+	    /// <summary>
+	    /// 0x09 
+	    /// </summary>
+	    /// <param name="message">
+	    /// A <see cref="System.Byte[]"/>
+	    /// </param>
+		private void HandleRespawnPacket(byte [] message)
 		{
-			try
-			{
-				current_slot_holding = util.EndianBitConverter.Big.ToInt16(message, 0);
-				current_block_holding = inventory.items[current_slot_holding];
-			}
-			catch { }
+			//pos 	
 		}
+		
+		/// <summary>
+		/// 0x0A 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
 		private void HandlePlayerPacket(byte[] message)
 		{
 			try
@@ -160,6 +154,13 @@ namespace SMP
 				Server.Log(e.StackTrace);
 			}
 		}
+		
+		/// <summary>
+		/// 0x0B 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
 		private void HandlePlayerPositionPacket(byte[] message)
 		{
 			try
@@ -207,6 +208,13 @@ namespace SMP
 				Server.Log(e.StackTrace);
 			}
 		}
+		
+		/// <summary>
+		/// 0x0C 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
 		private void HandlePlayerLookPacket(byte[] message)
 		{
 			try
@@ -229,6 +237,13 @@ namespace SMP
 				Server.Log(e.StackTrace);
 			}
 		}
+		
+		/// <summary>
+		/// 0x0D 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
 		private void HandlePlayerPositionAndLookPacket(byte[] message)
 		{
 			try
@@ -280,6 +295,60 @@ namespace SMP
 				Server.Log(e.Message);
 				Server.Log(e.StackTrace);
 			}
+		}
+
+		/// <summary>
+		/// 0x0E 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
+		private void HandleDigging(byte[] message)
+		{
+			if (message[0] == 0)
+			{
+				// Send an animation to all nearby players.
+                foreach( Player p in Player.players ) {
+                    //TODO CHECK TO SEE IF CHUNK IS IN PLAYER RANGE
+                    if( p.level == level && p != this )
+                        p.SendAnimation( id, 1 );
+                }
+			}
+			if (message[0] == 2)
+			{
+				//Server.Log("Blockchange");
+				//Player is done digging
+				int x = util.EndianBitConverter.Big.ToInt32(message, 1);
+				byte y = message[5];
+				int z = util.EndianBitConverter.Big.ToInt32(message, 6);
+				//Adds the item that the player was digging to the "ground"
+				byte id = e.CurrentChunk.GetBlock(x, y, z);
+				Item temp = new Item((Items)id);
+				temp.count = 1;
+				level.items_on_ground[Chunk.PosToInt(x, y, z)] = temp;
+				level.BlockChange(x, y, z, 0, 0);
+			}
+			if (message[0] == 4)
+			{
+				//Player dropped item
+				
+			}
+		}
+		
+		/// <summary>
+		/// 0x10 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
+		public void HandleHoldingChange(byte[] message)
+		{
+			try
+			{
+				current_slot_holding = util.EndianBitConverter.Big.ToInt16(message, 0);
+				current_block_holding = inventory.items[current_slot_holding];
+			}
+			catch { }
 		}
 
 		private void HandleDC(byte[] message)

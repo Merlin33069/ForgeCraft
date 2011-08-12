@@ -47,6 +47,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Ionic.Zlib.dll</HintPath>
     </Reference>
+    <Reference Include="LibNoise, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>LibNoise.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entity\Entity.cs" />
@@ -231,6 +235,8 @@
     <Compile Include="Command\Commands\CmdDND.cs" />
     <Compile Include="Command\Commands\CmdGod.cs" />
     <Compile Include="Command\Commands\CmdHackz.cs" />
+    <Compile Include="World\Generator\GenStandard.cs" />
+    <Compile Include="World\Generator\ChunkGen.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gui\" />
