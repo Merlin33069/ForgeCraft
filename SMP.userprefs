@@ -1,23 +1,11 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" ctype="Workspace" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/World/FCGenerator.cs" ctype="Workbench">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/Player/Player.Packets.cs" ctype="Workbench">
     <Files>
-      <File FileName="SMP/Program.cs" Line="1" Column="1" />
-      <File FileName="SMP/Server/Server.cs" Line="38" Column="37" />
-      <File FileName="SMP/NBToolkit/Replace.cs" Line="1" Column="1" />
-      <File FileName="SMP/Player/Player.cs" Line="380" Column="20" />
-      <File FileName="SMP/Command/Commands/CmdDND.cs" Line="1" Column="1" />
-      <File FileName="SMP/Command/Command.cs" Line="34" Column="26" />
-      <File FileName="SMP/World/FCGenerator.cs" Line="115" Column="4" />
-      <File FileName="SMP/World/Noise.cs" Line="120" Column="1" />
-      <File FileName="SMP/World/Chunk.cs" Line="256" Column="23" />
-      <File FileName="SMP/World/World.cs" Line="18" Column="24" />
-      <File FileName="SMP/Command/Commands/NewLVL.cs" Line="46" Column="10" />
-      <File FileName="SMP/Command/Commands/gotoLVL.cs" Line="47" Column="147" />
-      <File FileName="SMP/util/Logger.cs" Line="88" Column="1" />
-      <File FileName="SMP/Player/Player.Packets.cs" Line="75" Column="59" />
-      <File FileName="SMP/Entity/Entity.cs" Line="1" Column="1" />
-      <File FileName="SMP/Command/Commands/CmdDevs.cs" Line="35" Column="27" />
+      <File FileName="SMP/Entity/Entity.cs" Line="80" Column="35" />
+      <File FileName="SMP/Player/Player.cs" Line="200" Column="8" />
+      <File FileName="SMP/Player/Player.Packets.cs" Line="120" Column="3" />
+      <File FileName="SMP/Command/Commands/CmdGod.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

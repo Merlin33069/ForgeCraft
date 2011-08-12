@@ -126,7 +126,10 @@ namespace SMP
 	    /// </param>
 		private void HandleRespawnPacket(byte [] message)
 		{
-			//pos 	
+			Teleport_Player(level.SpawnX, level.SpawnY, level.SpawnZ);
+			byte[] data = new byte[1];
+            data[0] = 0;
+			SendRaw(0x09, data);
 		}
 		
 		/// <summary>

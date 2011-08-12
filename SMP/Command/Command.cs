@@ -38,6 +38,7 @@ namespace SMP
             core.Add(new CmdHelp());
 			core.Add(new CmdHackz());
             core.Add(new CmdKick());
+			core.Add(new CmdKill());
             core.Add(new CmdList());
             //core.Add(new CmdMBan());
             core.Add(new CmdMe());

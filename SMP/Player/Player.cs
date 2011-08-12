@@ -16,7 +16,7 @@ namespace SMP
 		public World level;
 		static Random random = new Random();
 		public short current_slot_holding;
-		public Item current_block_holding { get { return inventory.current_item; } set { inventory.current_item = value; SendHealth(); } }
+		public Item current_block_holding { get { return inventory.current_item; } set { inventory.current_item = value; SendInventory(); } } //Don't know if that is right but it was sending health and killing players
 		byte[] buffer = new byte[0];
 		byte[] tempbuffer = new byte[0xFF];
 		bool disconnected = false;
@@ -198,6 +198,7 @@ namespace SMP
 							HandleChatMessagePacket(message);
 							break;
 						case 0x09:
+						    Server.Log("respawn");
 							HandleRespawnPacket(message);
 							break;
 						case 0x0A: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPacket(message); break; //Player onground Incoming
