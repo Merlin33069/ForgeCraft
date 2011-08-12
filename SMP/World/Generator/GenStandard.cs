@@ -16,8 +16,12 @@ namespace SMP {
             perlin = new Perlin();
             perlin.Frequency = 0.009;
         }
-
-
+		public GenStandard(int seed)
+		{
+			random = new Random(seed);
+			perlin = new Perlin();
+			perlin.Frequency = 0.009;
+		}
         /// <summary>
         /// 
         /// </summary>
