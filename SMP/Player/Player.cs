@@ -238,12 +238,10 @@ namespace SMP
 			try
 			{
                 socket.Send( new byte[] { id } );
-				socket.Send(buffer);
-				buffer = null;
+				socket.Send(send);
 			}
 			catch (SocketException)
 			{
-				buffer = null;
 				Disconnect();
 			}
 		}
