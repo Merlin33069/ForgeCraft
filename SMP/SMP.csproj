@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command\Commands\CmdFire.cs" />
+    <Compile Include="Command\Commands\CmdSpawn.cs" />
     <Compile Include="Command\Commands\CmdTeleport.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="NBToolkit\BlockFilter.cs" />
