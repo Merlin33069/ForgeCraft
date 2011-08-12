@@ -26,20 +26,20 @@ namespace SMP
             StringBuilder sb = new StringBuilder();
             //lock (Player.GetPlayerLock())
             //{
-                if (Player.players.Count > 0)
-                    for (int i = 0; i < Player.players.Count; i++)
-                    {
-                        sb.Append(Player.players[i].username);
+            if (Player.players.Count > 0)
+                for (int i = 0; i < Player.players.Count; i++)
+                {
+                    sb.Append(Player.players[i].username);
 
-                        if (i != Player.players.Count - 1)
-                            sb.Append(", ");
-                    }
-                else
-                    p.SendMessage("No body is minecrafting right now.");
-                
+                    if (i != Player.players.Count - 1)
+                        sb.Append(", ");
+                }
+            else
+                p.SendMessage("No body else is minecrafting right now.");
+
             //}
 
-            p.SendMessage("Currently Online: " + sb.ToString());
+            p.SendMessage("Currently Online: " + sb);
         }
 
         public override void Help(Player p)

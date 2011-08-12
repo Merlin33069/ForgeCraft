@@ -49,6 +49,9 @@ namespace SMP
             //core.Add(new CmdSpawn());
             //core.Add(new CmdUnban());
             //core.Add(new CmdWhiteList());
+            core.Add(new CmdTeleport());
+            core.Add(new CmdFire());
+            core.Add(new CmdSpawn());
             all.commands = new List<Command>(core.commands);
             InitCommandTypes();
         }
