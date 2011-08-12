@@ -235,15 +235,9 @@ namespace SMP
 		{
 			if (socket == null || !socket.Connected)
 				return;
-			byte[] buffer = new byte[send.Length + 1];
-			buffer[0] = (byte)id;
-			for (int i = 0; i < send.Length; i++)
-			{
-				buffer[i + 1] = send[i];
-			}
-
 			try
 			{
+                socket.Send( new byte[] { id } );
 				socket.Send(buffer);
 				buffer = null;
 			}
@@ -262,6 +256,17 @@ namespace SMP
 			util.EndianBitConverter.Big.GetBytes(level.time).CopyTo(tosend, 0);
 			SendRaw(0x04, tosend);
 		}
+
+        /// <summary>
+        /// Sends an animation to the player.
+        /// </summary>
+        public void SendAnimation( int eid, byte type ) {
+            byte[] data = new byte[5];
+            util.EndianBitConverter.Big.GetBytes( eid ).CopyTo( data, 0 );
+            data[4] = type;
+            SendRaw( 0x12, data );
+        }
+
 		/// <summary>
 		/// Update the players health
 		/// </summary>

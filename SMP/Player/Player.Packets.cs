@@ -59,7 +59,12 @@ namespace SMP
 		{
 			if (message[0] == 0)
 			{
-				//Player is digging
+				// Send an animation to all nearby players.
+                foreach( Player p in Player.players ) {
+                    //TODO CHECK TO SEE IF CHUNK IS IN PLAYER RANGE
+                    if( p.level == level && p != this )
+                        p.SendAnimation( id, 1 );
+                }
 			}
 			if (message[0] == 2)
 			{
