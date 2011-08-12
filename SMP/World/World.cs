@@ -15,7 +15,7 @@ namespace SMP
 		public int seed;
 		public long time;
 		public System.Timers.Timer timeupdate = new System.Timers.Timer(1000);
-		public FCGenerator generator;
+		public GenStandard generator;
 		public Dictionary<Point, Chunk> chunkData;
 		public Dictionary<int, Item> items_on_ground;
 		public List<Point> ToGenerate = new List<Point>();
@@ -50,7 +50,7 @@ namespace SMP
 		{
 			chunkData = new Dictionary<Point, Chunk>();
 			items_on_ground = new Dictionary<int, Item>();
-			generator = new FCGenerator(this);
+			generator = new GenStandard();
 
 			for (int x = -3; x <= 3; x++)
 			{
@@ -106,7 +106,7 @@ namespace SMP
 		public void GenerateChunk(int x, int z)
 		{
 			Chunk c = new Chunk(x, z);
-			generator.FlatChunk(c);
+			generator.Generate(this, c);
 			//generator.PerlinChunk(c);
 			//generator.RandMap(c, seed);
 			c.RecalculateLight();
