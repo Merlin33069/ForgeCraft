@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LibNoise">
+      <HintPath>.\LibNoise.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -200,11 +203,13 @@
     <Compile Include="util\Endianness.cs" />
     <Compile Include="util\LittleEndianBitConverter.cs" />
     <Compile Include="World\Chunk.Light.cs" />
+    <Compile Include="World\ChunkGen.cs" />
     <Compile Include="World\DataValues.cs" />
     <Compile Include="World\Chunk.cs" />
     <Compile Include="World\FCGenerator.cs" />
     <Compile Include="Server\ConsolePlayer.cs" />
     <Compile Include="Network\KnownPackets.cs" />
+    <Compile Include="World\GenStandard.cs" />
     <Compile Include="World\Noise.cs" />
     <Compile Include="World\World.cs" />
     <Compile Include="Command\Command.cs" />
@@ -235,7 +240,6 @@
   <ItemGroup>
     <Folder Include="Gui\" />
     <Folder Include="Substrate\Source\Experimental\" />
-    <Folder Include="Groups\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NBToolkit\app.config" />
