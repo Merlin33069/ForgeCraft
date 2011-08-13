@@ -233,20 +233,25 @@ namespace SMP
 		/// <param name='send'>
 		/// Send. The byte[] information you want to send
 		/// </param>
-		public void SendRaw(byte id, byte[] send)
-		{
-			if (socket == null || !socket.Connected)
-				return;
-			try
-			{
-                socket.Send( new byte[] { id } );
-				socket.Send(send);
-			}
-			catch (SocketException)
-			{
-				Disconnect();
-			}
-		}
+        public void SendRaw(byte id, byte[] send)
+        {
+            if (socket == null || !socket.Connected)
+                return;
+            byte[] buffer = new byte[send.Length + 1];
+            buffer[0] = (byte)id;
+            send.CopyTo(buffer, 1);
+
+            try
+            {
+                socket.Send(buffer);
+                buffer = null;
+            }
+            catch (SocketException)
+            {
+                buffer = null;
+                Disconnect();
+            }
+        }
 		/// <summary>
 		/// Update the players time
 		/// </summary>
