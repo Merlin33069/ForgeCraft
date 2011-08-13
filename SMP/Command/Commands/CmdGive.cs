@@ -9,7 +9,7 @@ namespace SMP
         public override List<string> Shortcuts { get { return new List<string> {"item", "i"}; } }
         public override string Category { get { return "cheat"; } }
         public override bool ConsoleUseable { get { return true; } }
-        public override string Description { get { return "Spawn items for a player"; } }
+        public override string Description { get { return "Spawns items."; } }
 		public override string PermissionNode { get { return "core.cheat.give"; } }
 
         public override void Use(Player p, params string[] args)
@@ -20,57 +20,124 @@ namespace SMP
 				return;
 			}
 			
+			//probably an easier way, but couldn't think of it
+			
+			Player toPlayer = null;
+			short slot = 36;
+			short itemID = 0;
+			byte count = 1;
+			short meta = 0;
+			
+			short s; //doesn't actually do anything important
+			
+			//first arg
+			try
+			{
+				if (short.TryParse(args[0], out s))
+				{
+					itemID = short.Parse(args[0]);
+				}
+				else if (args[0].Contains(":"))
+				{
+					itemID = short.Parse(args[0].Substring(0, args[0].IndexOf(":")));
+					meta = short.Parse(args[0].Substring(args[0].IndexOf(":") + 1));
+					
+				}
+				else
+				{
+					toPlayer = Player.FindPlayer(args[0]);	
+				}
+			}
+			catch
+			{
+				p.SendMessage(HelpBot + "Something is wrong with your first argument.", WrapMethod.Chat);	
+			}
+			
 			if (args.Length == 1)
 			{
-				try
+				if (toPlayer != null)
 				{
-					short itemID = Convert.ToInt16(args[0]);
-					p.SendItem((short)p.inventory.FindEmptySlot(), itemID, 1, 0);
-					p.SendMessage(HelpBot + "Enjoy.");
+					p.SendMessage(HelpBot + "Not enough arguments.");
+					Help(p);
+					return;
 				}
-				catch{}
+				else
+				{
+					p.SendItem(slot, itemID, count, meta);
+					p.SendMessage(HelpBot + "Enjoy!");
+					return;
+				}
 			}
-			/*else if (args.Length == 2)
+			
+			//second arg
+			try
 			{
-				short itemID;
-				short amount;
-				try
+				if (toPlayer != null)
 				{
-					if (!args[0].Contains(":"))
+					if (short.TryParse(args[1], out s))
 					{
-						itemID = Convert.ToInt16(args[0]);
-						amount = Convert.ToInt16(args[1]);
+						itemID = short.Parse(args[1]);
 					}
-					else
+					else if (args[1].Contains(":"))
 					{
-						//TODO: item meta/damage	
+						itemID = short.Parse(args[1].Substring(0, args[1].IndexOf(":")));
+						meta = short.Parse(args[1].Substring(args[1].IndexOf(":") + 1));
+					}
+					else 
+					{
+						p.SendMessage(HelpBot + "Something is wrong with your second argument.", WrapMethod.Chat);	
+						return;
 					}
 				}
-				catch(FormatException)
+				else
 				{
-					Player pl = Player.FindPlayer(args[0]);
-					
-					if (pl != null)
-					{
-						try
-						{
-							itemID = Convert.ToInt16(args[0]);	
-							pl.SendItem(36, itemID, 1, 0);
-						}
-						catch{}
-					}
-					else
-					{
-						p.SendMessage(HelpBot + "Can not find player.");
-					}
+					count = byte.Parse(args[1]);
 				}
-			}*/
+			}
+			catch
+			{
+				p.SendMessage(HelpBot + "Something is wrong with your second argument.", WrapMethod.Chat);	
+				return;
+			}
+			
+			if (args.Length == 2)
+			{
+				if (toPlayer != null)
+				{
+					toPlayer.SendItem(slot, itemID, count, meta);
+					toPlayer.SendMessage(HelpBot + "Enjoy your gift!");
+					p.SendMessage(HelpBot + "Gift Given");
+					return;
+				}
+				else
+				{
+					p.SendItem(slot, itemID, count, meta);
+					p.SendMessage(HelpBot + "Enjoy!");
+					return;
+				}
+			}
+			
+			//third arg
+			try
+			{	
+				count = byte.Parse(args[2]);	
+			}
+			catch
+			{
+				p.SendMessage(HelpBot + "Third Argument is invalid.");
+				return;
+			}
+			
+			toPlayer.SendItem(slot, itemID, count, meta);
+			toPlayer.SendMessage(HelpBot + "Enjoy your gift!");
+			p.SendMessage(HelpBot + "Gift Given");			
 			
 		}
 		
 		public override void Help(Player p)
 		{
-			
+			p.SendMessage("Spawns item(s), and if specified to a player.");
+			p.SendMessage("/give (player) <item(:value)> (amount)");
 		}
 	}
 }

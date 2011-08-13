@@ -34,8 +34,16 @@ namespace SMP
 				StringBuilder sb = new StringBuilder();
 				for (int i = 0; i < Player.players.Count; i++)
 				{
-					//sb.Append(Player.players[i].Group.GroupColor + Player.players[i].username + Color.White); // uncomment when groups are finished
-					sb.Append(Player.players[i].username);
+					if(!Player.players[i].AFK)
+					{
+						//sb.Append(Player.players[i].Group.GroupColor + Player.players[i].username + Color.White); // uncomment when groups are finished
+						sb.Append(Player.players[i].username);
+					}
+					else
+					{
+						//sb.Append(Player.players[i].Group.GroupColor + Player.players[i].username + Color.Gray + "[AFK]" + Color.White); // uncomment when groups are finished
+						sb.Append(Player.players[i].username + Color.Gray + "[AFK]");
+					}
 					
 					if (i != Player.players.Count - 1)
                 		sb.Append(", ");
@@ -54,8 +62,16 @@ namespace SMP
 						{
 							if (Player.players[i].level == w)
 							{
-								//sb.Append(p.Group.GroupColor + p.username + Color.White); // uncomment when groups are finished
-								sb.Append(Player.players[i].username);
+								if(!Player.players[i].AFK)
+								{
+									//sb.Append(Player.players[i].Group.GroupColor + Player.players[i].username + Color.White); // uncomment when groups are finished
+									sb.Append(Player.players[i].username);
+								}
+								else
+								{
+									//sb.Append(Player.players[i].Group.GroupColor + Player.players[i].username + Color.Gray + "[AFK]" + Color.White); // uncomment when groups are finished
+									sb.Append(Player.players[i].username + Color.Gray + "[AFK]");
+								}
 								
 								if (i != Player.players.Count - 1)
 	                        		sb.Append(", ");

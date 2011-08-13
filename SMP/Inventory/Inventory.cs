@@ -60,6 +60,8 @@ namespace SMP
 			else
 				tosend = new byte[6];
  		}
+		
+		//the idea is there just doesn't quite work any fixes would be great!!
 		public int FindEmptySlot()
 		{			
 			for (int i = 36; i <= 44; i++)
@@ -73,7 +75,7 @@ namespace SMP
 			
 			for (int i = 9; i <= 35; i++)
 			{
-				if (items[i].count == 0)
+				if (items[i].item == Items.Nothing)
 				{
 					return i;	
 				}

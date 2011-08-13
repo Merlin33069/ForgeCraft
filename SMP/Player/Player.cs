@@ -50,6 +50,7 @@ namespace SMP
 		//Other Player settings Donotdisturb, god mode etc.
 		public bool DoNotDisturb = false; //blocks all incoming chat except pm's
 		public bool GodMode = false; //obvious, but not used anywhere yet
+		public bool AFK = false;
 		
 		Entity e;
 		public string ip;

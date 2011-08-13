@@ -1,0 +1,25 @@
+using System;
+using System.Collections.Generic;
+
+namespace SMP
+{
+	public class CmdBLANK : Command
+	{
+		public override string Name { get { return CHANGEME; } }
+        public override List<string> Shortcuts { get { return new List<string> {CHANGEME}; } }
+        public override string Category { get { return "other"; } }
+        public override bool ConsoleUseable { get { return false; } }
+        public override string Description { get { return CHANGEME; } }
+		public override string PermissionNode { get { return "core.other.CHANGEME"; } }
+
+        public override void Use(Player p, params string[] args)
+		{
+		
+		}
+		
+		public override void Help(Player p)
+		{
+		
+		}
+	}
+}

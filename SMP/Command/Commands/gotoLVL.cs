@@ -13,7 +13,7 @@ namespace SMP
 		}
 		public override bool ConsoleUseable {
 			get {
-				return true;
+				return false;
 			}
 		}
 		public override string Description {

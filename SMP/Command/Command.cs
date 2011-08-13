@@ -29,25 +29,28 @@ namespace SMP
         public static void InitCore()
         {
             //please put in alphabetical order and use core.add now not all.add
-            //core.Add(new CmdBan());
+            core.Add(new CmdAFK());
+			//core.Add(new CmdBan());
             core.Add(new CmdDevs());
 			core.Add(new CmdDND());
-            //core.Add(new CmdGive());
+            core.Add(new CmdGive());
 			core.Add(new CmdGod());
-			core.Add(new CmdGive());
 			core.Add(new gotoLVL());
             core.Add(new CmdHelp());
 			core.Add(new CmdHackz());
             core.Add(new CmdKick());
+			core.Add(new CmdKill());
             core.Add(new CmdList());
             //core.Add(new CmdMBan());
             core.Add(new CmdMe());
-            //core.Add(new CmdMKick());
+			core.Add(new CmdMotd());
+			core.Add(new CmdMsg());
 			core.Add(new NewLVL());
             //core.Add(new CmdReserveList());
             core.Add(new CmdSay());
+			core.Add(new CmdTeleport());
 			core.Add(new SetTime());
-            //core.Add(new CmdSpawn());
+            core.Add(new CmdSpawn());
             //core.Add(new CmdUnban());
             //core.Add(new CmdWhiteList());
             all.commands = new List<Command>(core.commands);
@@ -62,6 +65,7 @@ namespace SMP
             CommandCategories.Add(new List<string> { "Build", " for Building Commands" });
             CommandCategories.Add(new List<string> { "Mod", " for Moderation Commands" });
             CommandCategories.Add(new List<string> { "Information", " for Informative Commands" });
+			CommandCategories.Add(new List<string> { "General", " for General Commands"});
 			CommandCategories.Add(new List<string> { "Cheats", " Commands for Wusses" });
             CommandCategories.Add(new List<string> { "Core", " for Non-plugin Commands Commands" });
             CommandCategories.Add(new List<string> { "Short", " for Command Shortcuts" });

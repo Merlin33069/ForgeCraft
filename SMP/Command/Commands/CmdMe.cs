@@ -10,7 +10,7 @@ namespace SMP
         public override string Name { get { return "me"; } }
         public override List<String> Shortcuts { get { return new List<string> { }; } }
         public override string Category { get { return "information"; } }
-        public override bool ConsoleUseable { get { return false; } }
+        public override bool ConsoleUseable { get { return true; } }
         public override string Description { get { return "Tells everybody what you are doing."; } } //used for displaying what the commands does when using /help
 		public override string PermissionNode { get { return "core.info.me"; } }
         
@@ -21,15 +21,8 @@ namespace SMP
                 Help(p);
                 return;
             }
-
-            StringBuilder message = new StringBuilder();
-
-            for (int i = 0; i <= args.Length; i++)
-            {
-                message.Append(args[i] + " ");
-            }
             
-            Player.GlobalMessage(p.username + " " + message.ToString().Trim());
+            Player.GlobalMessage(p.username + " " + MakeString(args, 0, args.Length));
         }
 
         public override void Help(Player p)

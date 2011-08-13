@@ -27,11 +27,11 @@ namespace SMP
 				p.SendMessage("You are now invincible. Type /god again to be a mortal", WrapMethod.Chat);
 				Player.GlobalMessage(p.username + " is now being cheap and immortal, kill them!", WrapMethod.Chat);
 			}
-			else if (p.DoNotDisturb)
+			else if (p.GodMode)
 			{
-				p.DoNotDisturb = false;
+				p.GodMode = false;
 				p.SendMessage("You are no longer invincible.", WrapMethod.Chat);
-				Player.GlobalMessage(p.username + " is no longer being a wuss, don't kill them", WrapMethod.Chat);
+				Player.GlobalMessage(p.username + " is no longer being a wuss, don't kill them.", WrapMethod.Chat);
 			}
 		}
 		
