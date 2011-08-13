@@ -52,6 +52,8 @@ namespace SMP
 		public bool DoNotDisturb = false; //blocks all incoming chat except pm's
 		public bool GodMode = false; //obvious, but not used anywhere yet
 		public bool AFK = false;
+        public bool Crouching = false;
+        public bool IsOnFire = false;
 		
 		Entity e;
 		public string ip;
@@ -151,7 +153,7 @@ namespace SMP
 					case 0x0F: if (util.EndianBitConverter.Big.ToInt16(buffer, 11) >= 0) length = 15; else length = 12; break; //Block Placement
 					case 0x10: length = 2; break; //Holding Change
 					case 0x12: length = 5; break; //Animation Change
-					case 0x13: length = 5; break; //Entity Action
+                    case 0x13: length = 5; crouch(); break; //Entity Action
 
 					case 0x65: length = 1; break; //Close Window
 					case 0x66:
@@ -298,6 +300,59 @@ namespace SMP
 			tosend[40] = onground;
 			SendRaw(0x0D, tosend);
 		}
+        void CheckOnFire()
+        {
+            // check for players on fire before join map.
+            for (int i = 0; i < Player.players.Count; i++)
+            {
+                if (players[i].IsOnFire && players[i] != this && players[i].level == this.level)
+                {
+                    byte[] bytes = new byte[7];
+                    util.EndianBitConverter.Big.GetBytes(players[i].id).CopyTo(bytes, 0);
+                    bytes[4] = 0x00;
+                    bytes[5] = 0x01;
+                    bytes[6] = 0x7F;
+                    SendRaw(0x28, bytes);
+                }
+            }
+        }
+        void crouch()
+        {
+            Crouching = Crouching ? false : true;
+            if (!Crouching && IsOnFire) { SetFire(true); return; }
+            byte[] bytes2 = new byte[7];
+            util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes2, 0);
+            bytes2[4] = 0x00;
+            if (Crouching && !IsOnFire) bytes2[5] = 0x02;
+            else if (Crouching) bytes2[5] = 0x03;
+            else bytes2[5] = 0x00;
+            bytes2[6] = 0x7F;
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i] != this && players[i].LoggedIn)
+                {
+                    players[i].SendRaw(0x28, bytes2);
+                }
+            }
+        }
+        public void SetFire(bool onoff)
+        {
+            byte[] bytes2 = new byte[7];
+            util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes2, 0);
+            bytes2[4] = 0x00;
+            if (onoff) bytes2[5] = 0x01;
+            else bytes2[5] = 0x00;
+            bytes2[6] = 0x7F;
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i] != this && players[i].LoggedIn)
+                {
+                    players[i].SendRaw(0x28, bytes2);
+                }
+            }
+            IsOnFire = onoff;
+            //if (Crouching) crouch();
+        }
 		void SendLoginPass()
 		{
 			try
@@ -524,6 +579,7 @@ namespace SMP
 
 				SendRaw(0x14, bytes);
 
+                CheckOnFire();
 				//SendEntityEquipment(p.id, -1, -1, -1, -1, -1);
 			}
 			catch (Exception e)
