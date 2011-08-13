@@ -856,6 +856,13 @@ namespace SMP
 			{
 			    p.SendDespawn(id);
 			}
+
+            // Close stuff
+            if( socket != null && socket.Connected ) {
+                try { socket.Close(); }
+                catch { }
+                socket = null;
+            }
 		}
 		
 		#region TOOLS
