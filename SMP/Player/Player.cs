@@ -243,14 +243,49 @@ namespace SMP
 				return;
 			try
 			{
-                socket.Send( new byte[] { id } );
-				socket.Send(send);
+				int l = send.Length + 1;
+				byte[] bytes = new byte[l];
+				bytes[0] = id;
+				send.CopyTo(bytes, 1);
+                socket.Send(bytes);
+
+				//The other way didn't work for jason or I. had to revert, but found a way to get rid of the for.
+				//socket.Send(send);
 			}
 			catch (SocketException)
 			{
 				Disconnect();
 			}
 		}
+		#region Old SendRaw Code
+		//public void SendRaw1(byte id)
+		//{
+		//    SendRaw1(id, new byte[0]);
+		//}
+		//public void SendRaw1(byte id, byte[] send)
+		//{
+		//    if (socket == null || !socket.Connected)
+		//        return;
+		//    byte[] buffer = new byte[send.Length + 1];
+		//    buffer[0] = (byte)id;
+		//    for (int i = 0; i < send.Length; i++)
+		//    {
+		//        buffer[i + 1] = send[i];
+		//    }
+
+		//    try
+		//    {
+		//        socket.Send(buffer);
+		//        buffer = null;
+		//    }
+		//    catch (SocketException)
+		//    {
+		//        buffer = null;
+		//        Disconnect();
+		//    }
+		//}
+		#endregion
+
 		/// <summary>
 		/// Update the players time
 		/// </summary>
@@ -841,9 +876,6 @@ namespace SMP
         }
 		#endregion
 		#endregion
-
-		
-		
 
 		public void Kick(string message)
 		{
