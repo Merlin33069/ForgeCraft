@@ -6,7 +6,7 @@ namespace SMP
     public class CmdTeleport : Command
     {
         public override string Name { get { return "teleport"; } }
-        public override List<String> Shortcuts { get { return new List<string> { "tp", "tppos" }; } }
+        public override List<String> Shortcuts { get { return new List<string> { "tp" }; } }
         public override string Category { get { return "Mod"; } }
         public override bool ConsoleUseable { get { return false; } }
         public override string Description { get { return "Teleports to specified player or location"; } } //used for displaying what the commands does when using /help
@@ -27,14 +27,15 @@ namespace SMP
                     p.Teleport_Player(who.pos[0], who.pos[1], who.pos[2]);
                     return;
                 }
-				else
-				{
-					p.SendMessage(HelpBot + "Can not find player.");	
-				}
             }
             if (args.Length == 3)
             {
-                p.Teleport_Player((double)(int.Parse(args[0])), (double)(int.Parse(args[1])), (double)(int.Parse(args[2])));
+                try
+                {
+                    p.pos = new double[3] { int.Parse(args[0]), int.Parse(args[1]), int.Parse(args[2]) };
+                    if (p.chunknew != p.chunk) p.Teleport_Player((double)(int.Parse(args[0])), (double)(int.Parse(args[1])), (double)(int.Parse(args[2])));
+                }
+                catch { p.SendMessage("Cannot tp to ungenerated chunks."); return; }
                 return;
             }
             Help(p);
