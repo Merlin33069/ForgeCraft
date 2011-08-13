@@ -16,7 +16,7 @@ namespace SMP
 		public World level;
 		static Random random = new Random();
 		public short current_slot_holding;
-		public Item current_block_holding { get { return inventory.current_item; } set { inventory.current_item = value; SendHealth(); } }
+		public Item current_block_holding { get { return inventory.current_item; } set { inventory.current_item = value; SendInventory(); } }
 		byte[] buffer = new byte[0];
 		byte[] tempbuffer = new byte[0xFF];
 		bool disconnected = false;
@@ -195,25 +195,14 @@ namespace SMP
 							//Server.Log("Chat Message");
 							HandleChatMessagePacket(message);
 							break;
-<<<<<<< HEAD
-						case 0x09:
-						    //Server.Log("respawn");
-							HandleRespawnPacket(message);
-							break;
-=======
->>>>>>> 23c3d4d507249cbd419b5e9c5f8f3086f85dd74a
 						case 0x0A: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPacket(message); break; //Player onground Incoming
 						case 0x0B: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPositionPacket(message); break; //Pos incoming
 						case 0x0C: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerLookPacket(message); break; //Look incoming
 						case 0x0D: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPositionAndLookPacket(message); break; //Pos and look incoming
 						case 0x0E: HandleDigging(message); break; //Digging
-<<<<<<< HEAD
 					    case 0x0F: HandleBlockPlacementPacket(message); break; //Block Placement
 						case 0x10: HandleHoldingChange(message); break; //Holding Change
-=======
->>>>>>> 23c3d4d507249cbd419b5e9c5f8f3086f85dd74a
 						case 0xFF: HandleDC(message); break; //DC
-						case 0x10: HandleHoldingChange(message); break; //Holding Change
 					}
 					if (buffer.Length > 0)
 						buffer = HandleMessage(buffer);

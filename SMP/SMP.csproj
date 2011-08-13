@@ -1,262 +1,1 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{67CADBC9-7B70-4584-8A38-C9447391D6F4}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SMP</RootNamespace>
-    <AssemblyName>SMP</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="LibNoise">
-      <HintPath>.\LibNoise.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="zlib.net, Version=1.0.3.0, Culture=neutral, PublicKeyToken=47d7877cb3620160">
-      <HintPath>zlib.net.dll</HintPath>
-    </Reference>
-    <Reference Include="Ionic.Zlib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Ionic.Zlib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Entity\Entity.cs" />
-    <Compile Include="NBToolkit\BlockFilter.cs" />
-    <Compile Include="NBToolkit\ChunkFilter.cs" />
-    <Compile Include="NBToolkit\Dump.cs" />
-    <Compile Include="NBToolkit\FilteredChunkManager.cs" />
-    <Compile Include="NBToolkit\GenOres.cs" />
-    <Compile Include="NBToolkit\MathHelper.cs" />
-    <Compile Include="NBToolkit\NDesk\Options.cs" />
-    <Compile Include="NBToolkit\Oregen.cs" />
-    <Compile Include="NBToolkit\Program.cs" />
-    <Compile Include="NBToolkit\Purge.cs" />
-    <Compile Include="NBToolkit\Relight.cs" />
-    <Compile Include="NBToolkit\Replace.cs" />
-    <Compile Include="NBToolkit\TKFilter.cs" />
-    <Compile Include="NBToolkit\TKOptions.cs" />
-    <Compile Include="Player\Player.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Queue\Cache.cs" />
-    <Compile Include="Queue\Check.cs" />
-    <Compile Include="Queue\Enums.cs" />
-    <Compile Include="Queue\ICacheable.cs" />
-    <Compile Include="Queue\MainLoop.cs" />
-    <Compile Include="Queue\TorrentException.cs" />
-    <Compile Include="Server\Server.cs" />
-    <Compile Include="Substrate\Source\AlphaBlock.cs" />
-    <Compile Include="Substrate\Source\AlphaBlockCollection.cs" />
-    <Compile Include="Substrate\Source\AlphaBlockRef.cs" />
-    <Compile Include="Substrate\Source\AlphaChunkManager.cs" />
-    <Compile Include="Substrate\Source\AlphaWorld.cs" />
-    <Compile Include="Substrate\Source\BetaChunkManager.cs" />
-    <Compile Include="Substrate\Source\BetaWorld.cs" />
-    <Compile Include="Substrate\Source\BlockInfo.cs" />
-    <Compile Include="Substrate\Source\BlockManager.cs" />
-    <Compile Include="Substrate\Source\CacheTable.cs" />
-    <Compile Include="Substrate\Source\Chunk.cs" />
-    <Compile Include="Substrate\Source\ChunkRef.cs" />
-    <Compile Include="Substrate\Source\Core\Base.cs" />
-    <Compile Include="Substrate\Source\Core\BlockFluid.cs" />
-    <Compile Include="Substrate\Source\Core\BlockInterface.cs" />
-    <Compile Include="Substrate\Source\Core\BlockKey.cs" />
-    <Compile Include="Substrate\Source\Core\BlockLight.cs" />
-    <Compile Include="Substrate\Source\Core\BlockTileEntities.cs" />
-    <Compile Include="Substrate\Source\Core\BoundedBlockInterface.cs" />
-    <Compile Include="Substrate\Source\Core\ByteArray.cs" />
-    <Compile Include="Substrate\Source\Core\ChunkCache.cs" />
-    <Compile Include="Substrate\Source\Core\ChunkFile.cs" />
-    <Compile Include="Substrate\Source\Core\ChunkInterface.cs" />
-    <Compile Include="Substrate\Source\Core\ChunkKey.cs" />
-    <Compile Include="Substrate\Source\Core\IndexedLinkedList.cs" />
-    <Compile Include="Substrate\Source\Core\Interface.cs" />
-    <Compile Include="Substrate\Source\Core\ItemInterface.cs" />
-    <Compile Include="Substrate\Source\Core\LRUCache.cs" />
-    <Compile Include="Substrate\Source\Core\NBTFile.cs" />
-    <Compile Include="Substrate\Source\Core\NibbleArray.cs" />
-    <Compile Include="Substrate\Source\Core\OpenWorldEvent.cs" />
-    <Compile Include="Substrate\Source\Core\PlayerFile.cs" />
-    <Compile Include="Substrate\Source\Core\PlayerManagerInterface.cs" />
-    <Compile Include="Substrate\Source\Core\RegionFile.cs" />
-    <Compile Include="Substrate\Source\Core\RegionInterface.cs" />
-    <Compile Include="Substrate\Source\Core\RegionKey.cs" />
-    <Compile Include="Substrate\Source\Core\UnboundedBlockInterface.cs" />
-    <Compile Include="Substrate\Source\Data.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityArrow.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityBoat.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityChicken.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityCow.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityCreeper.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityEgg.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityFallingSand.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityGhast.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityGiant.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityItem.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityMinecart.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityMinecartChest.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityMinecartFurnace.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityMob.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityMonster.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityPainting.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityPig.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityPigZombie.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityPrimedTnt.cs" />
-    <Compile Include="Substrate\Source\Entities\EntitySheep.cs" />
-    <Compile Include="Substrate\Source\Entities\EntitySkeleton.cs" />
-    <Compile Include="Substrate\Source\Entities\EntitySlime.cs" />
-    <Compile Include="Substrate\Source\Entities\EntitySnowball.cs" />
-    <Compile Include="Substrate\Source\Entities\EntitySpider.cs" />
-    <Compile Include="Substrate\Source\Entities\EntitySquid.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityThrowable.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityWolf.cs" />
-    <Compile Include="Substrate\Source\Entities\EntityZombie.cs" />
-    <Compile Include="Substrate\Source\Entity.cs" />
-    <Compile Include="Substrate\Source\EntityCollection.cs" />
-    <Compile Include="Substrate\Source\EntityFactory.cs" />
-    <Compile Include="Substrate\Source\ImportExport\Schematic.cs" />
-    <Compile Include="Substrate\Source\Item.cs" />
-    <Compile Include="Substrate\Source\ItemInfo.cs" />
-    <Compile Include="Substrate\Source\Level.cs" />
-    <Compile Include="Substrate\Source\LevelIOException.cs" />
-    <Compile Include="Substrate\Source\NbtWorld.cs" />
-    <Compile Include="Substrate\Source\Nbt\INbtObject.cs" />
-    <Compile Include="Substrate\Source\Nbt\JSONSerializer.cs" />
-    <Compile Include="Substrate\Source\Nbt\NbtIOException.cs" />
-    <Compile Include="Substrate\Source\Nbt\NbtTree.cs" />
-    <Compile Include="Substrate\Source\Nbt\NbtVerifier.cs" />
-    <Compile Include="Substrate\Source\Nbt\SchemaNode.cs" />
-    <Compile Include="Substrate\Source\Nbt\SchemaNodeArray.cs" />
-    <Compile Include="Substrate\Source\Nbt\SchemaNodeCompound.cs" />
-    <Compile Include="Substrate\Source\Nbt\SchemaNodeList.cs" />
-    <Compile Include="Substrate\Source\Nbt\SchemaNodeScaler.cs" />
-    <Compile Include="Substrate\Source\Nbt\SchemaNodeString.cs" />
-    <Compile Include="Substrate\Source\Nbt\SchemaOptions.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagNode.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagNodeByte.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagNodeByteArray.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagNodeCompound.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagNodeDouble.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagNodeFloat.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagNodeInt.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagNodeList.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagNodeLong.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagNodeNull.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagNodeShort.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagNodeString.cs" />
-    <Compile Include="Substrate\Source\Nbt\TagType.cs" />
-    <Compile Include="Substrate\Source\Nbt\VerifierLogger.cs" />
-    <Compile Include="Substrate\Source\Orientation.cs" />
-    <Compile Include="Substrate\Source\Player.cs" />
-    <Compile Include="Substrate\Source\PlayerIOException.cs" />
-    <Compile Include="Substrate\Source\PlayerManager.cs" />
-    <Compile Include="Substrate\Source\Region.cs" />
-    <Compile Include="Substrate\Source\RegionManager.cs" />
-    <Compile Include="Substrate\Source\SpawnPoint.cs" />
-    <Compile Include="Substrate\Source\SubstrateException.cs" />
-    <Compile Include="Substrate\Source\TileEntities\TileEntityChest.cs" />
-    <Compile Include="Substrate\Source\TileEntities\TileEntityFurnace.cs" />
-    <Compile Include="Substrate\Source\TileEntities\TileEntityMobSpawner.cs" />
-    <Compile Include="Substrate\Source\TileEntities\TileEntityMusic.cs" />
-    <Compile Include="Substrate\Source\TileEntities\TileEntityPiston.cs" />
-    <Compile Include="Substrate\Source\TileEntities\TileEntityRecordPlayer.cs" />
-    <Compile Include="Substrate\Source\TileEntities\TileEntitySign.cs" />
-    <Compile Include="Substrate\Source\TileEntities\TileEntityTrap.cs" />
-    <Compile Include="Substrate\Source\TileEntity.cs" />
-    <Compile Include="Substrate\Source\TileEntityFactory.cs" />
-    <Compile Include="Substrate\Source\Vector.cs" />
-    <Compile Include="Substrate\Source\World.cs" />
-    <Compile Include="util\BigEndianBitConverter.cs" />
-    <Compile Include="util\EBitConverter.cs" />
-    <Compile Include="util\Endianness.cs" />
-    <Compile Include="util\LittleEndianBitConverter.cs" />
-    <Compile Include="World\Chunk.Light.cs" />
-    <Compile Include="World\DataValues.cs" />
-    <Compile Include="World\Chunk.cs" />
-    <Compile Include="World\FCGenerator.cs" />
-    <Compile Include="Server\ConsolePlayer.cs" />
-    <Compile Include="Network\KnownPackets.cs" />
-    <Compile Include="World\Generator\ChunkGen.cs" />
-    <Compile Include="World\Generator\GenStandard.cs" />
-    <Compile Include="World\Noise.cs" />
-    <Compile Include="World\World.cs" />
-    <Compile Include="Command\Command.cs" />
-    <Compile Include="Command\CommandList.cs" />
-    <Compile Include="Player\Player.Packets.cs" />
-    <Compile Include="util\Logger.cs" />
-    <Compile Include="Constants\Color.cs" />
-    <Compile Include="util\WordWrap.cs" />
-    <Compile Include="Command\Commands\CmdMe.cs" />
-    <Compile Include="Command\Commands\CmdSay.cs" />
-    <Compile Include="Command\Commands\CmdList.cs" />
-    <Compile Include="Command\Commands\CmdKick.cs" />
-    <Compile Include="Command\Commands\CmdHelp.cs" />
-    <Compile Include="Command\Commands\CmdDevs.cs" />
-    <Compile Include="Plugins\Plugin_Manager.cs" />
-    <Compile Include="Inventory\Inventory.cs" />
-    <Compile Include="Inventory\Item.cs" />
-    <Compile Include="Inventory\Windows.cs" />
-    <Compile Include="Command\Commands\SetTime.cs" />
-    <Compile Include="Command\Commands\NewLVL.cs" />
-    <Compile Include="Command\Commands\gotoLVL.cs" />
-    <Compile Include="Groups\Group.cs" />
-    <Compile Include="Groups\ConsoleGroup.cs" />
-    <Compile Include="Command\Commands\CmdDND.cs" />
-    <Compile Include="Command\Commands\CmdGod.cs" />
-    <Compile Include="Command\Commands\CmdHackz.cs" />
-    <Compile Include="World\Generator\GenStandard.cs" />
-    <Compile Include="World\Generator\ChunkGen.cs" />
-    <Compile Include="Command\Commands\CmdKill.cs" />
-    <Compile Include="Command\Commands\CmdGive.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Gui\" />
-    <Folder Include="Substrate\Source\Experimental\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="NBToolkit\app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="NBToolkit\License.txt" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-</Project>
+<?xml version="1.0" encoding="utf-8"?><Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  <PropertyGroup>    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>    <ProductVersion>10.0.0</ProductVersion>    <SchemaVersion>2.0</SchemaVersion>    <ProjectGuid>{CCBB3BED-8094-4041-A8F6-C65698A78F66}</ProjectGuid>    <OutputType>Exe</OutputType>    <RootNamespace>SMP</RootNamespace>    <AssemblyName>SMP</AssemblyName>    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>  </PropertyGroup>  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">    <DebugSymbols>true</DebugSymbols>    <DebugType>full</DebugType>    <Optimize>false</Optimize>    <OutputPath>bin\Debug</OutputPath>    <DefineConstants>DEBUG</DefineConstants>    <ErrorReport>prompt</ErrorReport>    <WarningLevel>4</WarningLevel>    <Externalconsole>true</Externalconsole>  </PropertyGroup>  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">    <DebugType>none</DebugType>    <Optimize>false</Optimize>    <OutputPath>bin\Release</OutputPath>    <ErrorReport>prompt</ErrorReport>    <WarningLevel>4</WarningLevel>    <Externalconsole>true</Externalconsole>  </PropertyGroup>  <ItemGroup>    <Reference Include="System" />    <Reference Include="zlib.net, Version=1.0.3.0, Culture=neutral, PublicKeyToken=47d7877cb3620160">      <SpecificVersion>False</SpecificVersion>      <HintPath>zlib.net.dll</HintPath>    </Reference>    <Reference Include="LibNoise, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">      <SpecificVersion>False</SpecificVersion>      <HintPath>LibNoise.dll</HintPath>    </Reference>    <Reference Include="Ionic.Zlib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">      <SpecificVersion>False</SpecificVersion>      <HintPath>Ionic.Zlib.dll</HintPath>    </Reference>  </ItemGroup>  <ItemGroup>    <Compile Include="Program.cs" />    <Compile Include="World\World.cs" />    <Compile Include="World\Noise.cs" />    <Compile Include="World\FCGenerator.cs" />    <Compile Include="World\DataValues.cs" />    <Compile Include="World\Chunk.Light.cs" />    <Compile Include="World\Chunk.cs" />    <Compile Include="World\Generator\GenStandard.cs" />    <Compile Include="World\Generator\ChunkGen.cs" />    <Compile Include="util\WordWrap.cs" />    <Compile Include="util\Logger.cs" />    <Compile Include="util\LittleEndianBitConverter.cs" />    <Compile Include="util\Endianness.cs" />    <Compile Include="util\EBitConverter.cs" />    <Compile Include="util\BigEndianBitConverter.cs" />    <Compile Include="Substrate\Source\World.cs" />    <Compile Include="Substrate\Source\Vector.cs" />    <Compile Include="Substrate\Source\TileEntityFactory.cs" />    <Compile Include="Substrate\Source\TileEntity.cs" />    <Compile Include="Substrate\Source\SubstrateException.cs" />    <Compile Include="Substrate\Source\SpawnPoint.cs" />    <Compile Include="Substrate\Source\RegionManager.cs" />    <Compile Include="Substrate\Source\Region.cs" />    <Compile Include="Substrate\Source\PlayerManager.cs" />    <Compile Include="Substrate\Source\PlayerIOException.cs" />    <Compile Include="Substrate\Source\Player.cs" />    <Compile Include="Substrate\Source\Orientation.cs" />    <Compile Include="Substrate\Source\NbtWorld.cs" />    <Compile Include="Substrate\Source\LevelIOException.cs" />    <Compile Include="Substrate\Source\Level.cs" />    <Compile Include="Substrate\Source\ItemInfo.cs" />    <Compile Include="Substrate\Source\Item.cs" />    <Compile Include="Substrate\Source\EntityFactory.cs" />    <Compile Include="Substrate\Source\EntityCollection.cs" />    <Compile Include="Substrate\Source\Entity.cs" />    <Compile Include="Substrate\Source\Data.cs" />    <Compile Include="Substrate\Source\ChunkRef.cs" />    <Compile Include="Substrate\Source\Chunk.cs" />    <Compile Include="Substrate\Source\CacheTable.cs" />    <Compile Include="Substrate\Source\BlockManager.cs" />    <Compile Include="Substrate\Source\BlockInfo.cs" />    <Compile Include="Substrate\Source\BetaWorld.cs" />    <Compile Include="Substrate\Source\BetaChunkManager.cs" />    <Compile Include="Substrate\Source\AlphaWorld.cs" />    <Compile Include="Substrate\Source\AlphaChunkManager.cs" />    <Compile Include="Substrate\Source\AlphaBlockRef.cs" />    <Compile Include="Substrate\Source\AlphaBlockCollection.cs" />    <Compile Include="Substrate\Source\AlphaBlock.cs" />    <Compile Include="Substrate\Source\TileEntities\TileEntityTrap.cs" />    <Compile Include="Substrate\Source\TileEntities\TileEntitySign.cs" />    <Compile Include="Substrate\Source\TileEntities\TileEntityRecordPlayer.cs" />    <Compile Include="Substrate\Source\TileEntities\TileEntityPiston.cs" />    <Compile Include="Substrate\Source\TileEntities\TileEntityMusic.cs" />    <Compile Include="Substrate\Source\TileEntities\TileEntityMobSpawner.cs" />    <Compile Include="Substrate\Source\TileEntities\TileEntityFurnace.cs" />    <Compile Include="Substrate\Source\TileEntities\TileEntityChest.cs" />    <Compile Include="Substrate\Source\Nbt\VerifierLogger.cs" />    <Compile Include="Substrate\Source\Nbt\TagType.cs" />    <Compile Include="Substrate\Source\Nbt\TagNodeString.cs" />    <Compile Include="Substrate\Source\Nbt\TagNodeShort.cs" />    <Compile Include="Substrate\Source\Nbt\TagNodeNull.cs" />    <Compile Include="Substrate\Source\Nbt\TagNodeLong.cs" />    <Compile Include="Substrate\Source\Nbt\TagNodeList.cs" />    <Compile Include="Substrate\Source\Nbt\TagNodeInt.cs" />    <Compile Include="Substrate\Source\Nbt\TagNodeFloat.cs" />    <Compile Include="Substrate\Source\Nbt\TagNodeDouble.cs" />    <Compile Include="Substrate\Source\Nbt\TagNodeCompound.cs" />    <Compile Include="Substrate\Source\Nbt\TagNodeByteArray.cs" />    <Compile Include="Substrate\Source\Nbt\TagNodeByte.cs" />    <Compile Include="Substrate\Source\Nbt\TagNode.cs" />    <Compile Include="Substrate\Source\Nbt\SchemaOptions.cs" />    <Compile Include="Substrate\Source\Nbt\SchemaNodeString.cs" />    <Compile Include="Substrate\Source\Nbt\SchemaNodeScaler.cs" />    <Compile Include="Substrate\Source\Nbt\SchemaNodeList.cs" />    <Compile Include="Substrate\Source\Nbt\SchemaNodeCompound.cs" />    <Compile Include="Substrate\Source\Nbt\SchemaNodeArray.cs" />    <Compile Include="Substrate\Source\Nbt\SchemaNode.cs" />    <Compile Include="Substrate\Source\Nbt\NbtVerifier.cs" />    <Compile Include="Substrate\Source\Nbt\NbtTree.cs" />    <Compile Include="Substrate\Source\Nbt\NbtIOException.cs" />    <Compile Include="Substrate\Source\Nbt\JSONSerializer.cs" />    <Compile Include="Substrate\Source\Nbt\INbtObject.cs" />    <Compile Include="Substrate\Source\ImportExport\Schematic.cs" />    <Compile Include="Substrate\Source\Entities\EntityZombie.cs" />    <Compile Include="Substrate\Source\Entities\EntityWolf.cs" />    <Compile Include="Substrate\Source\Entities\EntityThrowable.cs" />    <Compile Include="Substrate\Source\Entities\EntitySquid.cs" />    <Compile Include="Substrate\Source\Entities\EntitySpider.cs" />    <Compile Include="Substrate\Source\Entities\EntitySnowball.cs" />    <Compile Include="Substrate\Source\Entities\EntitySlime.cs" />    <Compile Include="Substrate\Source\Entities\EntitySkeleton.cs" />    <Compile Include="Substrate\Source\Entities\EntitySheep.cs" />    <Compile Include="Substrate\Source\Entities\EntityPrimedTnt.cs" />    <Compile Include="Substrate\Source\Entities\EntityPigZombie.cs" />    <Compile Include="Substrate\Source\Entities\EntityPig.cs" />    <Compile Include="Substrate\Source\Entities\EntityPainting.cs" />    <Compile Include="Substrate\Source\Entities\EntityMonster.cs" />    <Compile Include="Substrate\Source\Entities\EntityMob.cs" />    <Compile Include="Substrate\Source\Entities\EntityMinecartFurnace.cs" />    <Compile Include="Substrate\Source\Entities\EntityMinecartChest.cs" />    <Compile Include="Substrate\Source\Entities\EntityMinecart.cs" />    <Compile Include="Substrate\Source\Entities\EntityItem.cs" />    <Compile Include="Substrate\Source\Entities\EntityGiant.cs" />    <Compile Include="Substrate\Source\Entities\EntityGhast.cs" />    <Compile Include="Substrate\Source\Entities\EntityFallingSand.cs" />    <Compile Include="Substrate\Source\Entities\EntityEgg.cs" />    <Compile Include="Substrate\Source\Entities\EntityCreeper.cs" />    <Compile Include="Substrate\Source\Entities\EntityCow.cs" />    <Compile Include="Substrate\Source\Entities\EntityChicken.cs" />    <Compile Include="Substrate\Source\Entities\EntityBoat.cs" />    <Compile Include="Substrate\Source\Entities\EntityArrow.cs" />    <Compile Include="Substrate\Source\Core\UnboundedBlockInterface.cs" />    <Compile Include="Substrate\Source\Core\RegionKey.cs" />    <Compile Include="Substrate\Source\Core\RegionInterface.cs" />    <Compile Include="Substrate\Source\Core\RegionFile.cs" />    <Compile Include="Substrate\Source\Core\PlayerManagerInterface.cs" />    <Compile Include="Substrate\Source\Core\PlayerFile.cs" />    <Compile Include="Substrate\Source\Core\OpenWorldEvent.cs" />    <Compile Include="Substrate\Source\Core\NibbleArray.cs" />    <Compile Include="Substrate\Source\Core\NBTFile.cs" />    <Compile Include="Substrate\Source\Core\LRUCache.cs" />    <Compile Include="Substrate\Source\Core\ItemInterface.cs" />    <Compile Include="Substrate\Source\Core\Interface.cs" />    <Compile Include="Substrate\Source\Core\IndexedLinkedList.cs" />    <Compile Include="Substrate\Source\Core\ChunkKey.cs" />    <Compile Include="Substrate\Source\Core\ChunkInterface.cs" />    <Compile Include="Substrate\Source\Core\ChunkFile.cs" />    <Compile Include="Substrate\Source\Core\ChunkCache.cs" />    <Compile Include="Substrate\Source\Core\ByteArray.cs" />    <Compile Include="Substrate\Source\Core\BoundedBlockInterface.cs" />    <Compile Include="Substrate\Source\Core\BlockTileEntities.cs" />    <Compile Include="Substrate\Source\Core\BlockLight.cs" />    <Compile Include="Substrate\Source\Core\BlockKey.cs" />    <Compile Include="Substrate\Source\Core\BlockInterface.cs" />    <Compile Include="Substrate\Source\Core\BlockFluid.cs" />    <Compile Include="Substrate\Source\Core\Base.cs" />    <Compile Include="Server\Server.cs" />    <Compile Include="Server\ConsolePlayer.cs" />    <Compile Include="Queue\TorrentException.cs" />    <Compile Include="Queue\MainLoop.cs" />    <Compile Include="Queue\ICacheable.cs" />    <Compile Include="Queue\Enums.cs" />    <Compile Include="Queue\Check.cs" />    <Compile Include="Queue\Cache.cs" />    <Compile Include="Properties\AssemblyInfo.cs" />    <Compile Include="Plugins\Plugin_Manager.cs" />    <Compile Include="Player\Player.Packets.cs" />    <Compile Include="Player\Player.cs" />    <Compile Include="Network\KnownPackets.cs" />    <Compile Include="NBToolkit\TKOptions.cs" />    <Compile Include="NBToolkit\TKFilter.cs" />    <Compile Include="NBToolkit\Replace.cs" />    <Compile Include="NBToolkit\Relight.cs" />    <Compile Include="NBToolkit\Purge.cs" />    <Compile Include="NBToolkit\Program.cs" />    <Compile Include="NBToolkit\Oregen.cs" />    <Compile Include="NBToolkit\MathHelper.cs" />    <Compile Include="NBToolkit\GenOres.cs" />    <Compile Include="NBToolkit\FilteredChunkManager.cs" />    <Compile Include="NBToolkit\Dump.cs" />    <Compile Include="NBToolkit\ChunkFilter.cs" />    <Compile Include="NBToolkit\BlockFilter.cs" />    <Compile Include="NBToolkit\NDesk\Options.cs" />    <Compile Include="Inventory\Windows.cs" />    <Compile Include="Inventory\Item.cs" />    <Compile Include="Inventory\Inventory.cs" />    <Compile Include="Groups\Group.cs" />    <Compile Include="Groups\ConsoleGroup.cs" />    <Compile Include="Entity\Entity.cs" />    <Compile Include="Constants\Color.cs" />    <Compile Include="Command\CommandList.cs" />    <Compile Include="Command\Command.cs" />    <Compile Include="Command\Commands\SetTime.cs" />    <Compile Include="Command\Commands\NewLVL.cs" />    <Compile Include="Command\Commands\gotoLVL.cs" />    <Compile Include="Command\Commands\CmdTeleport.cs" />    <Compile Include="Command\Commands\CmdSpawn.cs" />    <Compile Include="Command\Commands\CmdSay.cs" />    <Compile Include="Command\Commands\CmdMe.cs" />    <Compile Include="Command\Commands\CmdList.cs" />    <Compile Include="Command\Commands\CmdKill.cs" />    <Compile Include="Command\Commands\CmdKick.cs" />    <Compile Include="Command\Commands\CmdHelp.cs" />    <Compile Include="Command\Commands\CmdHackz.cs" />    <Compile Include="Command\Commands\CmdGod.cs" />    <Compile Include="Command\Commands\CmdGive.cs" />    <Compile Include="Command\Commands\CmdDND.cs" />    <Compile Include="Command\Commands\CmdDevs.cs" />  </ItemGroup>  <ItemGroup>    <None Include="NBToolkit\app.config" />  </ItemGroup>  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" /></Project>
