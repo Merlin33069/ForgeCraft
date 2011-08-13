@@ -23,6 +23,7 @@ namespace SMP
                 return;
             }
 
+<<<<<<< HEAD
 			if (Player.players.Count == 0)
 			{
 				p.SendMessage("Nobody is mincrafting right now. :(");
@@ -73,6 +74,25 @@ namespace SMP
 					
 				}
 			}
+=======
+            StringBuilder sb = new StringBuilder();
+            //lock (Player.GetPlayerLock())
+            //{
+                if (Player.players.Count > 0)
+                    for (int i = 0; i < Player.players.Count; i++)
+                    {
+                        sb.Append(Player.players[i].username);
+
+                        if (i != Player.players.Count - 1)
+                            sb.Append(", ");
+                    }
+                else
+                    p.SendMessage("No body is minecrafting right now.");
+                
+            //}
+
+            p.SendMessage("Currently Online: " + sb.ToString());
+>>>>>>> 23c3d4d507249cbd419b5e9c5f8f3086f85dd74a
         }
 
         public override void Help(Player p)

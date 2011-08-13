@@ -1,15 +1,6 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" ctype="Workspace" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/Command/Commands/CmdDevs.cs" ctype="Workbench">
-    <Files>
-      <File FileName="SMP/Command/Commands/CmdGive.cs" Line="67" Column="7" />
-      <File FileName="SMP/Inventory/Inventory.cs" Line="67" Column="39" />
-      <File FileName="SMP/Entity/Entity.cs" Line="1" Column="1" />
-      <File FileName="SMP/World/DataValues.cs" Line="29" Column="3" />
-      <File FileName="SMP/Inventory/Item.cs" Line="1" Column="1" />
-      <File FileName="SMP/Command/Commands/CmdDevs.cs" Line="25" Column="33" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" ctype="Workspace" />
+  <MonoDevelop.Ide.Workbench ctype="Workbench" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

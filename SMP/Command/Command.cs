@@ -39,7 +39,6 @@ namespace SMP
             core.Add(new CmdHelp());
 			core.Add(new CmdHackz());
             core.Add(new CmdKick());
-			core.Add(new CmdKill());
             core.Add(new CmdList());
             //core.Add(new CmdMBan());
             core.Add(new CmdMe());
@@ -51,9 +50,6 @@ namespace SMP
             //core.Add(new CmdSpawn());
             //core.Add(new CmdUnban());
             //core.Add(new CmdWhiteList());
-            core.Add(new CmdTeleport());
-            core.Add(new CmdFire());
-            core.Add(new CmdSpawn());
             all.commands = new List<Command>(core.commands);
             InitCommandTypes();
         }

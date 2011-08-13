@@ -50,7 +50,7 @@ namespace SMP
 		{
 			chunkData = new Dictionary<Point, Chunk>();
 			items_on_ground = new Dictionary<int, Item>();
-			generator = new GenStandard(seed);
+			generator = new GenStandard();
 
 			for (int x = -3; x <= 3; x++)
 			{

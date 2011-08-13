@@ -15,13 +15,10 @@ namespace SMP {
 
             perlin = new Perlin();
             perlin.Frequency = 0.009;
+            perlin.Seed = (int)( DateTime.Now.Ticks & 0xffffffff );
         }
-		public GenStandard(int seed)
-		{
-			random = new Random(seed);
-			perlin = new Perlin();
-			perlin.Frequency = 0.009;
-		}
+
+
         /// <summary>
         /// 
         /// </summary>

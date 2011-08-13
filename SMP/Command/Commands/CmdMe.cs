@@ -24,7 +24,7 @@ namespace SMP
 
             StringBuilder message = new StringBuilder();
 
-            for (int i = 0; i < args.Length; i++)
+            for (int i = 0; i <= args.Length; i++)
             {
                 message.Append(args[i] + " ");
             }

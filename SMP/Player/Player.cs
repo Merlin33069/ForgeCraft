@@ -16,7 +16,7 @@ namespace SMP
 		public World level;
 		static Random random = new Random();
 		public short current_slot_holding;
-		public Item current_block_holding { get { return inventory.current_item; } set { inventory.current_item = value; SendInventory(); } } //Don't know if that is right but it was sending health and killing players
+		public Item current_block_holding { get { return inventory.current_item; } set { inventory.current_item = value; SendHealth(); } }
 		byte[] buffer = new byte[0];
 		byte[] tempbuffer = new byte[0xFF];
 		bool disconnected = false;
@@ -50,8 +50,6 @@ namespace SMP
 		//Other Player settings Donotdisturb, god mode etc.
 		public bool DoNotDisturb = false; //blocks all incoming chat except pm's
 		public bool GodMode = false; //obvious, but not used anywhere yet
-        public bool Crouching = false;
-        public bool IsOnFire = false;
 		
 		Entity e;
 		public string ip;
@@ -151,7 +149,7 @@ namespace SMP
 					case 0x0F: if (util.EndianBitConverter.Big.ToInt16(buffer, 11) >= 0) length = 15; else length = 12; break; //Block Placement
 					case 0x10: length = 2; break; //Holding Change
 					case 0x12: length = 5; break; //Animation Change
-                    case 0x13: length = 5; crouch(); break; //Entity Action
+					case 0x13: length = 5; break; //Entity Action
 
 					case 0x65: length = 1; break; //Close Window
 					case 0x66:
@@ -197,18 +195,25 @@ namespace SMP
 							//Server.Log("Chat Message");
 							HandleChatMessagePacket(message);
 							break;
+<<<<<<< HEAD
 						case 0x09:
 						    //Server.Log("respawn");
 							HandleRespawnPacket(message);
 							break;
+=======
+>>>>>>> 23c3d4d507249cbd419b5e9c5f8f3086f85dd74a
 						case 0x0A: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPacket(message); break; //Player onground Incoming
 						case 0x0B: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPositionPacket(message); break; //Pos incoming
 						case 0x0C: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerLookPacket(message); break; //Look incoming
 						case 0x0D: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPositionAndLookPacket(message); break; //Pos and look incoming
 						case 0x0E: HandleDigging(message); break; //Digging
+<<<<<<< HEAD
 					    case 0x0F: HandleBlockPlacementPacket(message); break; //Block Placement
 						case 0x10: HandleHoldingChange(message); break; //Holding Change
+=======
+>>>>>>> 23c3d4d507249cbd419b5e9c5f8f3086f85dd74a
 						case 0xFF: HandleDC(message); break; //DC
+						case 0x10: HandleHoldingChange(message); break; //Holding Change
 					}
 					if (buffer.Length > 0)
 						buffer = HandleMessage(buffer);
@@ -297,43 +302,6 @@ namespace SMP
 			tosend[40] = onground;
 			SendRaw(0x0D, tosend);
 		}
-        void crouch()
-        {
-            Crouching = Crouching ? false : true;
-            if (!Crouching && IsOnFire) { SetFire(true); return; }
-            byte[] bytes2 = new byte[7];
-            util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes2, 0);
-            bytes2[4] = 0x00;
-            if (Crouching && !IsOnFire) bytes2[5] = 0x02;
-            else if (Crouching) bytes2[5] = 0x03;
-            else bytes2[5] = 0x00;
-            bytes2[6] = 0x7F;
-            for (int i = 0; i < players.Count; i++)
-            {
-                if (players[i] != this && players[i].LoggedIn)
-                {
-                    players[i].SendRaw(0x28, bytes2);
-                }
-            }
-        }
-        public void SetFire(bool onoff)
-        {
-            byte[] bytes2 = new byte[7];
-            util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes2, 0);
-            bytes2[4] = 0x00;
-            if (onoff) bytes2[5] = 0x01;
-            else bytes2[5] = 0x00;
-            bytes2[6] = 0x7F;
-            for (int i = 0; i < players.Count; i++)
-            {
-                if (players[i] != this && players[i].LoggedIn)
-                {
-                    players[i].SendRaw(0x28, bytes2);
-                }
-            }
-            IsOnFire = onoff;
-            //if (Crouching) crouch();
-        }
 		void SendLoginPass()
 		{
 			try
@@ -552,8 +520,6 @@ namespace SMP
 				util.EndianBitConverter.Big.GetBytes((int)(p.pos[0] * 32)).CopyTo(bytes, (22 + (length * 2)) - 16);
 				util.EndianBitConverter.Big.GetBytes((int)(p.pos[1] * 32)).CopyTo(bytes, (22 + (length * 2)) - 12);
 				util.EndianBitConverter.Big.GetBytes((int)(p.pos[2] * 32)).CopyTo(bytes, (22 + (length * 2)) - 8);
-                util.EndianBitConverter.Big.GetBytes((int)(p.pos[1] * 32)).CopyTo(bytes, (22 + (length * 2)) - 12);
-                util.EndianBitConverter.Big.GetBytes((int)(p.pos[2] * 32)).CopyTo(bytes, (22 + (length * 2)) - 8);
 
 				bytes[(22 + (length * 2)) - 4] = (byte)(rot[0] / 1.40625);
 				bytes[(22 + (length * 2)) - 3] = (byte)(rot[1] / 1.40625);
@@ -902,6 +868,13 @@ namespace SMP
 			{
 			    p.SendDespawn(id);
 			}
+
+            // Close stuff
+            if( socket != null && socket.Connected ) {
+                try { socket.Close(); }
+                catch { }
+                socket = null;
+            }
 		}
 		
 		#region TOOLS
