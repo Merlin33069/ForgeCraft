@@ -30,6 +30,7 @@ namespace SMP
 		public int id { get { return e.id; } }
 		byte dimension { get { return e.dimension; } set { e.dimension = value; } } //-1 for nether, 0 normal, 1 skyworld?
 		public Chunk chunk { get { return e.CurrentChunk; } }
+        public Chunk chunknew { get { return e.c; } }
 		public Inventory inventory;
 		public List<Point> VisibleChunks = new List<Point>();
 		public List<int> VisibleEntities = new List<int>();
