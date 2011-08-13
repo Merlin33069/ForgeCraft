@@ -241,6 +241,7 @@
     <Compile Include="World\Generator\GenStandard.cs" />
     <Compile Include="World\Generator\ChunkGen.cs" />
     <Compile Include="Command\Commands\CmdKill.cs" />
+    <Compile Include="Command\Commands\CmdGive.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gui\" />

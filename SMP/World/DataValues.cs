@@ -26,7 +26,7 @@ namespace SMP
 		CoalOre = 16,
 		Wood = 17,
 		Leaves = 18,
-		//Sponge = 19,
+		Sponge = 19,
 		Glass = 20,
 		LapisOre = 21,
 		LapisBlock = 22,

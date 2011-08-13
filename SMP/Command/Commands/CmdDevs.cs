@@ -31,7 +31,7 @@ namespace SMP
                 devlist += temp + ", ";
             }
             devlist = devlist.Remove(devlist.Length - 2);
-            p.SendMessage(Color.DarkBlue + "ForgetCraft Development Team: " + Color.DarkRed + devlist, WrapMethod.Chat);
+            p.SendMessage(Color.DarkBlue + "ForgeCraft Development Team: " + Color.DarkRed + devlist, WrapMethod.Chat);  //lol it was ForgetCraft
 			p.SendItem(36, 278, 1, 3);
         }
 

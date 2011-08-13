@@ -198,7 +198,7 @@ namespace SMP
 							HandleChatMessagePacket(message);
 							break;
 						case 0x09:
-						    Server.Log("respawn");
+						    //Server.Log("respawn");
 							HandleRespawnPacket(message);
 							break;
 						case 0x0A: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPacket(message); break; //Player onground Incoming
@@ -206,6 +206,7 @@ namespace SMP
 						case 0x0C: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerLookPacket(message); break; //Look incoming
 						case 0x0D: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPositionAndLookPacket(message); break; //Pos and look incoming
 						case 0x0E: HandleDigging(message); break; //Digging
+					    case 0x0F: HandleBlockPlacementPacket(message); break; //Block Placement
 						case 0x10: HandleHoldingChange(message); break; //Holding Change
 						case 0xFF: HandleDC(message); break; //DC
 					}

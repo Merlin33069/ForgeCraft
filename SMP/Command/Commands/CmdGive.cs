@@ -25,12 +25,12 @@ namespace SMP
 				try
 				{
 					short itemID = Convert.ToInt16(args[0]);
-					p.SendItem(36, itemID, 1, 0);
+					p.SendItem((short)p.inventory.FindEmptySlot(), itemID, 1, 0);
 					p.SendMessage(HelpBot + "Enjoy.");
 				}
 				catch{}
 			}
-			else if (args.Length == 2)
+			/*else if (args.Length == 2)
 			{
 				short itemID;
 				short amount;
@@ -64,7 +64,7 @@ namespace SMP
 						p.SendMessage(HelpBot + "Can not find player.");
 					}
 				}
-			}
+			}*/
 			
 		}
 		

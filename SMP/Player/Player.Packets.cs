@@ -339,6 +339,44 @@ namespace SMP
 		}
 		
 		/// <summary>
+		/// 0x0F 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
+		private void HandleBlockPlacementPacket(byte[] message)
+		{
+			//Buggy will come back to it
+			
+			int blockX = util.EndianBitConverter.Big.ToInt32(message, 0);
+			byte blockY = message[4];
+			int blockZ = util.EndianBitConverter.Big.ToInt32(message, 5);
+			byte direction = message[9];
+			short blockID = util.EndianBitConverter.Big.ToInt16(message, 10);
+			byte amount;
+			short damage;
+			if (message.Length == 15)  //incase it is the secondary packet size
+			{
+				amount = message[11];
+				damage = util.EndianBitConverter.Big.ToInt16(message, 12);
+			}
+			
+			switch (direction)
+			{
+			case 0: blockY--; break;
+			case 1: blockY++; break;
+			case 2: blockZ--; break;
+			case 3: blockZ++; break;
+			case 4: blockX--; break;
+			case 5: blockX++; break;				
+			}
+			
+			level.BlockChange(blockX, (int)blockY, blockZ, 49, 0);
+			
+			//Server.Log("X: " + blockX + " Y: " + blockY + " Z: " + blockZ + " dir: " + direction);
+		}
+		
+		/// <summary>
 		/// 0x10 
 		/// </summary>
 		/// <param name="message">
@@ -354,6 +392,12 @@ namespace SMP
 			catch { }
 		}
 
+		/// <summary>
+		/// 0xFF 
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
 		private void HandleDC(byte[] message)
 		{
 			Server.Log(username + " Disconnected.");

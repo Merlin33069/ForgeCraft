@@ -24,7 +24,7 @@ namespace SMP
 			if (!p.GodMode)
 			{
 				p.GodMode = true;
-				p.SendMessage("You are now invincible. Type /god again to recieve chat again", WrapMethod.Chat);
+				p.SendMessage("You are now invincible. Type /god again to be a mortal", WrapMethod.Chat);
 				Player.GlobalMessage(p.username + " is now being cheap and immortal, kill them!", WrapMethod.Chat);
 			}
 			else if (p.DoNotDisturb)

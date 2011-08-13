@@ -60,6 +60,27 @@ namespace SMP
 			else
 				tosend = new byte[6];
  		}
+		public int FindEmptySlot()
+		{			
+			for (int i = 36; i <= 44; i++)
+			{
+				if (items[i].item == Items.Nothing)
+				{
+					Server.Log("slot: " + i);
+					return i;	
+				}
+			}
+			
+			for (int i = 9; i <= 35; i++)
+			{
+				if (items[i].count == 0)
+				{
+					return i;	
+				}
+			}
+			
+			return 43;
+		}
 	}
 }
 
