@@ -17,7 +17,7 @@ namespace SMP
 		public System.Timers.Timer timeupdate = new System.Timers.Timer(1000);
 		public GenStandard generator;
 		public Dictionary<Point, Chunk> chunkData;
-		public Dictionary<int, Item> items_on_ground;
+		//public Dictionary<int, Item> items_on_ground;
 		public List<Point> ToGenerate = new List<Point>();
 		#region Custom Command / Plugin Events
 		//Custom Command / Plugin Events -------------------------------------------------------------------
@@ -49,16 +49,19 @@ namespace SMP
 		public World (double spawnx, double spawny, double spawnz, string name, int seed)
 		{
 			chunkData = new Dictionary<Point, Chunk>();
-			items_on_ground = new Dictionary<int, Item>();
+			//items_on_ground = new Dictionary<int, Item>();
 			generator = new GenStandard();
-
+			Server.Log("Generating...");
+			Server.Log("-3");
 			for (int x = -3; x <= 3; x++)
 			{
 				for (int z = -3; z <= 3; z++)
 				{
 					GenerateChunk(x, z);
 				}
+				Server.Log(x + "");
 			}
+			Server.Log("Done Generating.");
 			this.SpawnX = spawnx; this.SpawnY = spawny; this.SpawnZ = spawnz;
 			timeupdate.Elapsed += delegate {
 				time += 20;
@@ -118,18 +121,29 @@ namespace SMP
 		}
 		public void BlockChange(int x, int y, int z, byte type, byte meta)
 		{
-			//TODO generate chunk if not exist and... something else but idr what
 			int cx = x >> 4, cz = z >> 4;
 			Chunk chunk = Chunk.GetChunk(cx, cz, this);
 			chunk.PlaceBlock(x & 0xf, y, z & 0xf, type, meta);
 			if (BlockChanged != null)
 				BlockChanged(x, y, z, type, meta);
-			foreach (Player p in Player.players)
+			foreach (Player p in Player.players.ToArray())
 			{
-				//TODO CHECK TO SEE IF CHUNK IS IN PLAYER RANGE
+				if (!p.VisibleChunks.Contains(chunk.point)) continue;
 				if (p.level == this)
 					p.SendBlockChange(x, (byte)y, z, type, meta);
 			}
+		}
+		public byte GetBlock(int x, int y, int z)
+		{
+			int cx = x >> 4, cz = z >> 4;
+			Chunk chunk = Chunk.GetChunk(cx, cz, this);
+			return chunk.SGB(x & 0xf, y, z & 0xf);
+		}
+		public byte GetMeta(int x, int y, int z)
+		{
+			int cx = x >> 4, cz = z >> 4;
+			Chunk chunk = Chunk.GetChunk(cx, cz, this);
+			return chunk.GetMetaData(x & 0xf, y, z & 0xf);
 		}
 	}
 	public struct Point : IEquatable<Point>

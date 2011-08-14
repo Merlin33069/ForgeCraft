@@ -222,12 +222,28 @@ namespace SMP
 				//TODO SET METADATA
 			}
 		}
-		public byte GetBlock(int x, int y, int z)
+
+		//DO NOT USE ANY FORM OF CHUNK.GETBLOCK UNLESS YOU REALLY KNOW YOU WANT TO, USE WORLD.GETBLOCK INSTEAD (TRUST ME, YOU WILL ONLY CAUSE ERRORS IF YOU USE THIS)
+		#region CHUNK GET BLOCK AREA
+		/// <summary>
+		/// *DO NOT USE THIS* unless you know what your doing, THIS does NOT get the block in world coordinates, use World.GetBlock for that, this will NOT be what you want. If you really need to use this function, please do NOT change this to public, use SGB() which calls this function to get the block.
+		/// </summary>
+		/// <param name="x">do not use</param>
+		/// <param name="y">do not use me either</param>
+		/// <param name="z">are you really still entering variables? DO NOT USE THIS METHOD</param>
+		/// <returns>>_></returns>
+		private byte GetBlock(int x, int y, int z)
 		{
 			if (InBound(x, y, z))
 				return blocks[PosToInt(x, y, z)];
 			return 0;
 		}
+		public byte SGB(int x, int y, int z)
+		{
+			return GetBlock(x, y, z);
+		}
+		#endregion
+
 		/// <summary>
 		/// Places the block at a x, y, z.
 		/// </summary>

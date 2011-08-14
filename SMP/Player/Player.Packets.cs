@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Collections.Generic;
 
 namespace SMP
 {
@@ -9,6 +10,7 @@ namespace SMP
     /// </summary>
 	public partial class Player : System.IDisposable
 	{
+		#region Login
 		private void HandleLogin(byte[] message)
 		{
 			int version = util.EndianBitConverter.Big.ToInt32(message, 0);
@@ -54,8 +56,9 @@ namespace SMP
 
 			SendHandshake();
 		}
-		
-        private void HandleChatMessagePacket(byte[] message)
+		#endregion
+		#region Chat
+		private void HandleChatMessagePacket(byte[] message)
         {
 			short length = util.EndianBitConverter.Big.ToInt16(message, 0);
 			string m = Encoding.BigEndianUnicode.GetString(message, 2, length * 2);
@@ -100,7 +103,8 @@ namespace SMP
             	Server.ServerLogger.Log(LogLevel.Info, username + ": " + m);
 			}
         }
-		
+		#endregion
+		#region Movement stuffs
 		private void HandlePlayerPacket(byte[] message)
 		{
 			try
@@ -241,60 +245,59 @@ namespace SMP
 				Server.Log(e.StackTrace);
 			}
 		}
-		
-		/// <summary>
-		/// 0x0E 
-		/// </summary>
-		/// <param name="message">
-		/// A <see cref="System.Byte[]"/>
-		/// </param>
+		#endregion
+		#region BlockChanges
 		private void HandleDigging(byte[] message)
 		{
 			if (message[0] == 0)
 			{
 				// Send an animation to all nearby players.
-                foreach( Player p in Player.players ) {
-                    //TODO CHECK TO SEE IF CHUNK IS IN PLAYER RANGE
+                foreach( int i in VisibleEntities ) {
+					Entity e = Entity.Entities[i];
+					if (!e.isPlayer) continue;
+					Player p = e.p;
                     if( p.level == level && p != this )
                         p.SendAnimation( id, 1 );
                 }
 			}
 			if (message[0] == 2)
 			{
-				//Server.Log("Blockchange");
 				//Player is done digging
 				int x = util.EndianBitConverter.Big.ToInt32(message, 1);
 				byte y = message[5];
 				int z = util.EndianBitConverter.Big.ToInt32(message, 6);
-				//Adds the item that the player was digging to the "ground"
-				byte id = e.CurrentChunk.GetBlock(x, y, z);
-				Item temp = new Item((Items)id);
-				temp.count = 1;
-				level.items_on_ground[Chunk.PosToInt(x, y, z)] = temp;
+
+				byte id = e.level.GetBlock(x, y, z);
+				Item item = new Item(id);
+				item.level = level;
+				item.count = 1;
+				item.meta = level.GetMeta(x, y, z);
+				item.e.pos = new double[3] { x+.5, y+.5, z+.5 };
+				item.rot = new byte[3] { 1, 1, 1 };
+				item.e.UpdateChunks(false, false);
+				
 				level.BlockChange(x, y, z, 0, 0);
 			}
 			if (message[0] == 4)
 			{
-				//Player dropped item
-				
+				//Player dropped item in hand
 			}
 		}
-		
-		/// <summary>
-		/// 0x0F 
-		/// </summary>
-		/// <param name="message">
-		/// A <see cref="System.Byte[]"/>
-		/// </param>
 		private void HandleBlockPlacementPacket(byte[] message)
 		{
-			//Buggy will come back to it
-			
 			int blockX = util.EndianBitConverter.Big.ToInt32(message, 0);
 			byte blockY = message[4];
 			int blockZ = util.EndianBitConverter.Big.ToInt32(message, 5);
 			byte direction = message[9];
+
+			if (blockX == -1 && blockZ == -1)
+			{
+				//this is supposed to just tell the server to update food and stuffs
+				return;
+			}
+
 			short blockID = util.EndianBitConverter.Big.ToInt16(message, 10);
+
 			byte amount;
 			short damage;
 			if (message.Length == 15)  //incase it is the secondary packet size
@@ -302,7 +305,40 @@ namespace SMP
 				amount = message[11];
 				damage = util.EndianBitConverter.Big.ToInt16(message, 12);
 			}
-			
+
+			//Server.Log(blockX + " " + blockY + " " + blockZ);
+
+			foreach (Entity e1 in new List<Entity>(Entity.Entities.Values))
+			{
+				//Server.Log("checking " + e1.id + " " + (int)(e.pos[0]-1) + " " + (int)e.pos[1] + " " + (int)e.pos[2]);
+				if (blockX == (int)e1.pos[0] && blockY == (int)(e1.pos[1]-1) && blockZ == (int)e1.pos[2])
+				{
+					//Server.Log("Entity found!");
+					if (e1.isItem)
+					{
+						//move item
+						continue;
+					}
+					if (e1.isObject)
+					{
+						//do stuff, like get in a minecart
+						continue;
+					}
+					if (e1.isAI)
+					{
+						//do stuff, like shear sheep
+						continue;
+					}
+					if (e1.isPlayer)
+					{
+						//dont do anything here? is there a case where you right click a player? a snowball maybe...
+						//Check the players holding item, if they need to do something with it, do it.
+						//anyway, if this is a player, then we dont place a block :D so return.
+						return;
+					}
+				}
+			}
+
 			switch (direction)
 			{
 			case 0: blockY--; break;
@@ -312,18 +348,23 @@ namespace SMP
 			case 4: blockX--; break;
 			case 5: blockX++; break;				
 			}
-			
-			level.BlockChange(blockX, (int)blockY, blockZ, 49, 0);
-			
-			//Server.Log("X: " + blockX + " Y: " + blockY + " Z: " + blockZ + " dir: " + direction);
+
+			if (blockID == -1)
+			{
+				//Players hand is empty
+				//Player right clicked with empty hand!
+			}
+			else if (blockID >= 1 && blockID <= 127)
+			{				
+				level.BlockChange(blockX, (int)blockY, blockZ, (byte)blockID, 0);
+			}
+			else
+			{
+				//item to be placed? like a flinttinder bed door etc
+			}
 		}
-		
-		/// <summary>
-		/// 0x10 
-		/// </summary>
-		/// <param name="message">
-		/// A <see cref="System.Byte[]"/>
-		/// </param>
+		#endregion
+
 		public void HandleHoldingChange(byte[] message)
 		{
 			try
@@ -334,12 +375,6 @@ namespace SMP
 			catch { }
 		}
 
-		/// <summary>
-		/// 0xFF 
-		/// </summary>
-		/// <param name="message">
-		/// A <see cref="System.Byte[]"/>
-		/// </param>
 		private void HandleDC(byte[] message)
 		{
 			Server.Log(username + " Disconnected.");

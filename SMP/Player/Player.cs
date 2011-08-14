@@ -13,7 +13,7 @@ namespace SMP
 	{
 		public static List<Player> players = new List<Player>();
 		public Socket socket;
-		public World level;
+		public World level { get { return e.level; } set { e.level = value; } }
 		static Random random = new Random();
 		public short current_slot_holding;
 		public Item current_block_holding { get { return inventory.current_item; } set { inventory.current_item = value; SendInventory(); } }
@@ -75,8 +75,7 @@ namespace SMP
 		{
 			try
 			{
-				level = Server.mainlevel;
-				e = new Entity(new double[3] { 0, 18, 0 }, new float[2] { 0, 0 }, this);
+				e = new Entity(new double[3] { 0, 18, 0 }, new float[2] { 0, 0 }, this, Server.mainlevel);
 				pos[1] = 128;
 				Stance = 128;
 				//socket = s;
@@ -588,21 +587,25 @@ namespace SMP
 				Server.Log(e.StackTrace);
 			}
 		}
-		public void SendPickupSpawn(Entity e)
+		public void SendPickupSpawn(Entity e1)
 		{
 			if (!LoggedIn) return;
+			//Server.Log("Pickup Spawning " + e1.id);
+
+			SendRaw(0x1E, util.EndianBitConverter.Big.GetBytes(e1.id));
 
 			byte[] bytes = new byte[24];
-			util.EndianBitConverter.Big.GetBytes(e.id).CopyTo(bytes, 0);
-			util.EndianBitConverter.Big.GetBytes((short)e.itype).CopyTo(bytes, 4);
+			util.EndianBitConverter.Big.GetBytes(e1.id).CopyTo(bytes, 0);
+			//Server.Log(e1.itype + "");
+			util.EndianBitConverter.Big.GetBytes(e1.itype).CopyTo(bytes, 4);
 			bytes[6] = e.count;
-			util.EndianBitConverter.Big.GetBytes(e.meta).CopyTo(bytes, 7);
-			util.EndianBitConverter.Big.GetBytes((int)e.pos[0]).CopyTo(bytes, 9);
-			util.EndianBitConverter.Big.GetBytes((int)e.pos[1]).CopyTo(bytes, 13);
-			util.EndianBitConverter.Big.GetBytes((int)e.pos[2]).CopyTo(bytes, 17);
-			bytes[21] = e.irot[0];
-			bytes[22] = e.irot[1];
-			bytes[23] = e.irot[2];
+			util.EndianBitConverter.Big.GetBytes(e1.meta).CopyTo(bytes, 7);
+			util.EndianBitConverter.Big.GetBytes((int)(e1.pos[0] * 32)).CopyTo(bytes, 9);
+			util.EndianBitConverter.Big.GetBytes((int)(e1.pos[1] * 32)).CopyTo(bytes, 13);
+			util.EndianBitConverter.Big.GetBytes((int)(e1.pos[2] * 32)).CopyTo(bytes, 17);
+			bytes[21] = e1.irot[0];
+			bytes[22] = e1.irot[1];
+			bytes[23] = e1.irot[2];
 			SendRaw(0x15, bytes);
 		}
 
@@ -644,7 +647,12 @@ namespace SMP
 		}
 		public void SendDespawn(int id) //Despawn ALL types of Entities (player mod item)
 		{
-			//if (!LoggedIn) return;
+			if (!LoggedIn)
+			{
+				if (!VisibleEntities.Contains(id))
+					VisibleEntities.Add(id);
+				return;
+			}
 			byte[] bytes = new byte[4];
 			util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
 			SendRaw(0x1D, bytes);
@@ -861,9 +869,6 @@ namespace SMP
 		#endregion
 		#endregion
 
-		
-		
-
 		public void Kick(string message)
 		{
 			if (disconnected) return;
@@ -915,11 +920,7 @@ namespace SMP
 		{
 			players.Remove(this);
 			e.CurrentChunk.Entities.Remove(e);
-
-			foreach (Player p in players)
-			{
-			    p.SendDespawn(id);
-			}
+			Entity.Entities.Remove(id);
 
             // Close stuff
             if( socket != null && socket.Connected ) {

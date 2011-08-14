@@ -63,6 +63,7 @@ namespace SMP
 				}
 				else
 				{
+					p.inventory.FindEmptySlot();
 					p.SendItem(slot, itemID, count, meta);
 					p.SendMessage(HelpBot + "Enjoy!");
 					return;

@@ -160,3 +160,10 @@ SMP/SMP.pidb
 /SMP/Substrate/Source/TileEntities/.svn/text-base/TileEntityTrap.cs.svn-base
 /SMP/bin/Debug/SMP.exe.config
 /SMP/bin/Debug/SMP.vshost.exe.config
+/SMP/bin/Debug/LibNoise.dll
+/SMP/bin/Debug/Ionic.Zlib.dll
+/SMP/bin/Debug/System.Data.SQLite.DLL
+/SMP/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+/SMP/obj/Debug/SMP.csproj.FileListAbsolute.txt
+/SMP/obj/Debug/SMP.exe
+/SMP/obj/Debug/SMP.pdb

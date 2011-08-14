@@ -9,20 +9,24 @@ namespace SMP
 	{
 		public static Dictionary<int, Entity> Entities = new Dictionary<int, Entity>();
 
-		public Chunk c { get { return Chunk.GetChunk((int)(pos[0] / 16), (int)(pos[2] / 16), p.level); } }
+		public Chunk c { get { return Chunk.GetChunk((int)(pos[0] / 16), (int)(pos[2] / 16), level); } }
 		public Chunk CurrentChunk;
 
 		public Player p; //Only set if this entity is a player, and it referances the player it is
-		//public Mob m; //Only set if this entity is a player
+		//public AI ai; //Only set if this entity is an AI
 
 		public Item I;//Only set if this entity is an item
-		public Items itype;//Item Type
+		public short itype;//Item Type
 		public short meta;//Items damage OR Metadata
 		public byte count;
 
+		//MUST BE SET
+		public World level;
+
 		public bool isPlayer;
-		public bool isMob;
+		public bool isAI;
 		public bool isItem;
+		public bool isObject; //Vehicles and arrows and stuffs
 
 		public static Random random = new Random();
 		public byte type = 0; //0 for player
@@ -36,20 +40,21 @@ namespace SMP
 		public byte[] irot = new byte[3]; //Used for ITEM Rotation Pitch and Roll
 		public byte OnGround = 1;
 
-		public Entity(double[] ipos, float[] irot, Player pl)
+		public Entity(double[] ipos, float[] irot, Player pl, World ilevel)
 		{
 			isPlayer = true;
 			id = FreeId();
 			pos = ipos;
 			rot = irot;
 			p = pl;
+			level = ilevel;
 			c.Entities.Add(this);
 			CurrentChunk = c;
 			Entities.Add(id, this);
 		}
 		public Entity(byte itype, double[] ipos, float[] irot)
 		{
-			isMob = true;
+			isAI = true;
 			id = FreeId();
 			type = itype;
 			pos = ipos;
@@ -58,7 +63,7 @@ namespace SMP
 			CurrentChunk = c;
 			Entities.Add(id, this);
 		}
-		public Entity(Items iitem, byte icount, short imeta, double[] ipos, byte[] irot2)
+		public Entity(short iitem, byte icount, short imeta, double[] ipos, byte[] irot2)
 		{
 			isItem = true;
 			id = FreeId();
@@ -79,16 +84,15 @@ namespace SMP
 		{
 			if (c != CurrentChunk || force)
 			{
-				//if (c == null) { p.Kick("You dumbass >_>"); return; }
 				try
 				{
-					CurrentChunk.Entities.Remove(this);
+					if(CurrentChunk != null) CurrentChunk.Entities.Remove(this);
 					c.Entities.Add(this);
 					CurrentChunk = c;
 				}
 				catch
 				{
-					p.Kick("Error Updating Chunk.");
+					Server.Log("Error Updating chunk for " + isPlayer.ToString() + " " + isItem.ToString() + " " + isAI.ToString() + " " + id);
 				}
 				if (isPlayer || force)
 				{
@@ -104,7 +108,7 @@ namespace SMP
 						{
 							Point po = new Point(x, z);
 							templist.Add(po);
-							if (p.VisibleChunks.Contains(po) || forcesend)
+							if (p.VisibleChunks.Contains(po) && !forcesend)
 							{
 								continue; //Continue if the player already has this chunk
 							}
@@ -140,9 +144,7 @@ namespace SMP
 			{
 				for (int z = sz; z <= ez; z++)
 				{
-					if (!p.level.chunkData.ContainsKey(new Point(x, z))) { continue; }  //stuck a p. infront to compile
-					if (!p.level.chunkData.ContainsKey(new Point(x, z))) { continue; } 
-					if (!p.level.chunkData.ContainsKey(new Point(x, z))) { continue; }
+					if (!level.chunkData.ContainsKey(new Point(x, z))) { continue; }
 
 					foreach (Entity e in p.level.chunkData[new Point(x, z)].Entities)
 					{
@@ -165,12 +167,13 @@ namespace SMP
 						}
 						else if (e.isItem)
 						{
+							p.VisibleEntities.Add(e.id);
 							p.SendPickupSpawn(e);
 							continue;
 						}
-						else if (e.isMob)
+						else if (e.isAI)
 						{
-							//TODO Spawn mob
+							//TODO Spawn ai
 							continue;
 						}
 					}
