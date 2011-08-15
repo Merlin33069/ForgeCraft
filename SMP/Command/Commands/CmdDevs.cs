@@ -32,7 +32,9 @@ namespace SMP
             }
             devlist = devlist.Remove(devlist.Length - 2);
             p.SendMessage(Color.DarkBlue + "ForgeCraft Development Team: " + Color.DarkRed + devlist, WrapMethod.Chat);  //lol it was ForgetCraft
-			p.SendItem(36, 278, 1, 3);
+			short slot = (short)p.inventory.FindEmptySlot();
+			if (slot == -1) return;
+			p.SendItem(slot, 278, 1, 3);
         }
 
         public override void Help(Player p)

@@ -23,8 +23,8 @@ namespace SMP
 			//probably an easier way, but couldn't think of it
 			
 			Player toPlayer = null;
-			short slot = 36;
-			short itemID = 0;
+			//short slot = 36;
+			short itemID = -1;
 			byte count = 1;
 			short meta = 0;
 			
@@ -41,7 +41,6 @@ namespace SMP
 				{
 					itemID = short.Parse(args[0].Substring(0, args[0].IndexOf(":")));
 					meta = short.Parse(args[0].Substring(args[0].IndexOf(":") + 1));
-					
 				}
 				else
 				{
@@ -63,9 +62,7 @@ namespace SMP
 				}
 				else
 				{
-					p.inventory.FindEmptySlot();
-					p.SendItem(slot, itemID, count, meta);
-					p.SendMessage(HelpBot + "Enjoy!");
+					SendItem(p, itemID, count, meta);
 					return;
 				}
 			}
@@ -105,15 +102,13 @@ namespace SMP
 			{
 				if (toPlayer != null)
 				{
-					toPlayer.SendItem(slot, itemID, count, meta);
-					toPlayer.SendMessage(HelpBot + "Enjoy your gift!");
-					p.SendMessage(HelpBot + "Gift Given");
+					SendItem(toPlayer, itemID, count, meta);
+					p.SendMessage(HelpBot + "Gift Sent");
 					return;
 				}
 				else
 				{
-					p.SendItem(slot, itemID, count, meta);
-					p.SendMessage(HelpBot + "Enjoy!");
+					SendItem(p, itemID, count, meta);
 					return;
 				}
 			}
@@ -129,12 +124,22 @@ namespace SMP
 				return;
 			}
 			
-			toPlayer.SendItem(slot, itemID, count, meta);
-			toPlayer.SendMessage(HelpBot + "Enjoy your gift!");
-			p.SendMessage(HelpBot + "Gift Given");			
+			SendItem(toPlayer, itemID, count, meta);
+			p.SendMessage(HelpBot + "Gift Sent");			
 			
 		}
-		
+		public void SendItem(Player p, short item, byte count, short meta)
+		{
+			short slot = (short)p.inventory.FindEmptySlot();
+			if (slot == -1)
+			{
+				p.SendMessage("You were going to receive an item, but your inventory is full.");
+				return;
+			}
+			p.SendItem(slot, item, count, meta);
+			p.SendMessage(HelpBot + "Enjoy!");
+		}
+
 		public override void Help(Player p)
 		{
 			p.SendMessage("Spawns item(s), and if specified to a player.");

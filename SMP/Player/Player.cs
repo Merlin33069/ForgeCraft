@@ -70,7 +70,6 @@ namespace SMP
 		public string username;
 		bool hidden = false;
 
-		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SMP.Player"/> class.
 		/// </summary>
@@ -95,7 +94,7 @@ namespace SMP
 				ip = socket.RemoteEndPoint.ToString().Split(':')[0];
 				Server.Log(ip + " connected to the server.");
 				
-				inventory = new Inventory();
+				inventory = new Inventory(this);
 				players.Add(this);
 				//Event --------------------
 				if (PlayerConnect != null)
@@ -555,12 +554,14 @@ namespace SMP
 			#region Inventory stuff
 			void SendInventory()
 			{
-
+				//TODO
 			}
 			public void SendItem(short slot, short Item) { SendItem(slot, Item, 1, 3); }
 			public void SendItem(short slot, short Item, byte count, short use)
 			{
 				if (!MapLoaded) return;
+
+				inventory.Add(Item, count, use, slot);
 
 				byte[] tosend;
 				if (Item == -1)
@@ -570,9 +571,11 @@ namespace SMP
 				tosend[0] = 0;
 				util.EndianBitConverter.Big.GetBytes(slot).CopyTo(tosend, 1);
 				util.EndianBitConverter.Big.GetBytes(Item).CopyTo(tosend, 3);
-				tosend[5] = count;
 				if (Item != -1)
+				{
+					tosend[5] = count;
 					util.EndianBitConverter.Big.GetBytes(use).CopyTo(tosend, 6);
+				}
 				SendRaw(0x67, tosend);
 			}
 			#endregion

@@ -30,6 +30,14 @@ namespace SMP
 			OnGround = false;
 			e = new Entity(this, l);
 		}
+		public Item(short item, byte count, short meta, World l)
+		{
+			this.item = (short)item;
+			this.meta = meta;
+			this.count = count;
+			OnGround = false;
+			e = new Entity(this, l);
+		}
 		public Item(short item, byte count, short meta, World l, double[] pos, byte[] rot)
 		{
 			this.item = item;

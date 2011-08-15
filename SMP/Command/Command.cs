@@ -28,11 +28,12 @@ namespace SMP
 		/// </summary>
         public static void InitCore()
         {
-            //please put in alphabetical order and use core.add now not all.add
+			#region please put in alphabetical order and use core.add now not all.add
             core.Add(new CmdAFK());
 			//core.Add(new CmdBan());
             core.Add(new CmdDevs());
 			core.Add(new CmdDND());
+			core.Add(new CmdFire());
             core.Add(new CmdGive());
 			core.Add(new CmdGod());
 			core.Add(new gotoLVL());
@@ -48,16 +49,16 @@ namespace SMP
 			core.Add(new NewLVL());
             //core.Add(new CmdReserveList());
             core.Add(new CmdSay());
+			core.Add(new CmdSpawn());
 			core.Add(new CmdTeleport());
 			core.Add(new SetTime());
-            core.Add(new CmdSpawn());
-            core.Add(new CmdFire());
             //core.Add(new CmdUnban());
-            //core.Add(new CmdWhiteList());
 			core.Add(new CmdViewDistance());
+            //core.Add(new CmdWhiteList());
             all.commands = new List<Command>(core.commands);
             InitCommandTypes();
-        }
+			#endregion
+		}
 
 		/// <summary>
 		/// Init core types

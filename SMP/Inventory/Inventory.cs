@@ -6,31 +6,36 @@ namespace SMP
 	public class Inventory
 	{
 		public Item[] items;
+		public Player p;
 		public int current_index;
 		public Item current_item;
-		public Inventory () {
+		public Inventory (Player pl)
+		{
+			p = pl;
+
 			items = new Item[45];
-			//Prevent null
+			
 			for (int i = 0; i < items.Length; i++)
 				items[i] = Item.Nothing;
+
 			current_item = items[36];
 		}
-		public void Add(Items item, int slot)
+
+		public void Add(short item, int slot)
 		{
-			if (slot > 44 || slot < 0)
-				return;
-			Item temp = Item.Nothing;
-			temp.count = 1;
-			items[slot] = temp;
+			Add(item, 1, 0, slot);
 		}
-		public void Add(Items item, byte count, int slot)
+		public void Add(short item, byte count, short meta, int slot)
 		{
-			Item temp = Item.Nothing;
-			temp.count = count;
-			if (slot > 44 || slot < 0)
-				return;
-			items[slot] = temp;
+			Item I = new Item(item, count, meta, p.level);
+			if (slot > 44 || slot < 0) return;
+			items[slot] = I;
 		}
+		public void Remove(int slot)
+		{
+			items[slot] = Item.Nothing;
+		}
+
 		public int Right_Click(int slot)
 		{
 			try
@@ -48,39 +53,27 @@ namespace SMP
 				}
 				return temp;
 			}
-			catch {
+			catch
+			{
 				return 0;
 			}
 		}
-		public void SetSlot(short slot, byte window)
-		{
-			byte[] tosend;
-			if (items[slot].item != (short)Items.Nothing)
-				tosend = new byte[9];
-			else
-				tosend = new byte[6];
- 		}
 		
-		//the idea is there just doesn't quite work any fixes would be great!!
 		public int FindEmptySlot()
 		{			
 			for (int i = 36; i < 45; i++)
-			{
 				if (items[i].item == (short)Items.Nothing)
 				{
-					Server.Log("slot: " + i);
-					return i;	
+					Console.WriteLine("found " + i);
+					return i;
 				}
-			}
 			
 			for (int i = 9; i <= 35; i++)
-			{
 				if (items[i].item == (short)Items.Nothing)
 				{
-					Server.Log("slot: " + i);
-					return i;	
+					Console.WriteLine("found " + i);
+					return i;
 				}
-			}
 			
 			return -1;
 		}
