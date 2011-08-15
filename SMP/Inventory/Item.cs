@@ -5,18 +5,36 @@ namespace SMP
 	public class Item
 	{
 		public Entity e;
-		public short item { get { return e.itype; } set { e.itype = value; } }
-		public byte count { get { return e.count; } set { e.count = value; } }
-		public short meta { get { return e.meta; } set { e.meta = value; } }
-
 		public World level { get { return e.level; } set { e.level = value; } }
-		public double[] pos { get{ return e.pos; } set{ e.pos = value; } }
-		public byte[] rot { get { return e.irot; } set { e.irot = value; } }
 
-		public Item (short item)
+		public short item = -1;
+		public byte count = 1;
+		public short meta = 0;
+		public bool OnGround; //This is used to tell the server that this item is on the ground.
+
+		public static Item Nothing = new Item();
+
+		public double[] pos;
+		public byte[] rot;
+
+		private Item() { }
+		public Item (short item, World l)
 		{
-			e = new Entity(item, 1, 0, new double[3] { 0, 0, 0 }, new byte[3] { 0, 0, 0 });
-			e.I = this;
+			this.item = item;
+			OnGround = false;
+			e = new Entity(this, l);
+		}
+		public Item(Items item, World l)
+		{
+			this.item = (short)item;
+			OnGround = false;
+			e = new Entity(this, l);
+		}
+		public Item(short item, byte count, short meta, World l, double[] pos, byte[] rot)
+		{
+			this.item = item;
+			OnGround = true;
+			e = new Entity(this, l);
 		}
 	}
 }

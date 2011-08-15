@@ -14,26 +14,35 @@ namespace SMP
 		public static List<Player> players = new List<Player>();
 		public Socket socket;
 		public World level { get { return e.level; } set { e.level = value; } }
-		static Random random = new Random();
+		public int viewdistance = 3;
+
 		public short current_slot_holding;
 		public Item current_block_holding { get { return inventory.current_item; } set { inventory.current_item = value; SendInventory(); } }
+
 		byte[] buffer = new byte[0];
 		byte[] tempbuffer = new byte[0xFF];
+
 		bool disconnected = false;
         public bool LoggedIn { get; protected set; }
-		public short health { get { return e.meta; } set { e.meta = value; } }
-		double Stance { get { return e.Stance; } set { e.Stance = value; } }
-		public double[] pos { get { return e.pos; } set { e.pos = value; } }
-		double[] oldpos { get { return e.oldpos; } set { e.oldpos = value; } }
-		float[] rot { get { return e.rot; } set { e.rot = value; } }
-		byte onground { get { return e.OnGround; } set { e.OnGround = value; } } //really a bool, but were going to hold it as a byte (1 or 0 ONLY) so we can send it easier
+		bool MapSent = false;
+		bool MapLoaded = false;
+		public short health;
+		public double Stance;
+		public double[] pos;
+		public double[] oldpos = new double[3];
+		public float[] rot;
+		byte onground;
 		public int id { get { return e.id; } }
-		byte dimension { get { return e.dimension; } set { e.dimension = value; } } //-1 for nether, 0 normal, 1 skyworld?
+		byte dimension = 0;
+
 		public Chunk chunk { get { return e.CurrentChunk; } }
         public Chunk chunknew { get { return e.c; } }
+
 		public Inventory inventory;
+
 		public List<Point> VisibleChunks = new List<Point>();
 		public List<int> VisibleEntities = new List<int>();
+
 		#region Custom Command / Plugin Event
 		//Events for Custom Command and Plugins ------------------------------------
 		public delegate void OnPlayerConnect(Player p);
@@ -44,6 +53,7 @@ namespace SMP
 		public delegate void OnPlayerCommand(string cmd, string message, Player p);
 		//Events for Custom Command and Plugins -------------------------------------
 		#endregion
+
 		//Groups and Permissions
 		public Group Group;
 		public List<string> AdditionalPermissions;
@@ -60,7 +70,7 @@ namespace SMP
 		public string username;
 		bool hidden = false;
 
-		bool MapSent = false;
+		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SMP.Player"/> class.
 		/// </summary>
@@ -75,13 +85,16 @@ namespace SMP
 		{
 			try
 			{
-				e = new Entity(new double[3] { 0, 18, 0 }, new float[2] { 0, 0 }, this, Server.mainlevel);
-				pos[1] = 128;
-				Stance = 128;
-				//socket = s;
+				pos = new double[3] { 0, 72, 0 };
+				//oldpos = new double[3] { 0, 0, 0 };
+				rot = new float[2] { 0,0 };
+				Stance = 72;
+
+				e = new Entity(this, Server.mainlevel);
+				
 				ip = socket.RemoteEndPoint.ToString().Split(':')[0];
 				Server.Log(ip + " connected to the server.");
-				dimension = 0;
+				
 				inventory = new Inventory();
 				players.Add(this);
 				//Event --------------------
@@ -222,518 +235,551 @@ namespace SMP
 		}
 
 		#region OUTGOING
-		void SendRaw(byte id)
-		{
-			SendRaw(id, new byte[0]);
-		}
-		/// <summary>
-		/// Send Data over to the client
-		/// </summary>
-		/// <param name='id'>
-		/// Identifier. The packet ID that you want to send
-		/// </param>
-		/// <param name='send'>
-		/// Send. The byte[] information you want to send
-		/// </param>
-        public void SendRaw(byte id, byte[] send)
-        {
-            if (socket == null || !socket.Connected)
-                return;
-            byte[] buffer = new byte[send.Length + 1];
-            buffer[0] = (byte)id;
-            send.CopyTo(buffer, 1);
-
-            try
-            {
-                socket.Send(buffer);
-                buffer = null;
-            }
-            catch (SocketException)
-            {
-                buffer = null;
-                Disconnect();
-            }
-        }
-		/// <summary>
-		/// Update the players time
-		/// </summary>
-		public void SendTime()
-		{
-			byte[] tosend = new byte[9];
-			util.EndianBitConverter.Big.GetBytes(level.time).CopyTo(tosend, 0);
-			SendRaw(0x04, tosend);
-		}
-
-        /// <summary>
-        /// Sends an animation to the player.
-        /// </summary>
-        public void SendAnimation( int eid, byte type ) {
-            byte[] data = new byte[5];
-            util.EndianBitConverter.Big.GetBytes( eid ).CopyTo( data, 0 );
-            data[4] = type;
-            SendRaw( 0x12, data );
-        }
-
-		/// <summary>
-		/// Update the players health
-		/// </summary>
-		public void SendHealth()
-		{
-			byte[] tosend = new byte[3];
-			util.EndianBitConverter.Big.GetBytes(e.meta).CopyTo(tosend, 0);
-			SendRaw(0x08, tosend);
-		}
-		public void Teleport_Player(double x, double y, double z)
-		{
-			Teleport_Player(x, y, z, rot[0], rot[1]);
-		}
-		public void Teleport_Player(double x, double y, double z, float yaw, float pitch)
-		{
-			byte[] tosend = new byte[41];
-			util.EndianBitConverter.Big.GetBytes(x).CopyTo(tosend, 0);
-			util.EndianBitConverter.Big.GetBytes(y + 1.65).CopyTo(tosend, 8);
-			util.EndianBitConverter.Big.GetBytes(y).CopyTo(tosend, 16);
-			util.EndianBitConverter.Big.GetBytes(z).CopyTo(tosend, 24);
-			util.EndianBitConverter.Big.GetBytes(yaw).CopyTo(tosend, 32);
-			util.EndianBitConverter.Big.GetBytes(pitch).CopyTo(tosend, 36);
-			tosend[40] = onground;
-			SendRaw(0x0D, tosend);
-		}
-        void CheckOnFire()
-        {
-            // check for players on fire before join map.
-            for (int i = 0; i < Player.players.Count; i++)
-            {
-                if (players[i].IsOnFire && players[i] != this && players[i].level == this.level)
-                {
-                    byte[] bytes = new byte[7];
-                    util.EndianBitConverter.Big.GetBytes(players[i].id).CopyTo(bytes, 0);
-                    bytes[4] = 0x00;
-                    bytes[5] = 0x01;
-                    bytes[6] = 0x7F;
-                    SendRaw(0x28, bytes);
-                }
-            }
-        }
-        void crouch()
-        {
-            Crouching = Crouching ? false : true;
-            if (!Crouching && IsOnFire) { SetFire(true); return; }
-            byte[] bytes2 = new byte[7];
-            util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes2, 0);
-            bytes2[4] = 0x00;
-            if (Crouching && !IsOnFire) bytes2[5] = 0x02;
-            else if (Crouching) bytes2[5] = 0x03;
-            else bytes2[5] = 0x00;
-            bytes2[6] = 0x7F;
-            for (int i = 0; i < players.Count; i++)
-            {
-                if (players[i] != this && players[i].LoggedIn)
-                {
-                    players[i].SendRaw(0x28, bytes2);
-                }
-            }
-        }
-        public void SetFire(bool onoff)
-        {
-            byte[] bytes2 = new byte[7];
-            util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes2, 0);
-            bytes2[4] = 0x00;
-            if (onoff) bytes2[5] = 0x01;
-            else bytes2[5] = 0x00;
-            bytes2[6] = 0x7F;
-            for (int i = 0; i < players.Count; i++)
-            {
-                if (players[i] != this && players[i].LoggedIn)
-                {
-                    players[i].SendRaw(0x28, bytes2);
-                }
-            }
-            IsOnFire = onoff;
-            //if (Crouching) crouch();
-        }
-		void SendLoginPass()
-		{
-			try
+			#region Raw
+			void SendRaw(byte id)
 			{
-				long seed = 0;
-				short length = (short)Server.name.Length;
-				byte[] bytes = new byte[(length * 2) + 15];
-
-				util.EndianBitConverter.Big.GetBytes(Server.protocolversion).CopyTo(bytes, 0);
-				util.EndianBitConverter.Big.GetBytes(length).CopyTo(bytes, 4);
-				Encoding.BigEndianUnicode.GetBytes(Server.name).CopyTo(bytes, 6);
-				util.EndianBitConverter.Big.GetBytes(seed).CopyTo(bytes, bytes.Length - 9);
-				bytes[bytes.Length - 1] = dimension;
-
-				SendRaw(1, bytes);
+				SendRaw(id, new byte[0]);
 			}
-			catch(Exception e)
+			/// <summary>
+			/// Send Data over to the client
+			/// </summary>
+			/// <param name='id'>
+			/// Identifier. The packet ID that you want to send
+			/// </param>
+			/// <param name='send'>
+			/// Send. The byte[] information you want to send
+			/// </param>
+			public void SendRaw(byte id, byte[] send)
 			{
-				Server.Log(e.Message);
-				Server.Log(e.StackTrace);
-			}
-			//SendMap();
-		}
-		void SendHandshake()
-		{
-			//Server.Log("Handshake out");
-			string st = "-";
-			byte[] bytes = new byte[(st.Length * 2) + 2];
-			util.EndianBitConverter.Big.GetBytes((ushort)st.Length).CopyTo(bytes, 0);
-			Encoding.BigEndianUnicode.GetBytes(st).CopyTo(bytes, 2);
-			//foreach (byte b in bytes)
-			//{
-			//    Server.Log(b + " <");
-			//}
-			//Server.Log("Handshake out-1");
-			SendRaw(2, bytes);
-			//Server.Log("Handshake out-2");
-		}
-
-		void SendInventory()
-		{
-
-		}
-
-		void SendMap()
-		{
-			//Server.Log("Sending");
-			//int i = 0;
-			//foreach (Chunk c in Server.mainlevel.chunkData.Values.ToArray())
-			//{
-			//	SendChunk(c);
-			//	i++;
-			//}
-			//Server.Log(i + " Chunks sent");
-
-			e.UpdateChunks(true, false);
-			SendSpawnPoint();
-			SendLoginDone();
-			//GlobalSpawn();
-		}
-		/// <summary>
-		/// Updates players chunks.
-		/// </summary>
-		/// <param name='force'>
-		/// Force. Force it to update the current chunk
-		/// </param>
-		/// <param name='forcesend'>
-		/// Forcesend. For it to send all the chunk, even if the player already see's it (Good for map switching)
-		/// </param>
-		public void UpdateChunks(bool force, bool forcesend)
-		{
-			e.UpdateChunks(force, forcesend);
-		}
-		/// <summary>
-		/// Prepare the client before sending the chunk
-		/// </summary>
-		/// <param name='c'>
-		/// C. The chunk to send
-		/// </param>
-		/// <param name='load'>
-		/// Load. Weather to unload or load the chunk (0 is unload otherwise it will load)
-		/// </param>
-		public void SendPreChunk(Chunk c, byte load)
-		{
-			byte[] bytes = new byte[9];
-			util.EndianBitConverter.Big.GetBytes(c.x).CopyTo(bytes, 0);
-			util.EndianBitConverter.Big.GetBytes(c.z).CopyTo(bytes, 4);
-			bytes[8] = load;
-			SendRaw(0x32, bytes);
-		}
-		public void SendItem(short slot, short Item){ SendItem(slot, Item, 1, 3); }
-		public void SendItem(short slot, short Item, byte count, short use)
-		{
-			byte[] tosend;
-			if (Item == -1)
-				tosend = new byte[5];
-			else
-				tosend = new byte[8];
-			tosend[0] = 0;
-			util.EndianBitConverter.Big.GetBytes(slot).CopyTo(tosend, 1);
-			util.EndianBitConverter.Big.GetBytes(Item).CopyTo(tosend, 3);
-			tosend[5] = count;
-			if (Item != -1)
-				util.EndianBitConverter.Big.GetBytes(use).CopyTo(tosend, 6);
-			SendRaw(0x67, tosend);
-		}
-		/// <summary>
-		/// Sends a player a Chunk
-		/// </summary>
-		/// <param name='c'>
-		/// C. The chunk to send
-		/// </param>
-		public void SendChunk(Chunk c)
-		{
-			SendPreChunk(c, 1);
-
-			//Send Chunk Data
-			byte[] CompressedData = c.GetCompressedData();
-			byte[] bytes = new byte[17 + CompressedData.Length];
-			util.EndianBitConverter.Big.GetBytes((int)(c.x * 16)).CopyTo(bytes, 0);
-			util.EndianBitConverter.Big.GetBytes((int)0).CopyTo(bytes, 4);
-			util.EndianBitConverter.Big.GetBytes((int)(c.z * 16)).CopyTo(bytes, 6);
-			bytes[10] = 15;
-			bytes[11] = 127;
-			bytes[12] = 15;
-			util.EndianBitConverter.Big.GetBytes(CompressedData.Length).CopyTo(bytes, 13);
-			CompressedData.CopyTo(bytes, 17);
-			SendRaw(0x33, bytes);
-
-			VisibleChunks.Add(c.point);
-		}
-		/// <summary>
-		/// Send the player the spawn point (Only usable after login)
-		/// </summary>
-		public void SendSpawnPoint()
-		{
-			byte[] bytes = new byte[12];
-			util.EndianBitConverter.Big.GetBytes((int)level.SpawnX).CopyTo(bytes, 0);
-			util.EndianBitConverter.Big.GetBytes((int)level.SpawnY).CopyTo(bytes, 4);
-			util.EndianBitConverter.Big.GetBytes((int)level.SpawnZ).CopyTo(bytes, 8);
-			SendRaw(0x06, bytes);
-		}
-		void SendLoginDone()
-		{
-			//Server.Log("Login Done");
-
-			byte[] bytes = new byte[41];
-			util.EndianBitConverter.Big.GetBytes(pos[0]).CopyTo(bytes, 0);
-			util.EndianBitConverter.Big.GetBytes(Stance).CopyTo(bytes, 8);
-			util.EndianBitConverter.Big.GetBytes(pos[1]).CopyTo(bytes, 16);
-			util.EndianBitConverter.Big.GetBytes(pos[2]).CopyTo(bytes, 24);
-			util.EndianBitConverter.Big.GetBytes(rot[0]).CopyTo(bytes, 32);
-			util.EndianBitConverter.Big.GetBytes(rot[1]).CopyTo(bytes, 36);
-			bytes[40] = onground;
-			SendRaw(0x0D, bytes);
-
-			//Server.Log(pos[0] + " " + pos[1] + " " + pos[2]);
-		}
-		/// <summary>
-		/// Sends a player a blockchange
-		/// </summary>
-		/// <param name='x'>
-		/// X. The x cords of the block
-		/// </param>
-		/// <param name='y'>
-		/// Y. The y cords of the block
-		/// </param>
-		/// <param name='z'>
-		/// Z. The z cords of the block
-		/// </param>
-		/// <param name='type'>
-		/// Type. The ID of the block
-		/// </param>
-		/// <param name='meta'>
-		/// Meta. The meta data of the block
-		/// </param>
-		public void SendBlockChange(int x, byte y, int z, byte type, byte meta)
-		{
-			byte[] bytes = new byte[11];
-			util.EndianBitConverter.Big.GetBytes(x).CopyTo(bytes, 0);
-			bytes[4] = y;
-			util.EndianBitConverter.Big.GetBytes(z).CopyTo(bytes, 5);
-			bytes[9] = type;
-			bytes[10] = meta;
-			SendRaw(0x35, bytes);
-		}
-
-		public void SendNamedEntitySpawn(Player p)
-		{
-			try
-			{
-				if (p == null)
-				{
-					if(VisibleEntities.Contains(p.id)) VisibleEntities.Remove(p.id);
+				if (socket == null || !socket.Connected)
 					return;
-				}
-				if (!LoggedIn)
+				byte[] buffer = new byte[send.Length + 1];
+				buffer[0] = (byte)id;
+				send.CopyTo(buffer, 1);
+
+				try
 				{
-					if(VisibleEntities.Contains(p.id)) VisibleEntities.Remove(p.id);
-					return;
+					socket.Send(buffer);
+					buffer = null;
 				}
-				if (!p.LoggedIn)
+				catch (SocketException)
 				{
-					if(VisibleEntities.Contains(p.id)) VisibleEntities.Remove(p.id);
-					return;
+					buffer = null;
+					Disconnect();
 				}
-				
-				short length = (short)p.username.Length;
-				byte[] bytes = new byte[22 + (length * 2)];
-
-				util.EndianBitConverter.Big.GetBytes(p.id).CopyTo(bytes, 0);
-				util.EndianBitConverter.Big.GetBytes(length).CopyTo(bytes, 4);
-
-				Encoding.BigEndianUnicode.GetBytes(p.username).CopyTo(bytes, 6);
-
-				util.EndianBitConverter.Big.GetBytes((int)(p.pos[0] * 32)).CopyTo(bytes, (22 + (length * 2)) - 16);
-				util.EndianBitConverter.Big.GetBytes((int)(p.pos[1] * 32)).CopyTo(bytes, (22 + (length * 2)) - 12);
-				util.EndianBitConverter.Big.GetBytes((int)(p.pos[2] * 32)).CopyTo(bytes, (22 + (length * 2)) - 8);
-
-				bytes[(22 + (length * 2)) - 4] = (byte)(rot[0] / 1.40625);
-				bytes[(22 + (length * 2)) - 3] = (byte)(rot[1] / 1.40625);
-
-				util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, (22 + (length * 2)) - 2);
-
-				SendRaw(0x14, bytes);
-
-                CheckOnFire();
-				//SendEntityEquipment(p.id, -1, -1, -1, -1, -1);
 			}
-			catch (Exception e)
+			#endregion
+			#region Loop Stuff, Time/Pos
+			/// <summary>
+			/// Update the players time
+			/// </summary>
+			public void SendTime()
 			{
-				Server.Log(e.Message);
-				Server.Log(e.StackTrace);
+				if (!LoggedIn) return;
+
+				byte[] tosend = new byte[9];
+				util.EndianBitConverter.Big.GetBytes(level.time).CopyTo(tosend, 0);
+				SendRaw(0x04, tosend);
 			}
-		}
-		public void SendPickupSpawn(Entity e1)
-		{
-			if (!LoggedIn) return;
-			//Server.Log("Pickup Spawning " + e1.id);
 
-			SendRaw(0x1E, util.EndianBitConverter.Big.GetBytes(e1.id));
-
-			byte[] bytes = new byte[24];
-			util.EndianBitConverter.Big.GetBytes(e1.id).CopyTo(bytes, 0);
-			//Server.Log(e1.itype + "");
-			util.EndianBitConverter.Big.GetBytes(e1.itype).CopyTo(bytes, 4);
-			bytes[6] = e.count;
-			util.EndianBitConverter.Big.GetBytes(e1.meta).CopyTo(bytes, 7);
-			util.EndianBitConverter.Big.GetBytes((int)(e1.pos[0] * 32)).CopyTo(bytes, 9);
-			util.EndianBitConverter.Big.GetBytes((int)(e1.pos[1] * 32)).CopyTo(bytes, 13);
-			util.EndianBitConverter.Big.GetBytes((int)(e1.pos[2] * 32)).CopyTo(bytes, 17);
-			bytes[21] = e1.irot[0];
-			bytes[22] = e1.irot[1];
-			bytes[23] = e1.irot[2];
-			SendRaw(0x15, bytes);
-		}
-
-		public void SendEntityPosVelocity()
-		{
-			if (!LoggedIn) return;
-		}
-		public void SendEntityEquipment(int id, short hand, short a1, short a2, short a3, short a4)
-		{
-			if (!LoggedIn) return;
-
-			byte[] bytes = new byte[10];
-
-			util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
-			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 4);
-			util.EndianBitConverter.Big.GetBytes(hand).CopyTo(bytes, 6);
-			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
-			SendRaw(0x05, bytes);
-
-			util.EndianBitConverter.Big.GetBytes((short)1).CopyTo(bytes, 4);
-			util.EndianBitConverter.Big.GetBytes(a1).CopyTo(bytes, 6);
-			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
-			SendRaw(0x05, bytes);
-
-			util.EndianBitConverter.Big.GetBytes((short)2).CopyTo(bytes, 4);
-			util.EndianBitConverter.Big.GetBytes(a2).CopyTo(bytes, 6);
-			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
-			SendRaw(0x05, bytes);
-
-			util.EndianBitConverter.Big.GetBytes((short)3).CopyTo(bytes, 4);
-			util.EndianBitConverter.Big.GetBytes(a3).CopyTo(bytes, 6);
-			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
-			SendRaw(0x05, bytes);
-
-			util.EndianBitConverter.Big.GetBytes((short)4).CopyTo(bytes, 4);
-			util.EndianBitConverter.Big.GetBytes(a4).CopyTo(bytes, 6);
-			util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
-			SendRaw(0x05, bytes);
-		}
-		public void SendDespawn(int id) //Despawn ALL types of Entities (player mod item)
-		{
-			if (!LoggedIn)
+			public static void GlobalUpdate()
 			{
-				if (!VisibleEntities.Contains(id))
-					VisibleEntities.Add(id);
-				return;
-			}
-			byte[] bytes = new byte[4];
-			util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
-			SendRaw(0x1D, bytes);
-		}
-
-		public static void GlobalUpdate()
-		{
-			players.ForEach(delegate(Player p)
-			{
-				p.SendRaw(0);
-				if (!p.LoggedIn) return;
-				p.SendRaw(0);
-				p.SendTime();
-				if (!p.hidden)
+				players.ForEach(delegate(Player p)
 				{
-					p.UpdatePosition();
-				}
-			});
-		}
-		void UpdatePosition()
-		{
-			e.UpdateEntities();
-			if (!LoggedIn) return;
-
-			int diffX = (int)(oldpos[0] * 32) - (int)(pos[0] * 32);
-			int diffY = (int)(oldpos[1] * 32) - (int)(pos[1] * 32);
-			int diffZ = (int)(oldpos[2] * 32) - (int)(pos[2] * 32);
-
-			if (Math.Abs(diffX) == 0 && Math.Abs(diffY) == 0 && Math.Abs(diffZ) == 0)
-			{
-				byte[] bytes = new byte[6];
-				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
-				bytes[4] = (byte)(rot[0] / 1.40625);
-				bytes[5] = (byte)(rot[1] / 1.40625);
-				foreach (Player p in players.ToArray())
-				{
-					if (p != this && p.level == level)
+					p.SendRaw(0);
+					if (!p.LoggedIn) return;
+					p.SendRaw(0);
+					p.SendTime();
+					if (!p.hidden)
 					{
-						if (p.LoggedIn)
-							p.SendRaw(0x20, bytes);
+						p.UpdatePosition();
+					}
+				});
+			}
+			void UpdatePosition()
+			{
+				//TODO the oldpos never gets set, we need to figure out why the diff's below always = 0
+
+				e.UpdateEntities();
+				if (!LoggedIn) return;
+
+				int diffX = (int)((oldpos[0] * 32) - (pos[0] * 32));
+				int diffY = (int)((oldpos[1] * 32) - (pos[1] * 32));
+				int diffZ = (int)((oldpos[2] * 32) - (pos[2] * 32));
+
+				if (Math.Abs(diffX) == 0 && Math.Abs(diffY) == 0 && Math.Abs(diffZ) == 0)
+				{
+					byte[] bytes = new byte[6];
+					util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+					bytes[4] = (byte)(rot[0] / 1.40625);
+					bytes[5] = (byte)(rot[1] / 1.40625);
+					foreach (int i in VisibleEntities.ToArray())
+					{
+						Entity e1 = Entity.Entities[i];
+						if (!e1.isPlayer) continue;
+						if (!e1.p.MapLoaded) continue;
+						e1.p.SendRaw(0x20, bytes);
+					}
+				}
+				else if (Math.Abs(diffX) <= 4 && Math.Abs(diffY) <= 4 && Math.Abs(diffZ) <= 4)
+				{
+					byte[] bytes = new byte[9];
+					util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+					bytes[4] = (byte)diffX;
+					bytes[5] = (byte)diffY;
+					bytes[6] = (byte)diffZ;
+					bytes[7] = (byte)(rot[0] / 1.40625);
+					bytes[8] = (byte)(rot[1] / 1.40625);
+					foreach (int i in VisibleEntities.ToArray())
+					{
+						Entity e1 = Entity.Entities[i];
+						if (!e1.isPlayer) continue;
+						if (!e1.p.MapLoaded) continue;
+						e1.p.SendRaw(0x21, bytes);
+					}
+					//oldpos = pos;
+				}
+				else
+				{
+					byte[] bytes = new byte[0x22];
+					util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+					util.EndianBitConverter.Big.GetBytes((int)(pos[0] * 32)).CopyTo(bytes, 4);
+					util.EndianBitConverter.Big.GetBytes((int)(pos[1] * 32)).CopyTo(bytes, 8);
+					util.EndianBitConverter.Big.GetBytes((int)(pos[2] * 32)).CopyTo(bytes, 12);
+					bytes[16] = (byte)(rot[0] / 1.40625);
+					bytes[17] = (byte)(rot[1] / 1.40625);
+					foreach (int i in VisibleEntities.ToArray())
+					{
+						Entity e1 = Entity.Entities[i];
+						if (!e1.isPlayer) continue;
+						if (!e1.p.MapLoaded) continue;
+						e1.p.SendRaw(0x22, bytes);
+					}
+					//oldpos = pos;
+				}
+			}
+			#endregion
+			#region Misc Packets Sending
+			/// <summary>
+			/// Sends an animation to the player.
+			/// </summary>
+			public void SendAnimation( int eid, byte type )
+			{
+				if (!MapLoaded) return;
+
+				byte[] data = new byte[5];
+				util.EndianBitConverter.Big.GetBytes( eid ).CopyTo( data, 0 );
+				data[4] = type;
+				SendRaw( 0x12, data );
+			}
+			/// <summary>
+			/// Update the players health
+			/// </summary>
+			public void SendHealth()
+			{
+				byte[] tosend = new byte[3];
+				util.EndianBitConverter.Big.GetBytes(health).CopyTo(tosend, 0);
+				SendRaw(0x08, tosend);
+			}
+			void CheckOnFire()
+			{
+				// check for players on fire before join map.
+				for (int i = 0; i < Player.players.Count; i++)
+				{
+					if (players[i].IsOnFire && players[i] != this && VisibleEntities.Contains(players[i].id))
+					{
+						byte[] bytes = new byte[7];
+						util.EndianBitConverter.Big.GetBytes(players[i].id).CopyTo(bytes, 0);
+						bytes[4] = 0x00;
+						bytes[5] = 0x01;
+						bytes[6] = 0x7F;
+						SendRaw(0x28, bytes);
 					}
 				}
 			}
-			else if (Math.Abs(diffX) <= 4 && Math.Abs(diffY) <= 4 && Math.Abs(diffZ) <= 4)
+			void crouch()
+			{
+				if (!MapLoaded) return;
+
+				Crouching = Crouching ? false : true;
+				if (!Crouching && IsOnFire) { SetFire(true); return; }
+				byte[] bytes2 = new byte[7];
+				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes2, 0);
+				bytes2[4] = 0x00;
+				if (Crouching && !IsOnFire) bytes2[5] = 0x02;
+				else if (Crouching) bytes2[5] = 0x03;
+				else bytes2[5] = 0x00;
+				bytes2[6] = 0x7F;
+				for (int i = 0; i < players.Count; i++)
+				{
+					if (players[i] != this && players[i].LoggedIn)
+					{
+						players[i].SendRaw(0x28, bytes2);
+					}
+				}
+			}
+			public void SetFire(bool onoff)
+			{
+				byte[] bytes2 = new byte[7];
+				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes2, 0);
+				bytes2[4] = 0x00;
+				if (onoff) bytes2[5] = 0x01;
+				else bytes2[5] = 0x00;
+				bytes2[6] = 0x7F;
+				for (int i = 0; i < players.Count; i++)
+				{
+					if (players[i] != this && players[i].LoggedIn)
+					{
+						players[i].SendRaw(0x28, bytes2);
+					}
+				}
+				IsOnFire = onoff;
+				//if (Crouching) crouch();
+			}
+			/// <summary>
+			/// Send the player the spawn point (Only usable after login)
+			/// </summary>
+			public void SendSpawnPoint()
+			{
+				byte[] bytes = new byte[12];
+				util.EndianBitConverter.Big.GetBytes((int)level.SpawnX).CopyTo(bytes, 0);
+				util.EndianBitConverter.Big.GetBytes((int)level.SpawnY).CopyTo(bytes, 4);
+				util.EndianBitConverter.Big.GetBytes((int)level.SpawnZ).CopyTo(bytes, 8);
+				SendRaw(0x06, bytes);
+			}
+			/// <summary>
+			/// Sends a player a blockchange
+			/// </summary>
+			/// <param name='x'>
+			/// X. The x cords of the block
+			/// </param>
+			/// <param name='y'>
+			/// Y. The y cords of the block
+			/// </param>
+			/// <param name='z'>
+			/// Z. The z cords of the block
+			/// </param>
+			/// <param name='type'>
+			/// Type. The ID of the block
+			/// </param>
+			/// <param name='meta'>
+			/// Meta. The meta data of the block
+			/// </param>
+			public void SendBlockChange(int x, byte y, int z, byte type, byte meta)
+			{
+				byte[] bytes = new byte[11];
+				util.EndianBitConverter.Big.GetBytes(x).CopyTo(bytes, 0);
+				bytes[4] = y;
+				util.EndianBitConverter.Big.GetBytes(z).CopyTo(bytes, 5);
+				bytes[9] = type;
+				bytes[10] = meta;
+				SendRaw(0x35, bytes);
+			}
+			#endregion
+			#region Teleport Player
+			public void Teleport_Player(double x, double y, double z)
+			{
+				Teleport_Player(x, y, z, rot[0], rot[1]);
+			}
+			public void Teleport_Player(double x, double y, double z, float yaw, float pitch)
+			{
+				if (!MapLoaded) return;
+
+				byte[] tosend = new byte[41];
+				util.EndianBitConverter.Big.GetBytes(x).CopyTo(tosend, 0);
+				util.EndianBitConverter.Big.GetBytes(y + 1.65).CopyTo(tosend, 8);
+				util.EndianBitConverter.Big.GetBytes(y).CopyTo(tosend, 16);
+				util.EndianBitConverter.Big.GetBytes(z).CopyTo(tosend, 24);
+				util.EndianBitConverter.Big.GetBytes(yaw).CopyTo(tosend, 32);
+				util.EndianBitConverter.Big.GetBytes(pitch).CopyTo(tosend, 36);
+				tosend[40] = onground;
+				SendRaw(0x0D, tosend);
+			}
+			#endregion
+			#region Login Stuffs
+			void SendLoginPass()
+			{
+				try
+				{
+					long seed = 0;
+					short length = (short)Server.name.Length;
+					byte[] bytes = new byte[(length * 2) + 15];
+
+					util.EndianBitConverter.Big.GetBytes(Server.protocolversion).CopyTo(bytes, 0);
+					util.EndianBitConverter.Big.GetBytes(length).CopyTo(bytes, 4);
+					Encoding.BigEndianUnicode.GetBytes(Server.name).CopyTo(bytes, 6);
+					util.EndianBitConverter.Big.GetBytes(seed).CopyTo(bytes, bytes.Length - 9);
+					bytes[bytes.Length - 1] = dimension;
+
+					SendRaw(1, bytes);
+				}
+				catch(Exception e)
+				{
+					Server.Log(e.Message);
+					Server.Log(e.StackTrace);
+				}
+				//SendMap();
+			}
+			void SendHandshake()
+			{
+				//Server.Log("Handshake out");
+				string st = "-";
+				byte[] bytes = new byte[(st.Length * 2) + 2];
+				util.EndianBitConverter.Big.GetBytes((ushort)st.Length).CopyTo(bytes, 0);
+				Encoding.BigEndianUnicode.GetBytes(st).CopyTo(bytes, 2);
+				//foreach (byte b in bytes)
+				//{
+				//    Server.Log(b + " <");
+				//}
+				//Server.Log("Handshake out-1");
+				SendRaw(2, bytes);
+				//Server.Log("Handshake out-2");
+			}
+			void SendLoginDone()
+			{
+				//Server.Log("Login Done");
+
+				byte[] bytes = new byte[41];
+				util.EndianBitConverter.Big.GetBytes(pos[0]).CopyTo(bytes, 0);
+				util.EndianBitConverter.Big.GetBytes(Stance).CopyTo(bytes, 8);
+				util.EndianBitConverter.Big.GetBytes(pos[1]).CopyTo(bytes, 16);
+				util.EndianBitConverter.Big.GetBytes(pos[2]).CopyTo(bytes, 24);
+				util.EndianBitConverter.Big.GetBytes(rot[0]).CopyTo(bytes, 32);
+				util.EndianBitConverter.Big.GetBytes(rot[1]).CopyTo(bytes, 36);
+				bytes[40] = onground;
+				SendRaw(0x0D, bytes);
+
+				//Server.Log(pos[0] + " " + pos[1] + " " + pos[2]);
+			}
+			#endregion
+			#region Inventory stuff
+			void SendInventory()
+			{
+
+			}
+			public void SendItem(short slot, short Item) { SendItem(slot, Item, 1, 3); }
+			public void SendItem(short slot, short Item, byte count, short use)
+			{
+				if (!MapLoaded) return;
+
+				byte[] tosend;
+				if (Item == -1)
+					tosend = new byte[5];
+				else
+					tosend = new byte[8];
+				tosend[0] = 0;
+				util.EndianBitConverter.Big.GetBytes(slot).CopyTo(tosend, 1);
+				util.EndianBitConverter.Big.GetBytes(Item).CopyTo(tosend, 3);
+				tosend[5] = count;
+				if (Item != -1)
+					util.EndianBitConverter.Big.GetBytes(use).CopyTo(tosend, 6);
+				SendRaw(0x67, tosend);
+			}
+			#endregion
+			#region Map Stuff
+			void SendMap()
+			{
+				//Server.Log("Sending");
+				//int i = 0;
+				//foreach (Chunk c in Server.mainlevel.chunkData.Values.ToArray())
+				//{
+				//	SendChunk(c);
+				//	i++;
+				//}
+				//Server.Log(i + " Chunks sent");
+
+				e.UpdateChunks(true, false);
+				SendSpawnPoint();
+				SendLoginDone();
+				MapLoaded = true;
+				//GlobalSpawn();
+			}
+			/// <summary>
+			/// Sends a player a Chunk
+			/// </summary>
+			/// <param name='c'>
+			/// C. The chunk to send
+			/// </param>
+			public void SendChunk(Chunk c)
+			{
+				SendPreChunk(c, 1);
+
+				//Send Chunk Data
+				byte[] CompressedData = c.GetCompressedData();
+				byte[] bytes = new byte[17 + CompressedData.Length];
+				util.EndianBitConverter.Big.GetBytes((int)(c.x * 16)).CopyTo(bytes, 0);
+				util.EndianBitConverter.Big.GetBytes((int)0).CopyTo(bytes, 4);
+				util.EndianBitConverter.Big.GetBytes((int)(c.z * 16)).CopyTo(bytes, 6);
+				bytes[10] = 15;
+				bytes[11] = 127;
+				bytes[12] = 15;
+				util.EndianBitConverter.Big.GetBytes(CompressedData.Length).CopyTo(bytes, 13);
+				CompressedData.CopyTo(bytes, 17);
+				SendRaw(0x33, bytes);
+
+				VisibleChunks.Add(c.point);
+			}
+			/// <summary>
+			/// Prepare the client before sending the chunk
+			/// </summary>
+			/// <param name='c'>
+			/// C. The chunk to send
+			/// </param>
+			/// <param name='load'>
+			/// Load. Weather to unload or load the chunk (0 is unload otherwise it will load)
+			/// </param>
+			public void SendPreChunk(Chunk c, byte load)
 			{
 				byte[] bytes = new byte[9];
-				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
-				bytes[4] = (byte)diffX;
-				bytes[5] = (byte)diffY;
-				bytes[6] = (byte)diffZ;
-				bytes[7] = (byte)(rot[0] / 1.40625);
-				bytes[8] = (byte)(rot[1] / 1.40625);
-				foreach (Player p in players.ToArray())
-				{
-					if (p != this && p.level == level)
-					{
-						if(VisibleEntities.Contains(p.id))
-							if (p.LoggedIn)
-								p.SendRaw(0x21, bytes);
-					}
-				}
+				util.EndianBitConverter.Big.GetBytes(c.x).CopyTo(bytes, 0);
+				util.EndianBitConverter.Big.GetBytes(c.z).CopyTo(bytes, 4);
+				bytes[8] = load;
+				SendRaw(0x32, bytes);
 			}
-			else
+			/// <summary>
+			/// Updates players chunks.
+			/// </summary>
+			/// <param name='force'>
+			/// Force. Force it to update the current chunk
+			/// </param>
+			/// <param name='forcesend'>
+			/// Forcesend. For it to send all the chunk, even if the player already see's it (Good for map switching)
+			/// </param>
+			public void UpdateChunks(bool force, bool forcesend)
 			{
-				byte[] bytes = new byte[0x22];
-				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
-				util.EndianBitConverter.Big.GetBytes((int)(pos[0] * 32)).CopyTo(bytes, 4);
-				util.EndianBitConverter.Big.GetBytes((int)(pos[1] * 32)).CopyTo(bytes, 8);
-				util.EndianBitConverter.Big.GetBytes((int)(pos[2] * 32)).CopyTo(bytes, 12);
-				bytes[16] = (byte)(rot[0] / 1.40625);
-				bytes[17] = (byte)(rot[1] / 1.40625);
-				foreach (Player p in players.ToArray())
+				e.UpdateChunks(force, forcesend);
+			}
+			#endregion
+			#region Entity Handling
+			public void SendNamedEntitySpawn(Player p)
+			{
+				try
 				{
-					if (p != this && p.level == level)
+					if (p == null)
 					{
-						if (p.LoggedIn)
-							p.SendRaw(0x22, bytes);
+						if(VisibleEntities.Contains(p.id)) VisibleEntities.Remove(p.id);
+						return;
 					}
+					if (!LoggedIn)
+					{
+						if(VisibleEntities.Contains(p.id)) VisibleEntities.Remove(p.id);
+						return;
+					}
+					if (!p.LoggedIn)
+					{
+						if(VisibleEntities.Contains(p.id)) VisibleEntities.Remove(p.id);
+						return;
+					}
+				
+					short length = (short)p.username.Length;
+					byte[] bytes = new byte[22 + (length * 2)];
+
+					util.EndianBitConverter.Big.GetBytes(p.id).CopyTo(bytes, 0);
+					util.EndianBitConverter.Big.GetBytes(length).CopyTo(bytes, 4);
+
+					Encoding.BigEndianUnicode.GetBytes(p.username).CopyTo(bytes, 6);
+
+					util.EndianBitConverter.Big.GetBytes((int)(p.pos[0] * 32)).CopyTo(bytes, (22 + (length * 2)) - 16);
+					util.EndianBitConverter.Big.GetBytes((int)(p.pos[1] * 32)).CopyTo(bytes, (22 + (length * 2)) - 12);
+					util.EndianBitConverter.Big.GetBytes((int)(p.pos[2] * 32)).CopyTo(bytes, (22 + (length * 2)) - 8);
+
+					bytes[(22 + (length * 2)) - 4] = (byte)(rot[0] / 1.40625);
+					bytes[(22 + (length * 2)) - 3] = (byte)(rot[1] / 1.40625);
+
+					util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, (22 + (length * 2)) - 2);
+
+					SendRaw(0x14, bytes);
+
+					CheckOnFire();
+					//SendEntityEquipment(p.id, -1, -1, -1, -1, -1);
+				}
+				catch (Exception e)
+				{
+					Server.Log(e.Message);
+					Server.Log(e.StackTrace);
 				}
 			}
-		}
+			public void SendPickupSpawn(Entity e1)
+			{
+				if (!MapLoaded)
+				{
+					if(VisibleEntities.Contains(e1.id)) VisibleEntities.Remove(e1.id);
+					return;
+				}
+				if(!e1.I.OnGround)
+				{
+					if (VisibleEntities.Contains(e1.id)) VisibleEntities.Remove(e1.id);
+					return;
+				}
+				//Server.Log("Pickup Spawning " + e1.id);
+
+				SendRaw(0x1E, util.EndianBitConverter.Big.GetBytes(e1.id));
+
+				byte[] bytes = new byte[24];
+				util.EndianBitConverter.Big.GetBytes(e1.id).CopyTo(bytes, 0);
+				//Server.Log(e1.itype + "");
+				util.EndianBitConverter.Big.GetBytes(e1.I.item).CopyTo(bytes, 4);
+				bytes[6] = e1.I.count;
+				util.EndianBitConverter.Big.GetBytes(e1.I.meta).CopyTo(bytes, 7);
+				util.EndianBitConverter.Big.GetBytes((int)(e1.I.pos[0] * 32)).CopyTo(bytes, 9);
+				util.EndianBitConverter.Big.GetBytes((int)(e1.I.pos[1] * 32)).CopyTo(bytes, 13);
+				util.EndianBitConverter.Big.GetBytes((int)(e1.I.pos[2] * 32)).CopyTo(bytes, 17);
+				bytes[21] = e1.I.rot[0];
+				bytes[22] = e1.I.rot[1];
+				bytes[23] = e1.I.rot[2];
+				SendRaw(0x15, bytes);
+			}
+
+			public void SendEntityPosVelocity()
+			{
+				if (!MapLoaded) return;
+			}
+			public void SendEntityEquipment(int id, short hand, short a1, short a2, short a3, short a4)
+			{
+				if (!MapLoaded) return;
+
+				byte[] bytes = new byte[10];
+
+				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+				util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 4);
+				util.EndianBitConverter.Big.GetBytes(hand).CopyTo(bytes, 6);
+				util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
+				SendRaw(0x05, bytes);
+
+				util.EndianBitConverter.Big.GetBytes((short)1).CopyTo(bytes, 4);
+				util.EndianBitConverter.Big.GetBytes(a1).CopyTo(bytes, 6);
+				util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
+				SendRaw(0x05, bytes);
+
+				util.EndianBitConverter.Big.GetBytes((short)2).CopyTo(bytes, 4);
+				util.EndianBitConverter.Big.GetBytes(a2).CopyTo(bytes, 6);
+				util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
+				SendRaw(0x05, bytes);
+
+				util.EndianBitConverter.Big.GetBytes((short)3).CopyTo(bytes, 4);
+				util.EndianBitConverter.Big.GetBytes(a3).CopyTo(bytes, 6);
+				util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
+				SendRaw(0x05, bytes);
+
+				util.EndianBitConverter.Big.GetBytes((short)4).CopyTo(bytes, 4);
+				util.EndianBitConverter.Big.GetBytes(a4).CopyTo(bytes, 6);
+				util.EndianBitConverter.Big.GetBytes((short)0).CopyTo(bytes, 8);
+				SendRaw(0x05, bytes);
+			}
+
+			public void SendDespawn(int id) //Despawn ALL types of Entities (player mod item)
+			{
+				if (!LoggedIn)
+				{
+					if (!VisibleEntities.Contains(id))
+						VisibleEntities.Add(id);
+					return;
+				}
+				byte[] bytes = new byte[4];
+				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
+				SendRaw(0x1D, bytes);
+			}
+			#endregion
 		#endregion
 		#region INCOMING
 		void HandleCommand(string cmd, string message)

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SMP
 {
-	public enum Blocks
+	public enum Blocks : byte
 	{
 		Air = 0,
 		Stone = 1,
@@ -105,7 +105,7 @@ namespace SMP
 		//LockedChest = 95,
 		Trapdoor = 96
 	};
-	public enum Items
+	public enum Items : short
 	{
 		Nothing = -1,
 		IronShovel = 256,
@@ -218,29 +218,29 @@ namespace SMP
 	/// <summary>
 	/// Goes for wood types AND leaves
 	/// </summary>
-	public enum Tree { Normal = 0, Spruce, Birch };
-	public enum Coal { Coal = 0, Charcoal };
-	public enum Jukebox { Nothing = 0, GoldDisk, GreenDisk };
-	public enum Wool { White = 0, Orange, Magenta, LightBlue, Yellow, LightGreen, Pink, Gray, LightGray, Cyan, Purple, Blue, Brown, DarkGreen, Red, Black };
-	public enum Dye { InkSac = 0, RoseRed, CactusGreen, CocoaBeans, LapisLazuli, PurpleDye, CyanDye, LightGrayDye, GrayDye, PinkDye, LimeDye, DandelionYellow, LightBlueDye, MagentaDye, OrangeDye, BoneMeal };
-	public enum Torch { South = 0x1, North = 0x2, West = 0x3, East = 0x4, Standing = 0x5 };
-	public enum Rail { EastWest = 0x0, NorthSouth = 0x1, AscendingSouth = 0x2, AscendingNorth = 0x3, AscendingEast = 0x4, AscendingWest = 0x5, CornerNorthEast = 0x6, CornerSouthEast = 0x7, CornerSouthWest = 0x8, CornerNorthWest = 0x9 };
-	public enum Ladder { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
-	public enum Stairs { South = 0x0, North = 0x1, West = 0x2, East = 0x3 };
-	public enum Levers { WallSouth = 0x1, WallNorth = 0x2, WallWest = 0x3, WallEast = 0x4, GroundWest = 0x5, GroundSouth = 0x6, LeverOn = 0x8 };
-	public enum Doors { NorthEast = 0x0, SouthEast = 0x1, SouthWest = 0x2, NorthWest = 0x3, TopHalf = 0x8, Open = 0x4 };
-	public enum Buttons { Pressed = 0x8, West = 0x1, East = 0x2, South = 0x3, North = 0x4 };
-	public enum SignPost { West = 0x0, West_NorthWest = 0x1, NorthWest = 0x2, North_NorthWest = 0x3, North = 0x4, North_NorthEast = 0x5, NorthEast = 0x6, East_NorthEast = 0x7, East = 0x8, East_SouthEast = 0x9, SouthEast = 0xA, South_SouthEast = 0xB, South = 0xC, South_SouthWest = 0xD, SouthWest = 0xE, West_SouthWest = 0xF };
-	public enum WallSigns { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
-	public enum Furnace { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
-	public enum Dispenser { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
-	public enum Pumpkin { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
-	public enum PressurePlate { NotPressed = 0x0, Pressed = 0x1 };
-	public enum Slab { Stone = 0x0, SandStone = 0x1, Wooden = 0x2, Cobblestone = 0x3 };
-	public enum Bed { Isfoot = 0x8, West = 0x0, North = 0x1, East = 0x2, South = 0x3 };
-	public enum Repeater { East = 0x0, South = 0x1, West = 0x2, North = 0x3, Tick1 = 0x5, Tick2 = 0x6, Tick3 = 0x7, Tick4 = 0x8 };
-	public enum TallGrass { DeadShrub = 0x0, TallGrass = 0x1, Fern = 0x2 };
-	public enum TrapDoors { West = 0x0, East = 0x1, South = 0x2, North = 0x3, Open = 0x4 };
-	public enum Piston { Down = 0x0, Up = 0x1, East = 0x2, West = 0x3, North = 0x4, South = 0x5, On = 0x8 };
-	public enum PistonExtension { Down = 0x0, Up = 0x1, East = 0x2, West = 0x3, North = 0x4, South = 0x5, Sticky = 0x8 };
+	public enum Tree : byte { Normal = 0, Spruce, Birch };
+	public enum Coal : byte { Coal = 0, Charcoal };
+	public enum Jukebox : byte { Nothing = 0, GoldDisk, GreenDisk };
+	public enum Wool : byte { White = 0, Orange, Magenta, LightBlue, Yellow, LightGreen, Pink, Gray, LightGray, Cyan, Purple, Blue, Brown, DarkGreen, Red, Black };
+	public enum Dye : byte { InkSac = 0, RoseRed, CactusGreen, CocoaBeans, LapisLazuli, PurpleDye, CyanDye, LightGrayDye, GrayDye, PinkDye, LimeDye, DandelionYellow, LightBlueDye, MagentaDye, OrangeDye, BoneMeal };
+	public enum Torch : byte { South = 0x1, North = 0x2, West = 0x3, East = 0x4, Standing = 0x5 };
+	public enum Rail : byte { EastWest = 0x0, NorthSouth = 0x1, AscendingSouth = 0x2, AscendingNorth = 0x3, AscendingEast = 0x4, AscendingWest = 0x5, CornerNorthEast = 0x6, CornerSouthEast = 0x7, CornerSouthWest = 0x8, CornerNorthWest = 0x9 };
+	public enum Ladder : byte { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
+	public enum Stairs : byte { South = 0x0, North = 0x1, West = 0x2, East = 0x3 };
+	public enum Levers : byte { WallSouth = 0x1, WallNorth = 0x2, WallWest = 0x3, WallEast = 0x4, GroundWest = 0x5, GroundSouth = 0x6, LeverOn = 0x8 };
+	public enum Doors : byte { NorthEast = 0x0, SouthEast = 0x1, SouthWest = 0x2, NorthWest = 0x3, TopHalf = 0x8, Open = 0x4 };
+	public enum Buttons : byte { Pressed = 0x8, West = 0x1, East = 0x2, South = 0x3, North = 0x4 };
+	public enum SignPost : byte { West = 0x0, West_NorthWest = 0x1, NorthWest = 0x2, North_NorthWest = 0x3, North = 0x4, North_NorthEast = 0x5, NorthEast = 0x6, East_NorthEast = 0x7, East = 0x8, East_SouthEast = 0x9, SouthEast = 0xA, South_SouthEast = 0xB, South = 0xC, South_SouthWest = 0xD, SouthWest = 0xE, West_SouthWest = 0xF };
+	public enum WallSigns : byte { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
+	public enum Furnace : byte { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
+	public enum Dispenser : byte { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
+	public enum Pumpkin : byte { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
+	public enum PressurePlate : byte { NotPressed = 0x0, Pressed = 0x1 };
+	public enum Slab : byte { Stone = 0x0, SandStone = 0x1, Wooden = 0x2, Cobblestone = 0x3 };
+	public enum Bed : byte { Isfoot = 0x8, West = 0x0, North = 0x1, East = 0x2, South = 0x3 };
+	public enum Repeater : byte { East = 0x0, South = 0x1, West = 0x2, North = 0x3, Tick1 = 0x5, Tick2 = 0x6, Tick3 = 0x7, Tick4 = 0x8 };
+	public enum TallGrass : byte { DeadShrub = 0x0, TallGrass = 0x1, Fern = 0x2 };
+	public enum TrapDoors : byte { West = 0x0, East = 0x1, South = 0x2, North = 0x3, Open = 0x4 };
+	public enum Piston : byte { Down = 0x0, Up = 0x1, East = 0x2, West = 0x3, North = 0x4, South = 0x5, On = 0x8 };
+	public enum PistonExtension : byte { Down = 0x0, Up = 0x1, East = 0x2, West = 0x3, North = 0x4, South = 0x5, Sticky = 0x8 };
 }

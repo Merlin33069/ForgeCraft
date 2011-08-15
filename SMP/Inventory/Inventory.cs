@@ -12,20 +12,20 @@ namespace SMP
 			items = new Item[45];
 			//Prevent null
 			for (int i = 0; i < items.Length; i++)
-				items[i] = new Item((short)Items.Nothing);
+				items[i] = Item.Nothing;
 			current_item = items[36];
 		}
 		public void Add(Items item, int slot)
 		{
 			if (slot > 44 || slot < 0)
 				return;
-			Item temp = new Item((short)item);
+			Item temp = Item.Nothing;
 			temp.count = 1;
 			items[slot] = temp;
 		}
 		public void Add(Items item, byte count, int slot)
-		{	
-			Item temp = new Item((short)item);
+		{
+			Item temp = Item.Nothing;
 			temp.count = count;
 			if (slot > 44 || slot < 0)
 				return;

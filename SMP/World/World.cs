@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace SMP
 {
 	public class World
@@ -49,19 +52,27 @@ namespace SMP
 		public World (double spawnx, double spawny, double spawnz, string name, int seed)
 		{
 			chunkData = new Dictionary<Point, Chunk>();
-			//items_on_ground = new Dictionary<int, Item>();
 			generator = new GenStandard();
 			Server.Log("Generating...");
-			Server.Log("-3");
-			for (int x = -3; x <= 3; x++)
+
+			//for (int x = -3; x <= 3; x++)
+			//{
+			//    for (int z = -3; z <= 3; z++)
+			//    {
+			//        GenerateChunk(x, z);
+			//    }
+			//    Server.Log(x + " Row Generated.");
+			//}
+
+			Parallel.For(-3, 3, delegate(int x)
 			{
-				for (int z = -3; z <= 3; z++)
+				Parallel.For(-3, 3, delegate(int z)
 				{
 					GenerateChunk(x, z);
-				}
-				Server.Log(x + "");
-			}
-			Server.Log("Done Generating.");
+				});
+				Console.WriteLine(x + " Row Generated.");
+			});
+
 			this.SpawnX = spawnx; this.SpawnY = spawny; this.SpawnZ = spawnz;
 			timeupdate.Elapsed += delegate {
 				time += 20;

@@ -9,7 +9,8 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SMP</RootNamespace>
     <AssemblyName>SMP</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,6 +46,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AI\AI.cs" />
+    <Compile Include="Command\Commands\CmdViewDistance.cs" />
+    <Compile Include="Objects\McObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Command\Commands\CmdFire.cs" />
     <Compile Include="World\World.cs" />
@@ -239,6 +243,7 @@
     <Compile Include="Command\Commands\CmdMsg.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="NBToolkit\app.config" />
     <None Include="Command\Commands\CMDBLANK.txt" />
   </ItemGroup>

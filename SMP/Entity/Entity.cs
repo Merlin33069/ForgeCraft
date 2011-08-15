@@ -9,16 +9,32 @@ namespace SMP
 	{
 		public static Dictionary<int, Entity> Entities = new Dictionary<int, Entity>();
 
-		public Chunk c { get { return Chunk.GetChunk((int)(pos[0] / 16), (int)(pos[2] / 16), level); } }
+		public Chunk c
+		{
+			get
+			{
+				return Chunk.GetChunk((int)(pos[0] / 16), (int)(pos[2] / 16), level);
+			}
+		}
 		public Chunk CurrentChunk;
 
-		public Player p; //Only set if this entity is a player, and it referances the player it is
-		//public AI ai; //Only set if this entity is an AI
+		public double[] pos
+		{
+			get
+			{
+				if(isPlayer) return p.pos;
+				if(isItem) return I.pos;
+				//if(isAI) return ai.pos;
+				//if(isObject) return obj.pos;
 
+				return new double[3] { -1, -1, -1 };
+			}
+		}
+
+		public Player p; //Only set if this entity is a player, and it referances the player it is
 		public Item I;//Only set if this entity is an item
-		public short itype;//Item Type
-		public short meta;//Items damage OR Metadata
-		public byte count;
+		public AI ai; //Only set if this entity is an AI
+		public McObject obj;
 
 		//MUST BE SET
 		public World level;
@@ -29,54 +45,29 @@ namespace SMP
 		public bool isObject; //Vehicles and arrows and stuffs
 
 		public static Random random = new Random();
-		public byte type = 0; //0 for player
 		public int id;
 
-		public byte dimension = 0;
-		public double Stance = 72;
-		public double[] pos = new double[3];
-		public double[] oldpos = new double[3];
-		public float[] rot = new float[2];
-		public byte[] irot = new byte[3]; //Used for ITEM Rotation Pitch and Roll
-		public byte OnGround = 1;
-
-		public Entity(double[] ipos, float[] irot, Player pl, World ilevel)
+		public Entity(Player pl, World l)
 		{
-			isPlayer = true;
-			id = FreeId();
-			pos = ipos;
-			rot = irot;
 			p = pl;
-			level = ilevel;
-			c.Entities.Add(this);
-			CurrentChunk = c;
-			Entities.Add(id, this);
-		}
-		public Entity(byte itype, double[] ipos, float[] irot)
-		{
-			isAI = true;
 			id = FreeId();
-			type = itype;
-			pos = ipos;
-			rot = irot;
-			c.Entities.Add(this);
-			CurrentChunk = c;
+			isPlayer = true;
+			level = l;
+
+			UpdateChunks(false, false);
+
 			Entities.Add(id, this);
 		}
-		public Entity(short iitem, byte icount, short imeta, double[] ipos, byte[] irot2)
+		public Entity(Item i, World l)
 		{
+			I = i;
+			id = FreeId();
 			isItem = true;
-			id = FreeId();
-			itype = iitem;
-			count = icount;
-			meta = imeta;
-			pos = ipos;
-			irot = irot2;
-			if (pos[0] != 0)
-			{
-				c.Entities.Add(this);
-				CurrentChunk = c;
-			}
+			level = l;
+
+			if (I.OnGround)
+				UpdateChunks(false, false);
+
 			Entities.Add(id, this);
 		}
 
@@ -94,14 +85,14 @@ namespace SMP
 				{
 					Server.Log("Error Updating chunk for " + isPlayer.ToString() + " " + isItem.ToString() + " " + isAI.ToString() + " " + id);
 				}
-				if (isPlayer || force)
+				if (isPlayer && p.LoggedIn)
 				{
 					List<Point> templist = new List<Point>();
 
-					int sx = CurrentChunk.point.x - 3; //StartX
-					int ex = CurrentChunk.point.x + 3; //EndX
-					int sz = CurrentChunk.point.z - 3; //StartZ
-					int ez = CurrentChunk.point.z + 3; //EndZ
+					int sx = CurrentChunk.point.x - p.viewdistance; //StartX
+					int ex = CurrentChunk.point.x + p.viewdistance; //EndX
+					int sz = CurrentChunk.point.z - p.viewdistance; //StartZ
+					int ez = CurrentChunk.point.z + p.viewdistance; //EndZ
 					for (int x = sx; x <= ex; x++)
 					{
 						for (int z = sz; z <= ez; z++)
@@ -188,11 +179,7 @@ namespace SMP
 				}
 			}
 		}
-		//public void UpdateEntitiesAndChunks()
-		//{
-		//	if (c != CurrentChunk) UpdateChunks();
-		//	if (isPlayer) UpdateEntities();
-		//}
+		
 		public static int FreeId()
 		{
 			int i = 0;
