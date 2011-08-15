@@ -13,12 +13,12 @@ namespace SMP
 		{
 			get
 			{
-				return Chunk.GetChunk((int)(pos[0] / 16), (int)(pos[2] / 16), level);
+				return Chunk.GetChunk((int)(pos.x / 16), (int)(pos.z / 16), level);
 			}
 		}
 		public Chunk CurrentChunk;
 
-		public double[] pos
+		public Point3 pos
 		{
 			get
 			{
@@ -27,7 +27,7 @@ namespace SMP
 				//if(isAI) return ai.pos;
 				//if(isObject) return obj.pos;
 
-				return new double[3] { -1, -1, -1 };
+				return Point3.Zero;
 			}
 		}
 
@@ -137,7 +137,7 @@ namespace SMP
 				{
 					if (!level.chunkData.ContainsKey(new Point(x, z))) { continue; }
 
-					foreach (Entity e in p.level.chunkData[new Point(x, z)].Entities)
+					foreach (Entity e in p.level.chunkData[new Point(x, z)].Entities.ToArray())
 					{
 						tempelist.Add(e.id);
 						if (p.VisibleEntities.Contains(e.id))

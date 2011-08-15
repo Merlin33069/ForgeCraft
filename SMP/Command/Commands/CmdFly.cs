@@ -40,64 +40,63 @@ namespace SMP
             }
             p.SendMessage("You are now flying. &cJump!");
             p.isFlying = true;
-            Thread flyThread = new Thread(() =>
-            {
-                flyingcode(p);
-            }) { Name = "FlyThread-" + p.username };
-            flyThread.Start();
+            //Thread flyThread = new Thread(() =>
+            //{
+                //flyingcode(p);
+            //}) { Name = "FlyThread-" + p.username };
+            //flyThread.Start();
         }
-        static void flyingcode(Player p)
-        {
-            Pos pos;
-            Pos newpos = new Pos() { x = (int)p.pos[0], y = (int)p.pos[1], z = (int)p.pos[2] };
-            Pos oldpos = new Pos() { x = (int)p.pos[0], y = (int)p.pos[1], z = (int)p.pos[2] };
-            List<Pos> buffer = new List<Pos>();
-            while (p.isFlying)
-            {
-                Thread.Sleep(p.FlyingUpdate);
-                newpos = new Pos() { x = (int)p.pos[0], y = (int)p.pos[1], z = (int)p.pos[2] };
-                if (newpos.x == oldpos.x && newpos.y == oldpos.y && newpos.z == oldpos.z)
-                    continue;
-                oldpos = new Pos() { x = (int)p.pos[0], y = (int)p.pos[1], z = (int)p.pos[2] };
-                try
-                {
-                    List<Pos> tempbuffer = new List<Pos>();
-                    pos = new Pos() { x = (int)p.pos[0], y = (int)p.pos[1], z = (int)p.pos[2] };
-                    for (int xx = pos.x - 3; xx < pos.x + 3; xx++)
-                        for (int yy = pos.y - 2; yy < pos.y; yy++)
-                            for (int zz = pos.z - 3; zz < pos.z + 3; zz++)
-                                if (p.level.GetBlock(xx, yy, zz) == 0)
-                                    tempbuffer.Add(new Pos() { x = xx, y = yy, z = zz });
-                    for (int i = 0; i < buffer.Count; )
-                    {
-                        if (!tempbuffer.Contains(buffer[i]))
-                        {
-                            p.SendBlockChange(buffer[i].x, (byte)buffer[i].y, buffer[i].z, 0, 0);
-                            buffer.Remove(buffer[i]);
-                            continue;
-                        }
-                        i++;
-                    }
-                    for (int i = 0; i < tempbuffer.Count; i++)
-                        if (!buffer.Contains(tempbuffer[i]))
-                        {
-                            buffer.Add(tempbuffer[i]);
-                            p.SendBlockChange(tempbuffer[i].x, (byte)tempbuffer[i].y, tempbuffer[i].z, 20, 0);
-                        }
-                    tempbuffer.Clear();
-                }
-                catch
-                {
-                    p.SendMessage("Flying error");
-                }
-            }
-            for (int i = 0; i < buffer.Count; i++)
-                p.SendBlockChange(buffer[i].x, (byte)buffer[i].y, buffer[i].z, 0, 0);
-            buffer.Clear();
-            return;
-        }
-
-        struct Pos { public int x, y, z;}
+		//static void flyingcode(Player p)
+		//{
+		//    Pos pos;
+		//    Pos newpos = new Pos() { x = (int)p.pos[0], y = (int)p.pos[1], z = (int)p.pos[2] };
+		//    Pos oldpos = new Pos() { x = (int)p.pos[0], y = (int)p.pos[1], z = (int)p.pos[2] };
+		//    List<Pos> buffer = new List<Pos>();
+		//    while (p.isFlying)
+		//    {
+		//        Thread.Sleep(p.FlyingUpdate);
+		//        newpos = new Pos() { x = (int)p.pos[0], y = (int)p.pos[1], z = (int)p.pos[2] };
+		//        if (newpos.x == oldpos.x && newpos.y == oldpos.y && newpos.z == oldpos.z)
+		//            continue;
+		//        oldpos = new Pos() { x = (int)p.pos[0], y = (int)p.pos[1], z = (int)p.pos[2] };
+		//        try
+		//        {
+		//            List<Pos> tempbuffer = new List<Pos>();
+		//            pos = new Pos() { x = (int)p.pos[0], y = (int)p.pos[1], z = (int)p.pos[2] };
+		//            for (int xx = pos.x - 3; xx < pos.x + 3; xx++)
+		//                for (int yy = pos.y - 2; yy < pos.y; yy++)
+		//                    for (int zz = pos.z - 3; zz < pos.z + 3; zz++)
+		//                        if (p.level.GetBlock(xx, yy, zz) == 0)
+		//                            tempbuffer.Add(new Pos() { x = xx, y = yy, z = zz });
+		//            for (int i = 0; i < buffer.Count; )
+		//            {
+		//                if (!tempbuffer.Contains(buffer[i]))
+		//                {
+		//                    p.SendBlockChange(buffer[i].x, (byte)buffer[i].y, buffer[i].z, 0, 0);
+		//                    buffer.Remove(buffer[i]);
+		//                    continue;
+		//                }
+		//                i++;
+		//            }
+		//            for (int i = 0; i < tempbuffer.Count; i++)
+		//                if (!buffer.Contains(tempbuffer[i]))
+		//                {
+		//                    buffer.Add(tempbuffer[i]);
+		//                    p.SendBlockChange(tempbuffer[i].x, (byte)tempbuffer[i].y, tempbuffer[i].z, 20, 0);
+		//                }
+		//            tempbuffer.Clear();
+		//        }
+		//        catch
+		//        {
+		//            p.SendMessage("Flying error");
+		//        }
+		//    }
+		//    for (int i = 0; i < buffer.Count; i++)
+		//        p.SendBlockChange(buffer[i].x, (byte)buffer[i].y, buffer[i].z, 0, 0);
+		//    buffer.Clear();
+		//    return;
+		//}
+        //struct Pos { public int x, y, z;}
 
         static int IntParseFast(string value)
         {

@@ -20,14 +20,14 @@ namespace SMP
                     goto default;
                 case 1:
                     if (Player.FindPlayer(args[0]) != null)
-                        p.Teleport_Player(Player.FindPlayer(args[0]).pos[0], Player.FindPlayer(args[0]).pos[1], Player.FindPlayer(args[0]).pos[2]);
+                        p.Teleport_Player(Player.FindPlayer(args[0]).pos);
                     else p.SendMessage("Cannot find player");
                     break;
                 case 2:
                     if (args[0].ToLower() == "here")
                     {
                         if (Player.FindPlayer(args[1]) != null)
-                            Player.FindPlayer(args[1]).Teleport_Player(p.pos[0], p.pos[1], p.pos[2]);
+                            Player.FindPlayer(args[1]).Teleport_Player(p.pos);
                         else p.SendMessage("Cannot find player");
                     }
                     break;

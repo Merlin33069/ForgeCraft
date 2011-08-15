@@ -135,7 +135,7 @@ namespace SMP
 				byte onGround = message[32];
 
 				// Return if position hasn't changed.
-				if (x == pos[0] && y == pos[1] && z == pos[2] && stance == Stance && onGround == onground)
+				if (new Point3(x, y, z) == pos && stance == Stance && onGround == onground)
 					return;
 
 				// Check stance
@@ -159,9 +159,7 @@ namespace SMP
 				}
 
 				//oldpos = pos;
-				pos[0] = x;
-				pos[1] = y;
-				pos[2] = z;
+				pos = new Point3(x, y, z);
 				onground = onGround;
 
 				e.UpdateChunks(false, false);
@@ -207,7 +205,7 @@ namespace SMP
 				byte onGround = message[40];
 
 				// Return if position hasn't changed.
-				if (x == pos[0] && y == pos[1] && z == pos[2] && stance == Stance &&
+				if (new Point3(x, y, z) == pos && stance == Stance &&
 					yaw == rot[0] && pitch == rot[1] && onGround == onground)
 					return;
 
@@ -232,9 +230,7 @@ namespace SMP
 				}
 
 				//oldpos = pos;
-				pos[0] = x;
-				pos[1] = y;
-				pos[2] = z;
+				pos = new Point3(x, y, z);
 				rot[0] = yaw;
 				rot[1] = pitch;
 				onground = onGround;
@@ -311,7 +307,7 @@ namespace SMP
 			foreach (Entity e1 in new List<Entity>(Entity.Entities.Values))
 			{
 				//Server.Log("checking " + e1.id + " " + (int)(e.pos[0]-1) + " " + (int)e.pos[1] + " " + (int)e.pos[2]);
-				if (blockX == (int)e1.pos[0] && blockY == (int)(e1.pos[1]-1) && blockZ == (int)e1.pos[2])
+				if (blockX == (int)e1.pos.x && blockY == (int)(e1.pos.y-1) && blockZ == (int)e1.pos.z)
 				{
 					//Server.Log("Entity found!");
 					if (e1.isItem)

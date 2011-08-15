@@ -14,7 +14,7 @@ namespace SMP
 
 		public static Item Nothing = new Item();
 
-		public double[] pos;
+		public Point3 pos;
 		public byte[] rot;
 
 		private Item() { }

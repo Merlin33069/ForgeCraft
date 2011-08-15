@@ -28,8 +28,8 @@ namespace SMP
 		bool MapLoaded = false;
 		public short health;
 		public double Stance;
-		public double[] pos;
-		public double[] oldpos = new double[3];
+		public Point3 pos;
+		public Point3 oldpos = Point3.Zero;
 		public float[] rot;
 		byte onground;
 		public int id { get { return e.id; } }
@@ -42,6 +42,7 @@ namespace SMP
 
 		public List<Point> VisibleChunks = new List<Point>();
 		public List<int> VisibleEntities = new List<int>();
+		public List<Point3> FlyList = new List<Point3>();
 
 		#region Custom Command / Plugin Event
 		//Events for Custom Command and Plugins ------------------------------------
@@ -304,11 +305,22 @@ namespace SMP
 				e.UpdateEntities();
 				if (!LoggedIn) return;
 
-				int diffX = (int)((oldpos[0] * 32) - (pos[0] * 32));
-				int diffY = (int)((oldpos[1] * 32) - (pos[1] * 32));
-				int diffZ = (int)((oldpos[2] * 32) - (pos[2] * 32));
+				Point3 diff = oldpos - pos;
+				int diff1 = (int)oldpos.mdiff(pos);
+				//int diffX = (int)((oldpos[0] * 32) - (pos[0] * 32));
+				//int diffY = (int)((oldpos[1] * 32) - (pos[1] * 32));
+				//int diffZ = (int)((oldpos[2] * 32) - (pos[2] * 32));
 
-				if (Math.Abs(diffX) == 0 && Math.Abs(diffY) == 0 && Math.Abs(diffZ) == 0)
+				//TODO Move this into the if's below when we get oldpos working
+				if (level.GetBlock((int)pos.x, (int)(pos.y - 1), (int)pos.z) == 0)
+				{
+					//do this
+				}
+				//
+
+				//Console.WriteLine(diff.x + " " + diff.y + " " + diff.z + " " + diff1);
+
+				if (diff1 == 0)
 				{
 					byte[] bytes = new byte[6];
 					util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
@@ -322,13 +334,13 @@ namespace SMP
 						e1.p.SendRaw(0x20, bytes);
 					}
 				}
-				else if (Math.Abs(diffX) <= 4 && Math.Abs(diffY) <= 4 && Math.Abs(diffZ) <= 4)
+				else if (diff1 <= 4)
 				{
 					byte[] bytes = new byte[9];
 					util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
-					bytes[4] = (byte)diffX;
-					bytes[5] = (byte)diffY;
-					bytes[6] = (byte)diffZ;
+					bytes[4] = (byte)diff.x;
+					bytes[5] = (byte)diff.y;
+					bytes[6] = (byte)diff.z;
 					bytes[7] = (byte)(rot[0] / 1.40625);
 					bytes[8] = (byte)(rot[1] / 1.40625);
 					foreach (int i in VisibleEntities.ToArray())
@@ -342,11 +354,12 @@ namespace SMP
 				}
 				else
 				{
+					Point3 sendme = pos * 32;
 					byte[] bytes = new byte[0x22];
 					util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
-					util.EndianBitConverter.Big.GetBytes((int)(pos[0] * 32)).CopyTo(bytes, 4);
-					util.EndianBitConverter.Big.GetBytes((int)(pos[1] * 32)).CopyTo(bytes, 8);
-					util.EndianBitConverter.Big.GetBytes((int)(pos[2] * 32)).CopyTo(bytes, 12);
+					util.EndianBitConverter.Big.GetBytes((int)sendme.x).CopyTo(bytes, 4);
+					util.EndianBitConverter.Big.GetBytes((int)sendme.y).CopyTo(bytes, 8);
+					util.EndianBitConverter.Big.GetBytes((int)sendme.z).CopyTo(bytes, 12);
 					bytes[16] = (byte)(rot[0] / 1.40625);
 					bytes[17] = (byte)(rot[1] / 1.40625);
 					foreach (int i in VisibleEntities.ToArray())
@@ -482,6 +495,14 @@ namespace SMP
 			{
 				Teleport_Player(x, y, z, rot[0], rot[1]);
 			}
+			public void Teleport_Player(double[] a)
+			{
+				Teleport_Player(a[0], a[1], a[2], rot[0], rot[1]);
+			}
+			public void Teleport_Player(Point3 a)
+			{
+				Teleport_Player(a.x, a.y, a.z, rot[0], rot[1]);
+			}
 			public void Teleport_Player(double x, double y, double z, float yaw, float pitch)
 			{
 				if (!MapLoaded) return;
@@ -541,10 +562,10 @@ namespace SMP
 				//Server.Log("Login Done");
 
 				byte[] bytes = new byte[41];
-				util.EndianBitConverter.Big.GetBytes(pos[0]).CopyTo(bytes, 0);
+				util.EndianBitConverter.Big.GetBytes(pos.x).CopyTo(bytes, 0);
 				util.EndianBitConverter.Big.GetBytes(Stance).CopyTo(bytes, 8);
-				util.EndianBitConverter.Big.GetBytes(pos[1]).CopyTo(bytes, 16);
-				util.EndianBitConverter.Big.GetBytes(pos[2]).CopyTo(bytes, 24);
+				util.EndianBitConverter.Big.GetBytes(pos.y).CopyTo(bytes, 16);
+				util.EndianBitConverter.Big.GetBytes(pos.z).CopyTo(bytes, 24);
 				util.EndianBitConverter.Big.GetBytes(rot[0]).CopyTo(bytes, 32);
 				util.EndianBitConverter.Big.GetBytes(rot[1]).CopyTo(bytes, 36);
 				bytes[40] = onground;
@@ -658,6 +679,7 @@ namespace SMP
 			#region Entity Handling
 			public void SendNamedEntitySpawn(Player p)
 			{
+				Console.WriteLine(username + " " + p.username);
 				try
 				{
 					if (p == null)
@@ -684,9 +706,10 @@ namespace SMP
 
 					Encoding.BigEndianUnicode.GetBytes(p.username).CopyTo(bytes, 6);
 
-					util.EndianBitConverter.Big.GetBytes((int)(p.pos[0] * 32)).CopyTo(bytes, (22 + (length * 2)) - 16);
-					util.EndianBitConverter.Big.GetBytes((int)(p.pos[1] * 32)).CopyTo(bytes, (22 + (length * 2)) - 12);
-					util.EndianBitConverter.Big.GetBytes((int)(p.pos[2] * 32)).CopyTo(bytes, (22 + (length * 2)) - 8);
+					Point3 sendme = p.pos * 32;
+					util.EndianBitConverter.Big.GetBytes((int)(sendme.x)).CopyTo(bytes, (22 + (length * 2)) - 16);
+					util.EndianBitConverter.Big.GetBytes((int)(sendme.y)).CopyTo(bytes, (22 + (length * 2)) - 12);
+					util.EndianBitConverter.Big.GetBytes((int)(sendme.z)).CopyTo(bytes, (22 + (length * 2)) - 8);
 
 					bytes[(22 + (length * 2)) - 4] = (byte)(rot[0] / 1.40625);
 					bytes[(22 + (length * 2)) - 3] = (byte)(rot[1] / 1.40625);
@@ -726,9 +749,10 @@ namespace SMP
 				util.EndianBitConverter.Big.GetBytes(e1.I.item).CopyTo(bytes, 4);
 				bytes[6] = e1.I.count;
 				util.EndianBitConverter.Big.GetBytes(e1.I.meta).CopyTo(bytes, 7);
-				util.EndianBitConverter.Big.GetBytes((int)(e1.I.pos[0] * 32)).CopyTo(bytes, 9);
-				util.EndianBitConverter.Big.GetBytes((int)(e1.I.pos[1] * 32)).CopyTo(bytes, 13);
-				util.EndianBitConverter.Big.GetBytes((int)(e1.I.pos[2] * 32)).CopyTo(bytes, 17);
+				Point3 sendme = e1.I.pos * 32;
+				util.EndianBitConverter.Big.GetBytes((int)sendme.x).CopyTo(bytes, 9);
+				util.EndianBitConverter.Big.GetBytes((int)sendme.y).CopyTo(bytes, 13);
+				util.EndianBitConverter.Big.GetBytes((int)sendme.z).CopyTo(bytes, 17);
 				bytes[21] = e1.I.rot[0];
 				bytes[22] = e1.I.rot[1];
 				bytes[23] = e1.I.rot[2];
