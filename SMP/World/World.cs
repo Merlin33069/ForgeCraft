@@ -124,6 +124,7 @@ namespace SMP
 			//generator.PerlinChunk(c);
 			//generator.RandMap(c, seed);
 			c.RecalculateLight();
+            c.SpreadLight();
 			if (GeneratedChunk != null)
 				GeneratedChunk(this, c, x, z);
 			if (WorldGenerateChunk != null)

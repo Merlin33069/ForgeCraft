@@ -243,7 +243,6 @@
     <Compile Include="Command\Commands\CmdMsg.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="NBToolkit\app.config" />
     <None Include="Command\Commands\CMDBLANK.txt" />
   </ItemGroup>
