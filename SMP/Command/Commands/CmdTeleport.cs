@@ -14,7 +14,38 @@ namespace SMP
 
         public override void Use(Player p, params string[] args)
         {
-            if (args.Length == 0)
+            switch (args.Length)
+            {
+                case 0:
+                    goto default;
+                case 1:
+                    if (Player.FindPlayer(args[0]) != null)
+                        p.Teleport_Player(Player.FindPlayer(args[0]).pos[0], Player.FindPlayer(args[0]).pos[1], Player.FindPlayer(args[0]).pos[2]);
+                    else p.SendMessage("Cannot find player");
+                    break;
+                case 2:
+                    if (args[0].ToLower() == "here")
+                    {
+                        if (Player.FindPlayer(args[1]) != null)
+                            Player.FindPlayer(args[1]).Teleport_Player(p.pos[0], p.pos[1], p.pos[2]);
+                        else p.SendMessage("Cannot find player");
+                    }
+                    break;
+                case 3:
+                    try
+                    {
+                        p.pos = new double[3] { int.Parse(args[0]), int.Parse(args[1]), int.Parse(args[2]) };
+                        if (p.chunknew != p.chunk) { }
+                        p.Teleport_Player((double)(int.Parse(args[0])), (double)(int.Parse(args[1])), (double)(int.Parse(args[2])));
+                    }
+                    catch { p.SendMessage("Cannot tp to ungenerated chunks."); }
+                    break;
+                default:
+                    Help(p);
+                    break;
+            }
+            #region oldcode
+            /*if (args.Length == 0)
             {
                 Help(p);
                 return;
@@ -28,17 +59,30 @@ namespace SMP
                     return;
                 }
             }
+            if (args.Length == 2)
+            {
+                if (args[0].ToLower() == "here")
+                {
+                    Player who = Player.FindPlayer(args[0]); // cannot use a using here or players dissapear.
+                    if (who != null)
+                    {
+                        who.Teleport_Player(p.pos[0], p.pos[1], p.pos[2]);
+                        return;
+                    }
+                }
+            }
             if (args.Length == 3)
             {
                 try
                 {
                     p.pos = new double[3] { int.Parse(args[0]), int.Parse(args[1]), int.Parse(args[2]) };
-                    if (p.chunknew != p.chunk) p.Teleport_Player((double)(int.Parse(args[0])), (double)(int.Parse(args[1])), (double)(int.Parse(args[2])));
+                    if (p.chunknew != p.chunk) { }
+                    p.Teleport_Player((double)(int.Parse(args[0])), (double)(int.Parse(args[1])), (double)(int.Parse(args[2])));
                 }
                 catch { p.SendMessage("Cannot tp to ungenerated chunks."); return; }
                 return;
             }
-            Help(p);
+            Help(p);*/
             /*byte[] bytes = new byte[41]; // some extra code.
             util.EndianBitConverter.Big.GetBytes(p.level.SpawnX).CopyTo(bytes, 0);
             util.EndianBitConverter.Big.GetBytes(p.Stance).CopyTo(bytes, 8);
@@ -48,6 +92,8 @@ namespace SMP
             util.EndianBitConverter.Big.GetBytes(p.rot[1]).CopyTo(bytes, 36);
             bytes[40] = p.onground;
             p.SendRaw(0x0D, bytes);*/
+
+            #endregion
         }
 
         public override void Help(Player p)

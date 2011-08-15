@@ -34,6 +34,7 @@ namespace SMP
             core.Add(new CmdDevs());
 			core.Add(new CmdDND());
 			core.Add(new CmdFire());
+            core.Add(new CmdFly());
             core.Add(new CmdGive());
 			core.Add(new CmdGod());
 			core.Add(new gotoLVL());

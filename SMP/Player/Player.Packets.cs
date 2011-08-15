@@ -270,14 +270,11 @@ namespace SMP
 				int z = util.EndianBitConverter.Big.ToInt32(message, 6);
 
 				byte id = e.level.GetBlock(x, y, z);
-
-				Item item = new Item(id, level);
-				item.count = 1;
-				item.meta = level.GetMeta(x, y, z);
-				item.pos = new double[3] { x+.5, y+.5, z+.5 };
-				item.rot = new byte[3] { 1, 1, 1 };
-				item.OnGround = true;
-				item.e.UpdateChunks(false, false);
+                if (id != 0)
+                {
+                    Item item = new Item(id, level) { count = 1, meta = level.GetMeta(x, y, z), pos = new double[3] { x + .5, y + .5, z + .5 }, rot = new byte[3] { 1, 1, 1 }, OnGround = true };
+                    item.e.UpdateChunks(false, false);
+                }
 				
 				level.BlockChange(x, y, z, 0, 0);
 			}
