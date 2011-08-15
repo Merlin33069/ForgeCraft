@@ -64,6 +64,8 @@ namespace SMP
 		public bool AFK = false;
         public bool Crouching = false;
         public bool IsOnFire = false;
+        public bool isFlying = false;
+        public int FlyingUpdate = 100;
 		
 		Entity e;
 		public string ip;
