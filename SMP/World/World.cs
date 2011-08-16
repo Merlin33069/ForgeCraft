@@ -20,7 +20,6 @@ namespace SMP
 		public System.Timers.Timer timeupdate = new System.Timers.Timer(1000);
 		public GenStandard generator;
 		public Dictionary<Point, Chunk> chunkData;
-		//public Dictionary<int, Item> items_on_ground;
 		public List<Point> ToGenerate = new List<Point>();
 		#region Custom Command / Plugin Events
 		//Custom Command / Plugin Events -------------------------------------------------------------------
@@ -289,7 +288,7 @@ namespace SMP
 		}
 		public static bool operator ==(Point3 a, int[] b)
 		{
-			if (a.X == b[0] && a.Y == b[1] && a.Z == b[2]) return true;
+			if (RD(a.X) == b[0] && RD(a.Y) == b[1] && RD(a.Z) == b[2]) return true;
 			return false;
 		}
 		public static bool operator ==(Point3 a, double[] b)
@@ -304,7 +303,7 @@ namespace SMP
 		}
 		public static bool operator !=(Point3 a, int[] b)
 		{
-			if (a.x != b[0] || a.y != b[1] || a.z != b[2]) return true;
+			if (RD(a.x) != b[0] || RD(a.y) != b[1] || RD(a.z) != b[2]) return true;
 			return false;
 		}
 		public static bool operator !=(Point3 a, double[] b)
@@ -378,9 +377,9 @@ namespace SMP
 		}
 		public double mdiff(Point3 a)
 		{
-			a.x = Math.Abs((Math.Max(a.X, X) - Math.Min(a.X, X)));
-			a.y = Math.Abs((Math.Max(a.Y, Y) - Math.Min(a.Y, Y)));
-			a.x = Math.Abs((Math.Max(a.Z, Z) - Math.Min(a.Z, Z)));
+			a.x = Math.Abs(a.X - X);
+			a.y = Math.Abs(a.Y - Y);
+			a.x = Math.Abs(a.Z - Z);
 			return Math.Max(Math.Max(a.x, a.y), a.z);
 		}
 
@@ -394,7 +393,7 @@ namespace SMP
 		}
 		static public explicit operator int[](Point3 po)
 		{
-			return new int[3] { (int)po.x, (int)po.y, (int)po.z };
+			return new int[3] { (int)RD(po.x), (int)RD(po.y), (int)RD(po.z) };
 		}
 		static public explicit operator double[](Point3 po)
 		{
@@ -419,6 +418,22 @@ namespace SMP
 		public override int GetHashCode()
 		{
 			return base.GetHashCode();
+		}
+
+		public Point3 RD()
+		{
+			return new Point3(RD(x), RD(y), RD(z));
+		}
+		static double RD(double valueToRound)
+		{
+			if (valueToRound < 0)
+			{
+				return Math.Floor(valueToRound);
+			}
+			else
+			{
+				return Math.Floor(valueToRound);
+			}
 		}
 	}
 }

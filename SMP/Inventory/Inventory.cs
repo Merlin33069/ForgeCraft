@@ -7,8 +7,12 @@ namespace SMP
 	{
 		public Item[] items;
 		public Player p;
-		public int current_index;
 		public Item current_item;
+		public int current_index;
+
+		bool ActiveWindow;
+		Windows window; //The type of window that is currently open
+
 		public Inventory (Player pl)
 		{
 			p = pl;
@@ -25,12 +29,76 @@ namespace SMP
 		{
 			Add(item, 1, 0, slot);
 		}
+		public void Add(Item item)
+		{
+			Add(item.item, item.count, item.meta);
+		}
+		public void Add(short item, byte count, short meta)
+		{
+			//Console.WriteLine("add1");
+			if (ActiveWindow)
+			{
+				//TODO pass action to the window
+				//SUDO window.Add(item, count, meta, slot);
+				return;
+			}
+			byte stackable = isStackable(item);
+			byte c = count;
+			//Console.WriteLine("add2");
+			for (int i = 36; i < 45; i++)
+			{
+				if (c == 0) return;
+				if (items[i].item == item)
+					if (items[i].count < stackable)
+					{
+						items[i].count += c;
+						c = 0;
+						if (items[i].count > stackable)
+						{
+							c = (byte)(items[i].count - stackable);
+							items[i].count -= c;
+						}
+						p.SendItem((short)i, item, items[i].count, meta);
+					}
+			}
+			//Console.WriteLine("add3");
+			for (int i = 9; i <= 35; i++)
+			{
+				if (c == 0) return;
+				if (items[i].item == item)
+					if (items[i].count < stackable)
+					{
+						items[i].count += c;
+						c = 0;
+						if (items[i].count > stackable)
+						{
+							c = (byte)(items[i].count - stackable);
+							items[i].count -= c;
+						}
+						p.SendItem((short)i, item, items[i].count, meta);
+					}
+			}
+			//Console.WriteLine("add4");
+			Add(item, c, meta, FindEmptySlot());
+		}
 		public void Add(short item, byte count, short meta, int slot)
 		{
+			Console.WriteLine("d1");
+			if (count == 0) return;
+			if (ActiveWindow)
+			{
+				//TODO pass action to the window
+				//SUDO window.Add(item, count, meta, slot);
+				return;
+			}
+
 			Item I = new Item(item, count, meta, p.level);
 			if (slot > 44 || slot < 0) return;
 			items[slot] = I;
+
+			p.SendItem((short)slot, item, count, meta);
 		}
+
 		public void Remove(int slot)
 		{
 			items[slot] = Item.Nothing;
@@ -64,18 +132,21 @@ namespace SMP
 			for (int i = 36; i < 45; i++)
 				if (items[i].item == (short)Items.Nothing)
 				{
-					Console.WriteLine("found " + i);
 					return i;
 				}
 			
 			for (int i = 9; i <= 35; i++)
 				if (items[i].item == (short)Items.Nothing)
 				{
-					Console.WriteLine("found " + i);
 					return i;
 				}
 			
 			return -1;
+		}
+		public byte isStackable(short id)
+		{
+			//TODO
+			return 64;
 		}
 	}
 }

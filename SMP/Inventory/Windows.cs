@@ -2,12 +2,9 @@ using System;
 
 namespace SMP
 {
-	public enum Windows
+	public class Windows
 	{
-		Chest_Large_chest = 0,
-		Workbench = 1,
-		Furnace = 2,
-		Dispenser = 3
+		//Used for holding window information being transfered to the client.
 	}
 }
 

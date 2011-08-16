@@ -172,6 +172,26 @@ namespace SMP
 			}
 			foreach (int i in p.VisibleEntities.ToArray())
 			{
+				Entity e = Entities[i];
+				if (!e.isItem) continue;
+
+				//Console.WriteLine(pos.x + " " + pos.y + " " + pos.z);
+				//Console.WriteLine(e.pos.x + " " + e.pos.y + " " + e.pos.z);
+				//Console.WriteLine(pos.mdiff(e.I.pos) + " ");
+
+				Point3 diff = pos.RD() - e.pos.RD();
+
+				if (diff.x == 0 && diff.y == 0 && diff.z == 0)
+				{
+					//TODO SendPickupAnimation
+					if (!e.I.OnGround) continue;
+					e.I.OnGround = false;
+					e.CurrentChunk.Entities.Remove(e);
+					p.inventory.Add(e.I);
+				}
+			}
+			foreach (int i in p.VisibleEntities.ToArray())
+			{
 				if (!tempelist.Contains(i))
 				{
 					p.VisibleEntities.Remove(i);

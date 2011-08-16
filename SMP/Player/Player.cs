@@ -312,10 +312,7 @@ namespace SMP
 				//int diffZ = (int)((oldpos[2] * 32) - (pos[2] * 32));
 
 				//TODO Move this into the if's below when we get oldpos working
-				if (level.GetBlock((int)pos.x, (int)(pos.y - 1), (int)pos.z) == 0)
-				{
-					//do this
-				}
+				if(isFlying) FlyCode(); 
 				//
 
 				//Console.WriteLine(diff.x + " " + diff.y + " " + diff.z + " " + diff1);
@@ -489,6 +486,18 @@ namespace SMP
 				bytes[10] = meta;
 				SendRaw(0x35, bytes);
 			}
+			public void SendBlockChange(int x, byte y, int z, byte type)
+			{
+				SendBlockChange(x, y, z, type, 0);
+			}
+			public void SendBlockChange(Point3 a, byte type, byte meta)
+			{
+				SendBlockChange((int)a.x, (byte)a.y, (int)a.z, type, meta);
+			}
+			public void SendBlockChange(Point3 a, byte type)
+			{
+				SendBlockChange(a, type, 0);
+			}
 			#endregion
 			#region Teleport Player
 			public void Teleport_Player(double x, double y, double z)
@@ -579,12 +588,10 @@ namespace SMP
 			{
 				//TODO
 			}
-			public void SendItem(short slot, short Item) { SendItem(slot, Item, 1, 3); }
+			public void SendItem(short slot, short Item) { SendItem(slot, Item, 1, 0); }
 			public void SendItem(short slot, short Item, byte count, short use)
 			{
 				if (!MapLoaded) return;
-
-				inventory.Add(Item, count, use, slot);
 
 				byte[] tosend;
 				if (Item == -1)
@@ -679,7 +686,7 @@ namespace SMP
 			#region Entity Handling
 			public void SendNamedEntitySpawn(Player p)
 			{
-				Console.WriteLine(username + " " + p.username);
+				//Console.WriteLine(username + " " + p.username);
 				try
 				{
 					if (p == null)
@@ -944,6 +951,89 @@ namespace SMP
 		#endregion
 		#endregion
 
+		void FlyCode()
+		{
+			List<Point3> temp = new List<Point3>();
+			Point3 point = pos.RD();
+
+			//for (int x = -2; x <= 2; x++)
+			//{
+			//    for (int z = -2; z <= 2; z++)
+			//    {
+			//        int y = (int)(point.y - 1);
+			//        if (x == 2 || z == 2) y++;
+			//        temp.Add(new Point3(x, y, z));
+			//    }
+			//}
+
+			Point3 p1 = new Point3(point.x, point.y - 1, point.z);
+			temp.Add(p1);
+			if ((level.GetBlock((int)point.x, (int)(point.y) - 1, (int)point.z) == 0) && !FlyList.Contains(p1))
+			{
+				SendBlockChange(p1, 20);
+				FlyList.Add(p1);
+			}
+
+			//8 below for catching
+			for (int x = -1; x <= 1; x++)
+			{
+				for (int z = -1; z <= 1; z++)
+				{
+					Point3 p = new Point3(point.x - x, point.y - 2, point.z - z);
+					temp.Add(p);
+					if ((level.GetBlock((int)point.x - x, (int)(point.y) - 2, (int)point.z - z) == 0) && !FlyList.Contains(p))
+					//if (!FlyList.Contains(p))
+					{
+						SendBlockChange(p, 20);
+						FlyList.Add(p);
+					}
+				}
+			}
+
+			//surrounding 25
+			for (int x = -2; x <= 2; x++)
+			{
+				for (int z = -2; z <= 2; z++)
+				{
+					if (x == 0 && z == 0) continue;
+					Point3 p = new Point3(point.x - x, point.y - 1, point.z - z);
+					temp.Add(p);
+					if ((level.GetBlock((int)point.x - x, (int)(point.y) - 1, (int)point.z - z) == 0) && !FlyList.Contains(p))
+					//if (!FlyList.Contains(p))
+					{
+						SendBlockChange(p, 20);
+						FlyList.Add(p);
+					}
+				}
+			}
+
+			//16 for the wall
+			for (int x = -2; x <= 2; x++)
+			{
+				for (int z = -2; z <= 2; z++)
+				{
+					if (Math.Abs(x) <= 1 && Math.Abs(z) <= 1) continue;
+					Point3 p = new Point3(point.x - x, point.y, point.z - z);
+					temp.Add(p);
+					if ((level.GetBlock((int)point.x-x, (int)(point.y), (int)point.z-z) == 0) && !FlyList.Contains(p))
+					//if(!FlyList.Contains(p))
+					{
+						SendBlockChange(p, 20);
+						FlyList.Add(p);
+					}
+				}
+			}
+
+			foreach (Point3 po in FlyList.ToArray())
+			{
+				if (!temp.Contains(po))
+				{
+					FlyList.Remove(po);
+					SendBlockChange(po, 0);
+				}
+			}
+			
+		}
 		public void Kick(string message)
 		{
 			if (disconnected) return;

@@ -130,13 +130,7 @@ namespace SMP
 		}
 		public void SendItem(Player p, short item, byte count, short meta)
 		{
-			short slot = (short)p.inventory.FindEmptySlot();
-			if (slot == -1)
-			{
-				p.SendMessage("You were going to receive an item, but your inventory is full.");
-				return;
-			}
-			p.SendItem(slot, item, count, meta);
+			p.inventory.Add(item, count, meta);
 			p.SendMessage(HelpBot + "Enjoy!");
 		}
 

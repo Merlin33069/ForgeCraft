@@ -249,6 +249,36 @@ namespace SMP
 		{
 			if (message[0] == 0)
 			{
+				#region TODO
+				int x = util.EndianBitConverter.Big.ToInt32(message, 1);
+				byte y = message[5];
+				int z = util.EndianBitConverter.Big.ToInt32(message, 6);
+				byte rc = level.GetBlock(x,y,z);
+				switch (rc)
+				{
+					case (25):
+						//Note Block
+						break;
+					case (64):
+						//Door
+						break;
+					case (69):
+						//Lever
+						break;
+					case (77):
+						//Button
+						break;
+					case (84):
+						//JukeBox
+						break;
+					case (96):
+						//Trapdoor
+						break;
+					default:
+						break;
+				}
+				#endregion
+
 				// Send an animation to all nearby players.
                 foreach( int i in VisibleEntities ) {
 					Entity e = Entity.Entities[i];
@@ -265,10 +295,15 @@ namespace SMP
 				byte y = message[5];
 				int z = util.EndianBitConverter.Big.ToInt32(message, 6);
 
-				byte id = e.level.GetBlock(x, y, z);
+				short id = e.level.GetBlock(x, y, z);
+				byte count = 1;
+
+				id = BlockDropSwitch(id);
+				//count = *TODO*dropcount(id);
+
                 if (id != 0)
                 {
-                    Item item = new Item(id, level) { count = 1, meta = level.GetMeta(x, y, z), pos = new double[3] { x + .5, y + .5, z + .5 }, rot = new byte[3] { 1, 1, 1 }, OnGround = true };
+                    Item item = new Item(id, level) { count = count, meta = level.GetMeta(x, y, z), pos = new double[3] { x + .5, y + .5, z + .5 }, rot = new byte[3] { 1, 1, 1 }, OnGround = true };
                     item.e.UpdateChunks(false, false);
                 }
 				
@@ -302,12 +337,68 @@ namespace SMP
 				damage = util.EndianBitConverter.Big.ToInt16(message, 12);
 			}
 
-			//Server.Log(blockX + " " + blockY + " " + blockZ);
+			#region TODO Fill this stuff out!
+			byte rc = level.GetBlock(blockX, blockY, blockZ);
+			switch (rc)
+			{
+				case (2):
+				case (3):
+					if (blockID == (short)Items.DiamondHoe || inventory.current_item.item == (short)Items.IronHoe || inventory.current_item.item == (short)Items.GoldHoe || inventory.current_item.item == (short)Items.StoneHoe || inventory.current_item.item == (short)Items.WoodenHoe)
+					{
+						//Till grass
+						return;
+					}
+					break;
+				case (8):
+				case (9):
+					//Water bucket checking
+					break;
+				case (10):
+				case (11):
+					//Lava bucket checking
+					break;
+				case (23):
+					//Dispenser
+					break;
+				case (25):
+					//NoteBlock
+					break;
+				case (26):
+					//Bed
+					break;
+				case (54):
+					//Chest
+					break;
+				case (58):
+					//Crafting Table
+					break;
+				case (61):
+				case (62):
+					//Furnace
+					break;
+				case (84):
+					//Jukebox
+					break;
+				case (92):
+					//Cake
+					break;
+				case (93):
+				case (94):
+					//Repeater
+					break;
+				default:
+					break;
+			}
+			#endregion
 
 			foreach (Entity e1 in new List<Entity>(Entity.Entities.Values))
 			{
 				//Server.Log("checking " + e1.id + " " + (int)(e.pos[0]-1) + " " + (int)e.pos[1] + " " + (int)e.pos[2]);
-				if (blockX == (int)e1.pos.x && blockY == (int)(e1.pos.y-1) && blockZ == (int)e1.pos.z)
+				Point3 block = new Point3(blockX, blockY, blockZ);
+				Point3 pp = new Point3((int[])pos);
+				pp.y--;
+
+				if (block==pp)
 				{
 					//Server.Log("Entity found!");
 					if (e1.isItem)
@@ -349,14 +440,25 @@ namespace SMP
 			{
 				//Players hand is empty
 				//Player right clicked with empty hand!
+				return;
 			}
-			else if (blockID >= 1 && blockID <= 127)
+
+			#region TODO these require special stuff when they are palced
+			switch (blockID)
+			{
+				//Too many to enumerate right now, what with all the items and whatnot (we need to catch when they are placed too!)
+				default:
+					break;
+			}
+			#endregion
+
+			if (blockID >= 1 && blockID <= 127)
 			{				
 				level.BlockChange(blockX, (int)blockY, blockZ, (byte)blockID, 0);
 			}
 			else
 			{
-				//item to be placed? like a flinttinder bed door etc
+				//item to be placed/used? like a flint/tinder bed door etc
 			}
 		}
 		#endregion
@@ -377,6 +479,121 @@ namespace SMP
 			GlobalMessage(username + " Left.");
 			Disconnect();
 			//TODO completely delete player.
+		}
+
+
+		public short BlockDropSwitch(short id)
+		{
+			switch (id)
+			{
+				case(1):
+					return 4;
+				case(2):
+					return 3;
+				case (7):
+				case (8):
+				case (9):
+				case (10):
+				case (11):
+					return 0;
+				case (13):
+					if (Entity.random.Next(1, 10) == 5) return 318;
+					return 13;
+				case (16):
+					return 263;
+				case (18):
+					return 0;
+				case (20):
+					return 0;
+				case (21):
+					return 251;
+				case (23):
+					//TODO add a catch to drop all items from dispenser
+					return 23;
+				case (25):
+					//Drop any cd's inside
+					return 25;
+				case (26):
+					//TODO delete other half
+					return 355;
+				case (31):
+					if (Entity.random.Next(1, 5) == 3) return 295;
+					return 0;
+				case (32):
+					return 0;
+				case (34):
+					return 0;
+				case (36):
+					return 0;
+				case (43):
+					//TODO drop two
+					return 44;
+				case (51):
+					return 0;
+				case (52):
+					return 0;
+				case (54):
+					//TODO drop all items
+					return 54;
+				case (55):
+					return 331;
+				case (56):
+					return 264;
+				case (59):
+					//TODO drop wheat if needed (and a random double seed)
+					return 295;
+				case (61):
+				case (62):
+					//TODO drop contents
+					return 61;
+				case (63):
+					return 323;
+				case (64):
+					//TODO delete other half
+					return 324;
+				case (68):
+					return 323;
+				case (71):
+					//TODO Delete other half
+					return 331;
+				case (73):
+				case (74):
+					//TODO Drop random amount
+					return 331;
+				case (75):
+				case (76):
+					return 75;
+				case (78):
+					//TODO Check item in hand, if shovel drop snow
+					return 0;
+				case (79):
+					return 0;
+				case (81):
+					//TODO Break other cacti
+					return 81;
+				case (82):
+					//TODO Drop Random Amount
+					return 337;
+				case (83):
+					//Drop random amount
+					return 353;
+				case (84):
+					//TODO DROP CONTENTS
+					return 84;
+				case (89):
+					//TODO Drop Random Amount
+					return 348;
+				case (90):
+					return 0;
+				case (92):
+					return 0;
+				case (93):
+				case (94):
+					return 354;
+
+				default:
+					return id;
+			}
 		}
 	}
 }
