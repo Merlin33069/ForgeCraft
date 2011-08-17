@@ -11,7 +11,7 @@ namespace SMP
 {
 	public class Server
 	{
-		Server s;
+		public static Server s;
 		public bool shuttingDown = false;
 		public static Socket listen;
 		public static World mainlevel;
@@ -58,6 +58,7 @@ namespace SMP
 			//TODO: (in order)
 			//load configuration
 			Command.InitCore();
+			BlockChange.InitAll();
 			Plugin.Load();
 			//load groups			
 			//load whitelist, banlist, VIPlist

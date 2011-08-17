@@ -52,6 +52,9 @@
     <Compile Include="Objects\McObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Command\Commands\CmdFire.cs" />
+    <Compile Include="WebserverStuff\WebClient.cs" />
+    <Compile Include="WebserverStuff\WebServer.cs" />
+    <Compile Include="World\BlockChangeSystem.cs" />
     <Compile Include="World\World.cs" />
     <Compile Include="World\Noise.cs" />
     <Compile Include="World\FCGenerator.cs" />

@@ -249,35 +249,15 @@ namespace SMP
 		{
 			if (message[0] == 0)
 			{
-				#region TODO
 				int x = util.EndianBitConverter.Big.ToInt32(message, 1);
 				byte y = message[5];
 				int z = util.EndianBitConverter.Big.ToInt32(message, 6);
-				byte rc = level.GetBlock(x,y,z);
-				switch (rc)
+
+				byte rc = level.GetBlock(x,y,z); //block hit
+				if(BlockChange.LeftClicked.ContainsKey(rc))
 				{
-					case (25):
-						//Note Block
-						break;
-					case (64):
-						//Door
-						break;
-					case (69):
-						//Lever
-						break;
-					case (77):
-						//Button
-						break;
-					case (84):
-						//JukeBox
-						break;
-					case (96):
-						//Trapdoor
-						break;
-					default:
-						break;
+					BlockChange.LeftClicked[rc].DynamicInvoke(this, new BCS(new Point3(x, y, z), 0, 0, 0, 0));
 				}
-				#endregion
 
 				// Send an animation to all nearby players.
                 foreach( int i in VisibleEntities ) {
@@ -298,8 +278,16 @@ namespace SMP
 				short id = e.level.GetBlock(x, y, z);
 				byte count = 1;
 
+				if (BlockChange.Destroyed.ContainsKey(id))
+				{
+					if (!(bool)BlockChange.Destroyed[id].DynamicInvoke(this, new BCS(new Point3(x, y, z), 0, 0, 0, 0)))
+					{
+						Console.WriteLine("Delegate for " + id + " Destroyed returned false");
+						return;
+					}
+				}
+
 				id = BlockDropSwitch(id);
-				//count = *TODO*dropcount(id);
 
                 if (id != 0)
                 {
@@ -329,74 +317,28 @@ namespace SMP
 
 			short blockID = util.EndianBitConverter.Big.ToInt16(message, 10);
 
-			byte amount;
-			short damage;
+			byte amount = 0;
+			short damage = 0;
 			if (message.Length == 15)  //incase it is the secondary packet size
 			{
 				amount = message[11];
 				damage = util.EndianBitConverter.Big.ToInt16(message, 12);
 			}
 
-			#region TODO Fill this stuff out!
 			byte rc = level.GetBlock(blockX, blockY, blockZ);
-			switch (rc)
+			if (BlockChange.RightClickedOn.ContainsKey(rc))
 			{
-				case (2):
-				case (3):
-					if (blockID == (short)Items.DiamondHoe || inventory.current_item.item == (short)Items.IronHoe || inventory.current_item.item == (short)Items.GoldHoe || inventory.current_item.item == (short)Items.StoneHoe || inventory.current_item.item == (short)Items.WoodenHoe)
-					{
-						//Till grass
-						return;
-					}
-					break;
-				case (8):
-				case (9):
-					//Water bucket checking
-					break;
-				case (10):
-				case (11):
-					//Lava bucket checking
-					break;
-				case (23):
-					//Dispenser
-					break;
-				case (25):
-					//NoteBlock
-					break;
-				case (26):
-					//Bed
-					break;
-				case (54):
-					//Chest
-					break;
-				case (58):
-					//Crafting Table
-					break;
-				case (61):
-				case (62):
-					//Furnace
-					break;
-				case (84):
-					//Jukebox
-					break;
-				case (92):
-					//Cake
-					break;
-				case (93):
-				case (94):
-					//Repeater
-					break;
-				default:
-					break;
+				if (!(bool)BlockChange.RightClickedOn[rc].DynamicInvoke(this, new BCS(new Point3(blockX, blockY, blockZ), blockID, direction, amount, damage)))
+				{
+					Console.WriteLine("Delegate for " + rc + " placed returned false");
+					return;
+				}
 			}
-			#endregion
 
 			foreach (Entity e1 in new List<Entity>(Entity.Entities.Values))
 			{
-				//Server.Log("checking " + e1.id + " " + (int)(e.pos[0]-1) + " " + (int)e.pos[1] + " " + (int)e.pos[2]);
 				Point3 block = new Point3(blockX, blockY, blockZ);
 				Point3 pp = new Point3((int[])pos);
-				pp.y--;
 
 				if (block==pp)
 				{
@@ -425,15 +367,32 @@ namespace SMP
 					}
 				}
 			}
+			foreach (Entity e1 in new List<Entity>(Entity.Entities.Values))
+			{
+				Point3 block = new Point3(blockX, blockY, blockZ);
+				Point3 pp = new Point3((int[])pos);
+				pp.y--;
+
+				if (block == pp)
+				{
+					if (e1.isPlayer)
+					{
+						//dont do anything here? is there a case where you right click a player? a snowball maybe...
+						//we should do an item check, then return...
+						//anyway, if this is a player, then we dont place a block :D so return.
+						return;
+					}
+				}
+			}
 
 			switch (direction)
 			{
-			case 0: blockY--; break;
-			case 1: blockY++; break;
-			case 2: blockZ--; break;
-			case 3: blockZ++; break;
-			case 4: blockX--; break;
-			case 5: blockX++; break;				
+				case 0: blockY--; break;
+				case 1: blockY++; break;
+				case 2: blockZ--; break;
+				case 3: blockZ++; break;
+				case 4: blockX--; break;
+				case 5: blockX++; break;				
 			}
 
 			if (blockID == -1)
@@ -443,23 +402,20 @@ namespace SMP
 				return;
 			}
 
-			#region TODO these require special stuff when they are palced
-			switch (blockID)
-			{
-				//Too many to enumerate right now, what with all the items and whatnot (we need to catch when they are placed too!)
-				default:
-					break;
-			}
-			#endregion
-
 			if (blockID >= 1 && blockID <= 127)
 			{				
-				level.BlockChange(blockX, (int)blockY, blockZ, (byte)blockID, 0);
+				level.BlockChange(blockX, (int)blockY, blockZ, (byte)blockID, (byte)damage);
 			}
 			else
 			{
-				//item to be placed/used? like a flint/tinder bed door etc
+				if(BlockChange.ItemRightClick.ContainsKey(blockID))
+				{
+					BlockChange.ItemRightClick[blockID].DynamicInvoke(this, new BCS(new Point3(blockX, blockY, blockZ), blockID, direction, amount, damage));
+				}
+				return;
 			}
+
+			inventory.Remove(inventory.current_index, 1);
 		}
 		#endregion
 
@@ -467,10 +423,21 @@ namespace SMP
 		{
 			try
 			{
-				current_slot_holding = util.EndianBitConverter.Big.ToInt16(message, 0);
-				current_block_holding = inventory.items[current_slot_holding];
+				current_slot_holding = (short)(util.EndianBitConverter.Big.ToInt16(message, 0) + 36);
+
+				inventory.current_index = current_slot_holding;
+				inventory.current_item = inventory.items[current_slot_holding];
+				current_block_holding = inventory.current_item;
 			}
 			catch { }
+		}
+		public void HandleWindowClose(byte[] message)
+		{
+			//TODO save the furnaces/dispensers, add unused stuff back to inventory etc
+		}
+		public void HandleWindowClick(byte[] message)
+		{
+			//TODO handle this, AND this is where crafting goes
 		}
 
 		private void HandleDC(byte[] message)
@@ -480,7 +447,6 @@ namespace SMP
 			Disconnect();
 			//TODO completely delete player.
 		}
-
 
 		public short BlockDropSwitch(short id)
 		{
@@ -507,15 +473,6 @@ namespace SMP
 					return 0;
 				case (21):
 					return 251;
-				case (23):
-					//TODO add a catch to drop all items from dispenser
-					return 23;
-				case (25):
-					//Drop any cd's inside
-					return 25;
-				case (26):
-					//TODO delete other half
-					return 355;
 				case (31):
 					if (Entity.random.Next(1, 5) == 3) return 295;
 					return 0;
@@ -525,64 +482,23 @@ namespace SMP
 					return 0;
 				case (36):
 					return 0;
-				case (43):
-					//TODO drop two
-					return 44;
 				case (51):
 					return 0;
 				case (52):
 					return 0;
-				case (54):
-					//TODO drop all items
-					return 54;
 				case (55):
 					return 331;
 				case (56):
 					return 264;
-				case (59):
-					//TODO drop wheat if needed (and a random double seed)
-					return 295;
-				case (61):
-				case (62):
-					//TODO drop contents
-					return 61;
 				case (63):
 					return 323;
-				case (64):
-					//TODO delete other half
-					return 324;
 				case (68):
 					return 323;
-				case (71):
-					//TODO Delete other half
-					return 331;
-				case (73):
-				case (74):
-					//TODO Drop random amount
-					return 331;
 				case (75):
 				case (76):
 					return 75;
-				case (78):
-					//TODO Check item in hand, if shovel drop snow
-					return 0;
 				case (79):
 					return 0;
-				case (81):
-					//TODO Break other cacti
-					return 81;
-				case (82):
-					//TODO Drop Random Amount
-					return 337;
-				case (83):
-					//Drop random amount
-					return 353;
-				case (84):
-					//TODO DROP CONTENTS
-					return 84;
-				case (89):
-					//TODO Drop Random Amount
-					return 348;
 				case (90):
 					return 0;
 				case (92):

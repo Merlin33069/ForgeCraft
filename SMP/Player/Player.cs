@@ -219,8 +219,11 @@ namespace SMP
 						case 0x0D: if (!MapSent) { MapSent = true; SendMap(); } HandlePlayerPositionAndLookPacket(message); break; //Pos and look incoming
 						case 0x0E: HandleDigging(message); break; //Digging
 					    case 0x0F: HandleBlockPlacementPacket(message); break; //Block Placement
-						case 0x10: HandleHoldingChange(message); break; //Holding Change
 						case 0xFF: HandleDC(message); break; //DC
+
+						case 0x10: HandleHoldingChange(message); break; //Holding Change
+						case 0x65: HandleWindowClose(message); break; //Window Closed
+						case 0x66: HandleWindowClick(message); break; //Window Click
 					}
 					if (buffer.Length > 0)
 						buffer = HandleMessage(buffer);
@@ -361,6 +364,7 @@ namespace SMP
 					bytes[17] = (byte)(rot[1] / 1.40625);
 					foreach (int i in VisibleEntities.ToArray())
 					{
+						if(!Entity.Entities.ContainsKey(i)) continue;
 						Entity e1 = Entity.Entities[i];
 						if (!e1.isPlayer) continue;
 						if (!e1.p.MapLoaded) continue;
@@ -955,17 +959,7 @@ namespace SMP
 		{
 			List<Point3> temp = new List<Point3>();
 			Point3 point = pos.RD();
-
-			//for (int x = -2; x <= 2; x++)
-			//{
-			//    for (int z = -2; z <= 2; z++)
-			//    {
-			//        int y = (int)(point.y - 1);
-			//        if (x == 2 || z == 2) y++;
-			//        temp.Add(new Point3(x, y, z));
-			//    }
-			//}
-
+			
 			Point3 p1 = new Point3(point.x, point.y - 1, point.z);
 			temp.Add(p1);
 			if ((level.GetBlock((int)point.x, (int)(point.y) - 1, (int)point.z) == 0) && !FlyList.Contains(p1))

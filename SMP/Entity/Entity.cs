@@ -172,6 +172,12 @@ namespace SMP
 			}
 			foreach (int i in p.VisibleEntities.ToArray())
 			{
+				if (!Entities.ContainsKey(i))
+				{
+					p.VisibleEntities.Remove(i);
+					continue;
+				}
+
 				Entity e = Entities[i];
 				if (!e.isItem) continue;
 

@@ -23,6 +23,7 @@ namespace SMP
 				items[i] = Item.Nothing;
 
 			current_item = items[36];
+			current_index = 36;
 		}
 
 		public void Add(short item, int slot)
@@ -102,6 +103,18 @@ namespace SMP
 		public void Remove(int slot)
 		{
 			items[slot] = Item.Nothing;
+		}
+		public void Remove(int slot, byte count)
+		{
+			if (count >= items[slot].count)
+			{
+				items[slot] = Item.Nothing;
+				p.SendItem((short)slot, -1, 0, 0);
+				return;
+			}
+
+			items[slot].count--;
+			p.SendItem((short)slot, items[slot].item, items[slot].count, items[slot].meta);
 		}
 
 		public int Right_Click(int slot)
