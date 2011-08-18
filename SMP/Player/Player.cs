@@ -26,7 +26,7 @@ namespace SMP
         public bool LoggedIn { get; protected set; }
 		bool MapSent = false;
 		bool MapLoaded = false;
-		public short health;
+        public short health = 20;
 		public double Stance;
 		public Point3 pos;
 		public Point3 oldpos = Point3.Zero;
@@ -220,7 +220,7 @@ namespace SMP
 						case 0x0E: HandleDigging(message); break; //Digging
 					    case 0x0F: HandleBlockPlacementPacket(message); break; //Block Placement
 						case 0xFF: HandleDC(message); break; //DC
-
+                        case 0x09: HandleRespawn(message); break; //when user presses respawn button
 						case 0x10: HandleHoldingChange(message); break; //Holding Change
 						case 0x65: HandleWindowClose(message); break; //Window Closed
 						case 0x66: HandleWindowClick(message); break; //Window Click
@@ -819,6 +819,13 @@ namespace SMP
 				util.EndianBitConverter.Big.GetBytes(id).CopyTo(bytes, 0);
 				SendRaw(0x1D, bytes);
 			}
+            public void SendRespawn(byte world)
+            {
+                byte[] bytes = new byte[1];
+                bytes[0] = world;
+
+                SendRaw(0x09, bytes);
+            }
 			#endregion
 		#endregion
 		#region INCOMING
@@ -1088,7 +1095,27 @@ namespace SMP
                 socket = null;
             }
 		}
-		
+        public void SendLightning(int x, int y, int z, int EntityId)
+        {
+            byte[] bytes = new byte[17];
+            util.EndianBitConverter.Big.GetBytes(EntityId).CopyTo(bytes, 0);
+            util.EndianBitConverter.Big.GetBytes(true).CopyTo(bytes, 4);
+            util.EndianBitConverter.Big.GetBytes(x).CopyTo(bytes, 5);
+            util.EndianBitConverter.Big.GetBytes(y).CopyTo(bytes, 9);
+            util.EndianBitConverter.Big.GetBytes(z).CopyTo(bytes, 13);
+            SendRaw(0x47, bytes);
+        }
+        public void hurt(short Amount)
+        {
+            health -= Amount;
+            SendHealth();
+            if (health <= 0) { health = 20; }
+        }
+        public void hurt()
+        {
+            hurt(1);
+
+        }
 		#region TOOLS
 		/// <summary>
         /// Finds a player by string or partial string
