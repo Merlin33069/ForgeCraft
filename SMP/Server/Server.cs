@@ -22,6 +22,7 @@ namespace SMP
 		public static bool unsafe_plugin = false;
 		public static Logger ServerLogger = new Logger();
 		internal ConsolePlayer consolePlayer;
+		internal string ConsoleName = "Console";
 		
 		public static string KickMessage = "You've been kicked!!";
 		public static string Motd = "Powered By ForgeCraft.";
@@ -35,6 +36,7 @@ namespace SMP
 			Log("Starting Server");
 			s = this;
 			consolePlayer = new ConsolePlayer(s);
+			consolePlayer.SetUsername(ConsoleName);
 			mainlevel = new World(0, 127, 0, "main", new Random().Next());
 			World.worlds.Add(mainlevel);
 			ml = new MainLoop("server");
@@ -137,6 +139,12 @@ namespace SMP
                 listen.Close();
                 listen = null;
             }
+		}
+		
+		public void SetConsoleName(string name)
+		{
+			ConsoleName = name;
+			consolePlayer.SetUsername(name);
 		}
 	}
 }

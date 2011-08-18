@@ -1,9 +1,29 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" ctype="Workspace" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/Command/Commands/CmdDND.cs" ctype="Workbench">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/Player/Player.Packets.cs" ctype="Workbench">
     <Files>
-      <File FileName="SMP/Command/Commands/CmdDND.cs" Line="1" Column="1" />
+      <File FileName="SMP/Groups/Group.cs" Line="10" Column="68" />
+      <File FileName="SMP/Groups/GroupUtils.cs" Line="11" Column="3" />
+      <File FileName="SMP/Player/Player.Packets.cs" Line="21" Column="23" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="SMP" expanded="True">
+            <Node name="Command" expanded="True">
+              <Node name="Commands" expanded="True" />
+            </Node>
+            <Node name="Constants" expanded="True" />
+            <Node name="Groups" expanded="True" />
+            <Node name="Player" expanded="True">
+              <Node name="Player.Packets.cs" selected="True" />
+            </Node>
+            <Node name="Server" expanded="True" />
+            <Node name="WebserverStuff" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

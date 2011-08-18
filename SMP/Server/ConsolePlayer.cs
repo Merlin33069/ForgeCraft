@@ -15,7 +15,7 @@ namespace SMP {
             : base()
         {
             this.Group = new ConsoleGroup();
-            username = "Console";
+            username = server.s.ConsoleName;
             ip = "127.0.0.1";
         }
 
@@ -44,5 +44,10 @@ namespace SMP {
             }
             return sb.ToString();
         }
+		
+		public void SetUsername(string name)
+		{
+			 username = name;
+		}
     }
 }

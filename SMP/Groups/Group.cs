@@ -1,6 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
+/* Notes to self (Keith)
+ * load groups, load group tracks
+ * try to promote along a track
+ * if no track is found than try to find a group with inheritance
+ * if multiple groups inherit or no inheritance is found then throw a error
+ * methods to add/remove inheritance add/remove permissions, change attributes
+ * methods (players) to setrank, add/remove subgroups etc, etc, etc
+ */
+
 namespace SMP
 {
     public class Group
