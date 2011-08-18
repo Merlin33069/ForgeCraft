@@ -447,7 +447,10 @@ namespace SMP
 			Disconnect();
 			//TODO completely delete player.
 		}
-
+        public void HandleRespawn(byte[] message)
+        {
+            SendRespawn(message[0]);
+        }
 		public short BlockDropSwitch(short id)
 		{
 			switch (id)
