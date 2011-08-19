@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SMP</RootNamespace>
     <AssemblyName>SMP</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -247,6 +247,7 @@
     <Compile Include="Command\Commands\CmdMotd.cs" />
     <Compile Include="Command\Commands\CmdMsg.cs" />
     <Compile Include="Groups\GroupUtils.cs" />
+    <Compile Include="Groups\DefaultGroup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NBToolkit\app.config" />

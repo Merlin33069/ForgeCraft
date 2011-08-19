@@ -22,7 +22,7 @@ namespace SMP
 		public static bool unsafe_plugin = false;
 		public static Logger ServerLogger = new Logger();
 		internal ConsolePlayer consolePlayer;
-		internal string ConsoleName = "Console";
+		public static string ConsoleName = "Console";
 		
 		public static string KickMessage = "You've been kicked!!";
 		public static string Motd = "Powered By ForgeCraft.";
@@ -127,13 +127,6 @@ namespace SMP
 		
 		public void Stop()
 		{
-			List<Player> templist = Player.players;
-			Thread.Sleep(200);
-			foreach (Player p in templist)
-			{
-				p.Kick("Server Shutting Down!");
-			}
-			Thread.Sleep(200);
 			if (listen != null)
             {
                 listen.Close();
@@ -144,7 +137,7 @@ namespace SMP
 		public void SetConsoleName(string name)
 		{
 			ConsoleName = name;
-			consolePlayer.SetUsername(name);
+			consolePlayer.username = name;
 		}
 	}
 }

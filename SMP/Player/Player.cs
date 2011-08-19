@@ -837,7 +837,7 @@ namespace SMP
             {
                 Server.ServerLogger.Log(LogLevel.Info, this.username + " tried using /" + cmd);
                 Server.ServerLogger.Log(LogLevel.Info, "Unrecognised command: " + cmd);
-                SendMessage(Color.Purple + "HelpBot V12: Command /" + cmd + " not recognized");
+                SendMessage(Command.HelpBot + "Command /" + cmd + " not recognized");
                 return;
             }
 			
@@ -862,6 +862,7 @@ namespace SMP
 			
 			command.Use(this, args.ToArray());
             Server.ServerLogger.Log(LogLevel.Info, this.username + " used /" + command.Name);
+			
 			
 			//will uncomment when group system is added for now everybody can use every command ;)
             /*if (Group.CheckPermission(this, command.PermissionNode))
@@ -891,7 +892,7 @@ namespace SMP
             {
                 Server.ServerLogger.Log(LogLevel.Info, this.username + " tried using /" + cmd + ", but doesn't have appropiate permissions.");
                 SendMessage(Color.Purple + "HelpBot V12: You don't have access to command /" + cmd + ".");
-            }*/
+			}*/
 		}
 		#endregion
 		#region Messaging

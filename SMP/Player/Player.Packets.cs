@@ -31,6 +31,13 @@ namespace SMP
 	                return;
 	            }
 			
+			//may cause issues :s
+			foreach(Player p in players)
+			{
+				if(p.username == this.username && p != this)
+					this.Kick("Someone is already logged in as you!");
+			}	
+			
 			if (Player.players.Count >= Server.MaxPlayers)
 			{
 				//TODO: Add VIPList checking here
@@ -43,6 +50,8 @@ namespace SMP
 			
 			LoggedIn = true;
 			SendLoginPass();
+			
+			this.Group = new DefaultGroup();
 			//OnPlayerConnect Event
 			if (PlayerAuth != null)
 				PlayerAuth(this);
@@ -94,12 +103,23 @@ namespace SMP
                 HandleCommand(cmd, m);
                 return;
             }
+			else if (m[0] == '@')
+			{
+				if(m[1] != ' ')
+				{
+					HandleCommand("msg", m.Substring(1));
+				}
+				else if(m[1] == ' ')
+				{
+					HandleCommand("msg", m.Substring(2));
+				}
+			}
 
             // TODO: Rank coloring
             //GlobalMessage(this.PlayerColor + "{1}§f: {2}", WrapMethod.Chat, this.Prefix, Username, message);
 			if (!DoNotDisturb)
 			{
-				GlobalMessage(Color.DarkBlue + "<" + level.name + "> " + Color.White + username + ": " + m);
+				GlobalMessage(Color.DarkBlue + "<" + level.name + "> " + Group.GroupColor + "[" + Group.Name + "] " + Color.White + username + ": " + m);
             	Server.ServerLogger.Log(LogLevel.Info, username + ": " + m);
 			}
         }

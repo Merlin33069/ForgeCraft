@@ -1,25 +1,20 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" ctype="Workspace" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/Player/Player.Packets.cs" ctype="Workbench">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SMP/Groups/GroupUtils.cs" ctype="Workbench">
     <Files>
       <File FileName="SMP/Groups/Group.cs" Line="10" Column="68" />
-      <File FileName="SMP/Groups/GroupUtils.cs" Line="11" Column="3" />
-      <File FileName="SMP/Player/Player.Packets.cs" Line="21" Column="23" />
+      <File FileName="SMP/Groups/GroupUtils.cs" Line="85" Column="35" />
+      <File FileName="SMP/World/World.cs" Line="73" Column="9" />
+      <File FileName="SMP/Server/ConsolePlayer.cs" Line="18" Column="42" />
+      <File FileName="SMP/Server/Server.cs" Line="25" Column="16" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="SMP" expanded="True">
-            <Node name="Command" expanded="True">
-              <Node name="Commands" expanded="True" />
-            </Node>
-            <Node name="Constants" expanded="True" />
+          <Node name="SMP" expanded="True" selected="True">
             <Node name="Groups" expanded="True" />
-            <Node name="Player" expanded="True">
-              <Node name="Player.Packets.cs" selected="True" />
-            </Node>
             <Node name="Server" expanded="True" />
-            <Node name="WebserverStuff" expanded="True" />
+            <Node name="World" expanded="True" />
           </Node>
         </State>
       </Pad>

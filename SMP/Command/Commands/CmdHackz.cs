@@ -7,7 +7,7 @@ namespace SMP
 	public class CmdHackz : Command
 	{
 		public override string Name { get { return "hackz"; } }
-        public override List<string> Shortcuts { get { return new List<string> {"hacks", "hack"}; } }
+        public override List<string> Shortcuts { get { return new List<string> {"hacks", "hack", "hax"}; } }
         public override string Category { get { return "cheats"; } }
         public override bool ConsoleUseable { get { return false; } }
         public override string Description { get { return "Hack the server like a pro."; } }
