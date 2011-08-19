@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-/* Notes to self (Keith)
- * load groups, load group tracks
- * try to promote along a track
- * if no track is found than try to find a group with inheritance
- * if multiple groups inherit or no inheritance is found then throw a error
- * methods to add/remove inheritance add/remove permissions, change attributes
- * methods (players) to setrank, add/remove subgroups etc, etc, etc
- */
-
 namespace SMP
 {
     public class Group
     {
         public static List<Group> GroupList = new List<Group>();
         public static Group DefaultGroup;
+		public static Dictionary<string, List<Group>> TracksDictionary = new Dictionary<string, List<Group>>(); //holds the all the tracks
+		public List<string> Tracks = new List<string>(); //holds whatever track(s) it is a part of, used to reference Dictionary id
         public string Name;
         public bool IsDefaultGroup = false;
         public bool CanBuild = false;

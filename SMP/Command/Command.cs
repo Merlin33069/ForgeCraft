@@ -51,9 +51,9 @@ namespace SMP
             //core.Add(new CmdReserveList());
             core.Add(new CmdSay());
 			core.Add(new CmdSpawn());
+            core.Add(new CmdStrike());
 			core.Add(new CmdTeleport());
 			core.Add(new SetTime());
-            core.Add(new CmdStrike());
             //core.Add(new CmdUnban());
 			core.Add(new CmdViewDistance());
             //core.Add(new CmdWhiteList());

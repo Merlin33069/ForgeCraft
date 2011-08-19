@@ -58,6 +58,7 @@ namespace SMP
 		//Groups and Permissions
 		public Group Group;
 		public List<string> AdditionalPermissions;
+		public List<Group> SubGroups = new List<Group>();
 		
 		//Other Player settings Donotdisturb, god mode etc.
 		public bool DoNotDisturb = false; //blocks all incoming chat except pm's
@@ -840,7 +841,7 @@ namespace SMP
                 return;
             }
 			
-			//TO BE REMOVED WHEN GROUPS ARE ADDED
+			//TO BE REMOVED WHEN PERMMISSIONS ARE ADDED
 			List<string> args = new List<string>();
 			while (true)
             {
@@ -903,9 +904,7 @@ namespace SMP
         {
             string[] lines = WordWrap.GetWrappedText(message, method);
             for (int i = 0; i < lines.Length; i++)
-            {				
-				//somebody check if this is right please :s
-				//LooksGood to me ~Merlin33069
+            {
 				byte[] bytes = new byte[(lines[i].Length * 2) + 2];
 				util.EndianBitConverter.Big.GetBytes((ushort)lines[i].Length).CopyTo(bytes, 0);
 				Encoding.BigEndianUnicode.GetBytes(lines[i]).CopyTo(bytes, 2);
