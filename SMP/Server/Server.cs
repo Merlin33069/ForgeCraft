@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,13 +30,14 @@ namespace SMP
 		
 		public static System.Timers.Timer updateTimer = new System.Timers.Timer(100);
 		public static MainLoop ml;
-
+		
 		public Server()
 		{
 			Log("Starting Server");
 			s = this;
 			consolePlayer = new ConsolePlayer(s);
 			consolePlayer.SetUsername(ConsoleName);
+			//Group.DefaultGroup = new DefaultGroup(); //debugging
 			mainlevel = new World(0, 127, 0, "main", new Random().Next());
 			World.worlds.Add(mainlevel);
 			ml = new MainLoop("server");
@@ -45,24 +46,24 @@ namespace SMP
 			{
 				updateTimer.Elapsed += delegate
 				{
-					Player.GlobalUpdate();
+				Player.GlobalUpdate();
 				}; updateTimer.Start();
 			});
 			#endregion
-
+			
 			//Setup();
-
+			
 			Log("Server Started");
 		}
-
+		
 		public bool Setup()
 		{
-			//TODO: (in order)
+		//TODO: (in order)
 			//load configuration
 			Command.InitCore();
 			BlockChange.InitAll();
 			Plugin.Load();
-			//load groups			
+			//load groups
 			//load whitelist, banlist, VIPlist
 			
 			try
@@ -71,14 +72,14 @@ namespace SMP
 				listen = new Socket(endpoint.Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 				listen.Bind(endpoint);
 				listen.Listen((int)SocketOptionName.MaxConnections);
-
+				
 				listen.BeginAccept(new AsyncCallback(Accept), null);
 				return true;
 			}
 			catch (SocketException e) { Log(e.Message + e.StackTrace); return false; }
 			catch (Exception e) { Log(e.Message + e.StackTrace); return false; }
 		}
-
+		
 		void Accept(IAsyncResult result)
 		{
 			if (shuttingDown == false)
@@ -89,8 +90,8 @@ namespace SMP
 				{
 					p = new Player();
 					
-						p.socket = listen.EndAccept(result);
-						new Thread(new ThreadStart(p.Start)).Start();
+					p.socket = listen.EndAccept(result);
+					new Thread(new ThreadStart(p.Start)).Start();
 					
 					listen.BeginAccept(new AsyncCallback(Accept), null);
 					begin = true;
@@ -98,24 +99,24 @@ namespace SMP
 				catch (SocketException e)
 				{
 					if (p != null)
-						p.Disconnect();
+					p.Disconnect();
 					if (!begin)
-						listen.BeginAccept(new AsyncCallback(Accept), null);
+					listen.BeginAccept(new AsyncCallback(Accept), null);
 				}
 				catch (Exception e)
 				{
-					Log(e.Message);
+				Log(e.Message);
 					Log(e.StackTrace);
 					if (p != null)
-						p.Disconnect();
+					p.Disconnect();
 					if (!begin)
-						listen.BeginAccept(new AsyncCallback(Accept), null);
+					listen.BeginAccept(new AsyncCallback(Accept), null);
 				}
 			}
 		}
-
+		
 		/// <summary>
-		/// To be depracted and replaced with ServerLogger 
+		/// To be depracted and replaced with ServerLogger
 		/// </summary>
 		/// <param name="message">
 		/// A <see cref="System.String"/>

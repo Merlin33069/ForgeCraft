@@ -6,7 +6,7 @@
       <File FileName="SMP/Groups/GroupUtils.cs" Line="17" Column="14" />
       <File FileName="SMP/Player/Player.cs" Line="1110" Column="1" />
       <File FileName="SMP/Player/Player.Packets.cs" Line="56" Column="27" />
-      <File FileName="SMP/World/World.cs" Line="75" Column="9" />
+      <File FileName="SMP/World/World.cs" Line="75" Column="7" />
       <File FileName="SMP/Command/Command.cs" Line="57" Column="28" />
       <File FileName="SMP/Command/Commands/CmdHackz.cs" Line="10" Column="103" />
       <File FileName="SMP/Program.cs" Line="1" Column="1" />
@@ -14,14 +14,12 @@
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="SMP" expanded="True">
+          <Node name="SMP" expanded="True" selected="True">
             <Node name="Command" expanded="True">
               <Node name="Commands" expanded="True" />
             </Node>
             <Node name="Groups" expanded="True" />
-            <Node name="Player" expanded="True">
-              <Node name="Player.cs" selected="True" />
-            </Node>
+            <Node name="Player" expanded="True" />
             <Node name="Server" expanded="True" />
             <Node name="World" expanded="True" />
           </Node>

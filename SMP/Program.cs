@@ -74,9 +74,9 @@ namespace SMP
                     {
                         case "stop":
                             Server.ServerLogger.Log(LogLevel.Info, "Stopping Server...");
-							foreach (Player p in Player.players)
+							for(int i =Player.players.Count -1; i >= 0; i--)
 							{
-								p.Kick("Server Shutting Down!");
+								Player.players[i].Kick("Server Shutting Down!");
 							}
                             Exit();
                             return;

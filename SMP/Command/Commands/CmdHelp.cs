@@ -16,8 +16,7 @@ namespace SMP
 			
         public override void Use(Player p, params string[] args)
         {   
-			p.SendMessage("TODO: Uncomment");
-            /*bool cmdsFound = false;
+            bool cmdsFound = false;
             bool catFound = false;
 
             if (args.Length == 0)
@@ -34,7 +33,7 @@ namespace SMP
             {
                 string categoryArg = args[0].ToLower();
 
-                if (categoryArg == "info") //just in case someone uses info fo information
+                if (categoryArg == "info") //just in case someone uses info for information
                     categoryArg = "information";
 
                 if (categoryArg == "core")
@@ -103,7 +102,7 @@ namespace SMP
                     }
 
                 }
-            }*/
+            }
         }
 
         public override void Help(Player p)

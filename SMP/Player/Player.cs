@@ -56,8 +56,8 @@ namespace SMP
 		#endregion
 
 		//Groups and Permissions
-		public Group Group;
-		public List<string> AdditionalPermissions;
+		public Group group;
+		public List<string> AdditionalPermissions = new List<string>();
 		public List<Group> SubGroups = new List<Group>();
 		
 		//Other Player settings Donotdisturb, god mode etc.
@@ -840,59 +840,59 @@ namespace SMP
                 SendMessage(Command.HelpBot + "Command /" + cmd + " not recognized");
                 return;
             }
-			
-			//TO BE REMOVED WHEN PERMMISSIONS ARE ADDED
-			List<string> args = new List<string>();
-			while (true)
-            {
-                if (message.IndexOf(' ') != -1)
-                {
-                    message = message.Substring(message.IndexOf(' ') + 1);
-                    if (message.IndexOf(' ') != -1)
-                    args.Add(message.Substring(0, message.IndexOf(' ')));
-                    else
-                    {
-                        args.Add(message);
-                        break;
-                    }
-                }
-                else if (message.IndexOf(' ') == -1)
-                    break;
-            }
-			
-			command.Use(this, args.ToArray());
-            Server.ServerLogger.Log(LogLevel.Info, this.username + " used /" + command.Name);
-			
-			
-			//will uncomment when group system is added for now everybody can use every command ;)
-            /*if (Group.CheckPermission(this, command.PermissionNode))
-            {
-            List<string> args = new List<string>();
-            while (true)
-            {
-                if (message.IndexOf(' ') != -1)
-                {
-                    message = message.Substring(message.IndexOf(' ') + 1);
-                    if (message.IndexOf(' ') != -1)
-                    args.Add(message.Substring(0, message.IndexOf(' ')));
-                    else
-                    {
-                        args.Add(message);
-                        break;
-                    }
-                }
-                else if (message.IndexOf(' ') == -1)
-                    break;
-            }
-
-            command.Use(this, args.ToArray());
-            Server.ServerLogger.Log(LogLevel.Info, this.username + " used /" + command.Name);
-            }
-            else if (!Group.CheckPermission(this, command.PermissionNode))
-            {
-                Server.ServerLogger.Log(LogLevel.Info, this.username + " tried using /" + cmd + ", but doesn't have appropiate permissions.");
-                SendMessage(Color.Purple + "HelpBot V12: You don't have access to command /" + cmd + ".");
-			}*/
+				//TO BE REMOVED WHEN PERMMISSIONS ARE ADDED
+				/*List<string> args = new List<string>();
+				while (true)
+	            {
+	                if (message.IndexOf(' ') != -1)
+	                {
+	                    message = message.Substring(message.IndexOf(' ') + 1);
+	                    if (message.IndexOf(' ') != -1)
+	                    args.Add(message.Substring(0, message.IndexOf(' ')));
+	                    else
+	                    {
+	                        args.Add(message);
+	                        break;
+	                    }
+	                }
+	                else if (message.IndexOf(' ') == -1)
+	                    break;
+	            }
+				
+				command.Use(this, args.ToArray());
+	            Server.ServerLogger.Log(LogLevel.Info, this.username + " used /" + command.Name);
+				*/
+				
+				//will uncomment when group system is added for now everybody can use every command ;)
+				//Player p = FindPlayer(this.username);
+	            if (Group.CheckPermission(this, "core.info.help"))
+	            {
+	            List<string> args = new List<string>();
+	            while (true)
+	            {
+	                if (message.IndexOf(' ') != -1)
+	                {
+	                    message = message.Substring(message.IndexOf(' ') + 1);
+	                    if (message.IndexOf(' ') != -1)
+	                    args.Add(message.Substring(0, message.IndexOf(' ')));
+	                    else
+	                    {
+	                        args.Add(message);
+	                        break;
+	                    }
+	                }
+	                else if (message.IndexOf(' ') == -1)
+	                    break;
+	            }
+	
+	            command.Use(this, args.ToArray());
+	            Server.ServerLogger.Log(LogLevel.Info, this.username + " used /" + command.Name);
+	            }
+	            else if (!Group.CheckPermission(this, command.PermissionNode))
+	            {
+	                Server.ServerLogger.Log(LogLevel.Info, this.username + " tried using /" + cmd + ", but doesn't have appropiate permissions.");
+	                SendMessage(Color.Purple + "HelpBot V12: You don't have access to command /" + cmd + ".");
+				}
 		}
 		#endregion
 		#region Messaging

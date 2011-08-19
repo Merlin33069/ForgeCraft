@@ -53,7 +53,7 @@ namespace SMP
 		{
 			if(Group.GroupList.Contains(g))
 			{
-				p.Group = g;
+				p.group = g;
 				return true;
 			}
 			else 
@@ -71,22 +71,22 @@ namespace SMP
 		/// </returns>
 		public static bool PromotePlayer(Player p)
 		{
-			for (int i = 0; i < p.Group.Tracks.Count; i++)
+			for (int i = 0; i < p.group.Tracks.Count; i++)
 			{
-				if(Group.TracksDictionary.ContainsKey(p.Group.Tracks[i]))
+				if(Group.TracksDictionary.ContainsKey(p.group.Tracks[i]))
 				{
 					List<Group> tempList;
-					Group.TracksDictionary.TryGetValue(p.Group.Tracks[i], out tempList);
+					Group.TracksDictionary.TryGetValue(p.group.Tracks[i], out tempList);
 					
 					if(tempList.Count >= 1)
 					{
 						for(int ind = 0; i < tempList.Count; i++)
 						{
-							if(p.Group == tempList[ind])
+							if(p.group == tempList[ind])
 							{
 								if(ind + 1 > tempList.Count)
 								{
-									p.Group = tempList[ind + 1];
+									p.group = tempList[ind + 1];
 									return true;
 								}
 							}
@@ -99,9 +99,9 @@ namespace SMP
 			//maybe add checks to make sure there isn't multiple inheritance
 			foreach(Group g in Group.GroupList)
 			{
-				if(g.InheritanceList.Contains(p.Group))
+				if(g.InheritanceList.Contains(p.group))
 				{
-					p.Group = g;
+					p.group = g;
 					return true;
 				}
 			}
@@ -119,22 +119,22 @@ namespace SMP
 		/// </returns>
 		public static bool DemotePlayer(Player p)
 		{
-			for (int i = 0; i < p.Group.Tracks.Count; i++)
+			for (int i = 0; i < p.group.Tracks.Count; i++)
 			{
-				if(Group.TracksDictionary.ContainsKey(p.Group.Tracks[i]))
+				if(Group.TracksDictionary.ContainsKey(p.group.Tracks[i]))
 				{
 					List<Group> tempList;
-					Group.TracksDictionary.TryGetValue(p.Group.Tracks[i], out tempList);
+					Group.TracksDictionary.TryGetValue(p.group.Tracks[i], out tempList);
 					
 					if(tempList.Count >= 1)
 					{
 						for(int ind = 0; i < tempList.Count; i++)
 						{
-							if(p.Group == tempList[ind])
+							if(p.group == tempList[ind])
 							{
 								if(ind > 0)
 								{
-									p.Group = tempList[ind - 1];
+									p.group = tempList[ind - 1];
 									return true;
 								}
 							}
@@ -144,9 +144,9 @@ namespace SMP
 				}
 			}
 			
-			if(p.Group.InheritanceList.Count == 1)
+			if(p.group.InheritanceList.Count == 1)
 			{
-				p.Group = p.Group.InheritanceList[0];
+				p.group = p.group.InheritanceList[0];
 				return true;
 			}
 			return false;

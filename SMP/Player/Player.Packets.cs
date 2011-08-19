@@ -52,7 +52,7 @@ namespace SMP
 			LoggedIn = true;
 			SendLoginPass();
 			
-			this.Group = new DefaultGroup();
+			this.group = new DefaultGroup();
             UpdateShi(this);
 			//OnPlayerConnect Event
 			if (PlayerAuth != null)
@@ -134,7 +134,7 @@ namespace SMP
             //GlobalMessage(this.PlayerColor + "{1}§f: {2}", WrapMethod.Chat, this.Prefix, Username, message);
 			if (!DoNotDisturb)
 			{
-				GlobalMessage(Color.DarkBlue + "<" + level.name + "> " + Group.GroupColor + "[" + Group.Name + "] " + Color.White + username + ": " + m);
+				GlobalMessage(Color.DarkBlue + "<" + level.name + "> " + group.GroupColor + "[" + group.Name + "] " + Color.White + username + ": " + m);
             	Server.ServerLogger.Log(LogLevel.Info, username + ": " + m);
 			}
         }

@@ -32,7 +32,7 @@ namespace SMP
             {
                 return true;
             }
-            else if (p.Group.PermissionList.Contains(perm))
+            else if (p.group.PermissionList.Contains(perm))
             {
                 return true;
             }

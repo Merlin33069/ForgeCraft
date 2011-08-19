@@ -14,7 +14,7 @@ namespace SMP {
         public ConsolePlayer(Server server)
             : base()
         {
-            this.Group = new ConsoleGroup();
+            this.group = new ConsoleGroup();
             username = Server.ConsoleName;
             ip = "127.0.0.1";
         }
