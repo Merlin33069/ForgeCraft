@@ -1095,16 +1095,7 @@ namespace SMP
                 socket = null;
             }
 		}
-        public void SendLightning(int x, int y, int z, int EntityId)
-        {
-            byte[] bytes = new byte[17];
-            util.EndianBitConverter.Big.GetBytes(EntityId).CopyTo(bytes, 0);
-            util.EndianBitConverter.Big.GetBytes(true).CopyTo(bytes, 4);
-            util.EndianBitConverter.Big.GetBytes(x).CopyTo(bytes, 5);
-            util.EndianBitConverter.Big.GetBytes(y).CopyTo(bytes, 9);
-            util.EndianBitConverter.Big.GetBytes(z).CopyTo(bytes, 13);
-            SendRaw(0x47, bytes);
-        }
+        
         public void hurt(short Amount)
         {
             health -= Amount;
@@ -1114,6 +1105,23 @@ namespace SMP
         public void hurt()
         {
             hurt(1);
+
+        }
+        public void SpawnMob(int EID, byte Type, int x, int y, int z)
+        {
+            byte[] bytes = new byte[20];
+            util.EndianBitConverter.Big.GetBytes(EID).CopyTo(bytes, 0);
+            bytes[4] = Type;
+            util.EndianBitConverter.Big.GetBytes(x).CopyTo(bytes, 5);
+            util.EndianBitConverter.Big.GetBytes(y).CopyTo(bytes, 9);
+            util.EndianBitConverter.Big.GetBytes(z).CopyTo(bytes, 13);
+           // byte yaw = 27;
+            bytes[17] = 1;
+            bytes[18] = 1;
+            bytes[19] = 0x01;
+
+           // SendRaw(0x18, bytes);
+            
 
         }
 		#region TOOLS

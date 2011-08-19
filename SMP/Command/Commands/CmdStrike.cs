@@ -17,11 +17,13 @@ namespace SMP
             if (args.Length == 0 || args.Length > 1) { Help(p); return; }
 
             Player q = Player.FindPlayer(args[0]);
+            
             int x = (int)Math.Round(q.pos.X, 0, MidpointRounding.AwayFromZero);
             int y = (int)Math.Round(q.pos.Y, 0, MidpointRounding.AwayFromZero);
             int z = (int)Math.Round(q.pos.Z, 0, MidpointRounding.AwayFromZero);
-
-            q.SendLightning(x,y,z, 10);
+            World w = World.Find(p.level.name);
+            w.SendLightning(x, y, z, 10, p);
+            
             q.hurt(6);
         }
 
