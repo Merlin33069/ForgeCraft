@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-//using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace SMP
 {
@@ -55,16 +55,16 @@ namespace SMP
 			generator = new GenStandard();
 			Server.Log("Generating...");
 
-			for (int x = -3; x <= 3; x++)
+			/*for (int x = -3; x <= 3; x++)
 			{
 			    for (int z = -3; z <= 3; z++)
 			    {
 			        GenerateChunk(x, z);
 			    }
 			    Server.Log(x + " Row Generated.");
-			}
+			}*/
 
-			/*Parallel.For(-3, 3, delegate(int x)
+			Parallel.For(-3, 3, delegate(int x)
 			{
 				Parallel.For(-3, 3, delegate(int z)
 				{
@@ -72,7 +72,7 @@ namespace SMP
 				});
 				Console.WriteLine(x + " Row Generated.");
                 
-			});*/
+			});
             Console.WriteLine("Look distance = 3");
 			this.SpawnX = spawnx; this.SpawnY = spawny; this.SpawnZ = spawnz;
 			timeupdate.Elapsed += delegate {
