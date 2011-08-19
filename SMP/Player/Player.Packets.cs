@@ -45,6 +45,7 @@ namespace SMP
 			}
 			
 			//TODO: Check ban list, and whitelist
+            
 			
 			//TODO: load Player attributes like group, and other settings
 			
@@ -52,10 +53,23 @@ namespace SMP
 			SendLoginPass();
 			
 			this.Group = new DefaultGroup();
+            UpdateShi(this);
 			//OnPlayerConnect Event
 			if (PlayerAuth != null)
 				PlayerAuth(this);
 		}
+
+        private void UpdateShi(Player p)
+        {
+            World w = World.Find(p.level.name);
+
+            if (w.Israining)
+            {
+                w.rain(true, p);
+               // p.SendMessage("IS IT RAINING?"); for debugging :P
+            }
+            
+        }
 		private void HandleHandshake(byte[] message)
 		{
 			//Server.Log("handshake-2");
@@ -64,6 +78,7 @@ namespace SMP
 			//Server.Log(Encoding.BigEndianUnicode.GetString(message, 2, length * 2));
 
 			SendHandshake();
+            
 		}
 		#endregion
 		#region Chat

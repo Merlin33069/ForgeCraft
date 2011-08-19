@@ -48,6 +48,7 @@ namespace SMP
 			core.Add(new CmdMotd());
 			core.Add(new CmdMsg());
 			core.Add(new NewLVL());
+            core.Add(new CmdRain());
             //core.Add(new CmdReserveList());
             core.Add(new CmdSay());
 			core.Add(new CmdSpawn());

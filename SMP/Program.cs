@@ -133,7 +133,7 @@ namespace SMP
                 }
                 else
                 {
-                    Player.GlobalMessage(Color.Announce + input);
+                    Player.GlobalMessage(Color.Announce + "[Console] " + Color.Blue + input);
                 }
             }
         }

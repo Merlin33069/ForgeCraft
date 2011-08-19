@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
 
 namespace SMP
 {
-	public class World
+	public partial class World
 	{
 		public static List<World> worlds = new List<World>();
 		public double SpawnX;
@@ -21,6 +21,7 @@ namespace SMP
 		public GenStandard generator;
 		public Dictionary<Point, Chunk> chunkData;
 		public List<Point> ToGenerate = new List<Point>();
+        public bool Raining = false;
 		#region Custom Command / Plugin Events
 		//Custom Command / Plugin Events -------------------------------------------------------------------
 		public delegate void OnWorldLoad(World w); //TODO When loading levels is finished, add this event
@@ -54,24 +55,25 @@ namespace SMP
 			generator = new GenStandard();
 			Server.Log("Generating...");
 
-			//for (int x = -3; x <= 3; x++)
-			//{
-			//    for (int z = -3; z <= 3; z++)
-			//    {
-			//        GenerateChunk(x, z);
-			//    }
-			//    Server.Log(x + " Row Generated.");
-			//}
+			for (int x = -3; x <= 3; x++)
+			{
+			    for (int z = -3; z <= 3; z++)
+			    {
+			        GenerateChunk(x, z);
+			    }
+			    Server.Log(x + " Row Generated.");
+			}
 
-			Parallel.For(-3, 3, delegate(int x)
+			/*Parallel.For(-3, 3, delegate(int x)
 			{
 				Parallel.For(-3, 3, delegate(int z)
 				{
 					GenerateChunk(x, z);
 				});
 				Console.WriteLine(x + " Row Generated.");
-			});
-
+                
+			});*/
+            Console.WriteLine("Look distance = 3");
 			this.SpawnX = spawnx; this.SpawnY = spawny; this.SpawnZ = spawnz;
 			timeupdate.Elapsed += delegate {
 				time += 20;
@@ -82,6 +84,7 @@ namespace SMP
 			timeupdate.Start();
 			this.name = name;
 		}
+       
 		public static World Find(string name)
 		{
 			World tempLevel = null; bool returnNull = false;
@@ -435,6 +438,8 @@ namespace SMP
 				return Math.Floor(valueToRound);
 			}
 		}
+       
+        
 	}
 }
 

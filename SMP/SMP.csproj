@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="AI\AI.cs" />
     <Compile Include="Command\Commands\CmdFly.cs" />
+    <Compile Include="Command\Commands\CmdRain.cs" />
     <Compile Include="Command\Commands\CmdStrike.cs" />
     <Compile Include="Command\Commands\CmdViewDistance.cs" />
     <Compile Include="Objects\McObject.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="WebserverStuff\WebClient.cs" />
     <Compile Include="WebserverStuff\WebServer.cs" />
     <Compile Include="World\BlockChangeSystem.cs" />
+    <Compile Include="World\Weather.cs" />
     <Compile Include="World\World.cs" />
     <Compile Include="World\Noise.cs" />
     <Compile Include="World\FCGenerator.cs" />
