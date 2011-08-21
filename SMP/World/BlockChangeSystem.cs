@@ -11,6 +11,7 @@ namespace SMP
 
 		public static Dictionary<short, BCD> RightClickedOn = new Dictionary<short, BCD>();
 		public static Dictionary<short, BCD> ItemRightClick = new Dictionary<short, BCD>();
+		public static Dictionary<short, BCD> Placed = new Dictionary<short, BCD>();
 		public static Dictionary<short, BCD> LeftClicked = new Dictionary<short, BCD>();
 		public static Dictionary<short, BCD> Destroyed = new Dictionary<short, BCD>();
 
@@ -57,7 +58,7 @@ namespace SMP
 			ItemRightClick.Add((short)Items.Bucket, new BCD(UseBucket));
 			ItemRightClick.Add((short)Items.BucketWater, new BCD(UseWaterBucket));
 			ItemRightClick.Add((short)Items.BucketLava, new BCD(UseLavaBucket));
-			ItemRightClick.Add((short)Items.Milk, new BCD(DrinkMilk));
+			ItemRightClick.Add((short)Items.Milk, new BCD(DrinkMilk)); //not really drink milk, but when you right click, it likes to empty milk, and its fuckin annoying >_>
 			ItemRightClick.Add((short)Items.Minecart, new BCD(PlaceMinecart));
 			ItemRightClick.Add((short)Items.Saddle, new BCD(UseSaddle));
 			ItemRightClick.Add((short)Items.Redstone, new BCD(PlaceRedstone));
@@ -80,6 +81,36 @@ namespace SMP
 			ItemRightClick.Add((short)Items.GoldMusicDisc, new BCD(GoldMusicDisk));
 			ItemRightClick.Add((short)Items.GreenMusicDisc, new BCD(GreenMusicDisk));
 
+			//Block Place Delegates, like water/lava and to get furnaces/dispensers/etc to lay correctly
+			Placed.Add((short)Blocks.Dirt, new BCD(PlaceDirt)); //We need a timer of sorts to change this to grass? or something... idk
+			Placed.Add((short)Blocks.AWater, new BCD(PlaceWater));
+			Placed.Add((short)Blocks.SWater, new BCD(PlaceWater));
+			Placed.Add((short)Blocks.ALava, new BCD(PlaceLava));
+			Placed.Add((short)Blocks.SLava, new BCD(PlaceLava));
+			Placed.Add((short)Blocks.Sand, new BCD(PlaceSand));
+			Placed.Add((short)Blocks.Gravel, new BCD(PlaceGravel));
+			Placed.Add((short)Blocks.Dispenser, new BCD(PlaceDispenser));
+			Placed.Add((short)Blocks.RailPowered, new BCD(PlaceRailPower));
+			Placed.Add((short)Blocks.RailDetector, new BCD(PlaceRailDetect));
+			Placed.Add((short)Blocks.PistonSticky, new BCD(PlaceStickyPiston));
+			Placed.Add((short)Blocks.Piston, new BCD(PlaceNormalPiston));
+			Placed.Add((short)Blocks.Slabs, new BCD(PlaceSlabs));
+			Placed.Add((short)Blocks.Torch, new BCD(PlaceTorch));
+			Placed.Add((short)Blocks.StairsWooden, new BCD(PlaceStairsWooden));
+			Placed.Add((short)Blocks.Chest, new BCD(PlaceChest));
+			Placed.Add((short)Blocks.Furnace, new BCD(PlaceFurnace));
+			Placed.Add((short)Blocks.Ladder, new BCD(PlaceLadder));
+			Placed.Add((short)Blocks.Rails, new BCD(PlaceRail));
+			Placed.Add((short)Blocks.StairsCobblestone, new BCD(PlaceStairsCobblestone));
+			Placed.Add((short)Blocks.Lever, new BCD(PlaceLever));
+			Placed.Add((short)Blocks.RedstoneTorchOff, new BCD(PlaceRedstoneTorch));
+			Placed.Add((short)Blocks.ButtonStone, new BCD(PlaceButtonStone));
+			Placed.Add((short)Blocks.Cactus, new BCD(PlaceCactus));
+			Placed.Add((short)Blocks.SugarCane, new BCD(PlaceSugarCane));
+			Placed.Add((short)Blocks.Fence, new BCD(PlaceFence));
+			Placed.Add((short)Blocks.Pumpkin, new BCD(PlacePumpkin));
+			Placed.Add((short)Blocks.JackOLantern, new BCD(PlaceJackOLantern));
+			Placed.Add((short)Blocks.Trapdoor, new BCD(PlaceTrapdoor));
 
 			//Block LeftClick Delegates: (Holds Delegates for when a player hits specific items)
 			LeftClicked.Add((short)Blocks.NoteBlock, new BCD(PlayNoteblock));
@@ -111,18 +142,17 @@ namespace SMP
 
 		public static bool Till(Player a, BCS b)
 		{
+			if (a.inventory.current_item.item == (short)Items.DiamondHoe || a.inventory.current_item.item == (short)Items.IronHoe || a.inventory.current_item.item == (short)Items.GoldHoe || a.inventory.current_item.item == (short)Items.StoneHoe || a.inventory.current_item.item == (short)Items.WoodenHoe)
+			if (Blockclicked(a, b) == (byte)Blocks.Grass)
+			{
+				a.level.BlockChange((int)b.pos.x, (int)b.pos.y, (int)b.pos.z, (byte)Blocks.FarmLand, 0);
+				a.inventory.current_item.meta++; //damage of the item
+			}
 			return true;
-		}
-		public static bool BucketWater(Player a, BCS b)
-		{
-			return false;
-		}
-		public static bool BucketLava(Player a, BCS b)
-		{
-			return false;
 		}
 		public static bool OpenDispenser(Player a, BCS b)
 		{
+			//TODO, open a dispenser window and redirect clent window handling to it.
 			return false;
 		}
 		public static bool ChangeNoteblock(Player a, BCS b)
@@ -200,6 +230,7 @@ namespace SMP
 		}
 		public static bool FireBow(Player a, BCS b)
 		{
+			//pew pew pew.
 			return false;
 		}
 		public static bool GoldMusicDisk(Player a, BCS b)
@@ -280,10 +311,21 @@ namespace SMP
 		}
 		public static bool UseBucket(Player a, BCS b)
 		{
+			if (Blockclicked(a, b) == (byte)Blocks.AWater || Blockclicked(a, b) == (byte)Blocks.SWater)
+			{
+				a.level.BlockChange((int)b.pos.x, (int)b.pos.y, (int)b.pos.z, 0, 0);
+				a.inventory.current_item.item = (short)Items.BucketWater;
+			}
+			else if (Blockclicked(a, b) == (byte)Blocks.ALava || Blockclicked(a, b) == (byte)Blocks.SLava)
+			{
+				a.level.BlockChange((int)b.pos.x, (int)b.pos.y, (int)b.pos.z, 0, 0);
+				a.inventory.current_item.item = (short)Items.BucketLava;
+			}
 			return false;
 		}
 		public static bool UseDye(Player a, BCS b)
 		{
+			//We dont need to do this, duh, just catch when some things are right clicked on, like saplings.
 			return false;
 		}
 		public static bool UseFishingRod(Player a, BCS b)
@@ -305,6 +347,149 @@ namespace SMP
 		public static bool UseWaterBucket(Player a, BCS b)
 		{
 			return false;
+		}
+
+		public static bool PlaceButtonStone(Player a, BCS b)
+		{
+			if (!BlockData.CanPlaceAgainst(Blockclicked(a,b))) return false;
+			//TODO check the block where the user is placing, if something exists, return
+
+			switch (b.Direction)
+			{
+				case (0):
+				case (1):
+					return false;
+
+				case ((byte)Directions.East):
+					b.Direction = (byte)Buttons.West;
+					break;
+				case ((byte)Directions.West):
+					b.Direction = (byte)Buttons.East;
+					break;
+				case ((byte)Directions.North):
+					b.Direction = (byte)Buttons.South;
+					break;
+				case ((byte)Directions.South):
+					b.Direction = (byte)Buttons.North;
+					break;
+
+				default:
+					Server.Log("PBS - default");
+					return false;
+			}
+
+			a.level.BlockChange((int)b.pos.x, (int)b.pos.y, (int)b.pos.z, (byte)b.ID, b.Direction);
+			a.inventory.Remove(a.inventory.current_index, 1);
+			return false;
+
+		}
+		public static bool PlaceCactus(Player a, BCS b)
+		{
+			return true;
+		}
+		public static bool PlaceChest(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceDirt(Player a, BCS b)
+		{
+			return true;
+		}
+		public static bool PlaceDispenser(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceFence(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceFurnace(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceGravel(Player a, BCS b)
+		{
+			return true;
+		}
+		public static bool PlaceJackOLantern(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceLadder(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceLava(Player a, BCS b)
+		{
+			return true;
+		}
+		public static bool PlaceLever(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceNormalPiston(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceStikyPiston(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlacePumpkin(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceRail(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceRailDetect(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceRailPower(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceRedstoneTorch(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceSand(Player a, BCS b)
+		{
+			return true;
+		}
+		public static bool PlaceSlabs(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceStairsCobblestone(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceStairsWooden(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceStickyPiston(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceSugarCane(Player a, BCS b)
+		{
+			return true;
+		}
+		public static bool PlaceTorch(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceTrapdoor(Player a, BCS b)
+		{
+			return false;
+		}
+		public static bool PlaceWater(Player a, BCS b)
+		{
+			return true;
 		}
 
 		public static bool PlayNoteblock(Player a, BCS b)
@@ -392,14 +577,41 @@ namespace SMP
 		{
 			return false;
 		}
+
+		/// <summary>
+		/// this one reverses the direction offset and returns the block id that was clicked
+		/// this does not always need to be used, only if the direction offset has already been applied
+		/// in the packet handling.
+		/// </summary>
+		/// <param name="p"></param>
+		/// <param name="a"></param>
+		/// <returns></returns>
+		public static byte Blockclicked(Player p, BCS a)
+		{
+			int x = (int)a.pos.x;
+			int y = (int)a.pos.y;
+			int z = (int)a.pos.z;
+
+			switch (a.Direction)
+			{
+				case 0: y++; break;
+				case 1: y--; break;
+				case 2: z++; break;
+				case 3: z--; break;
+				case 4: x++; break;
+				case 5: x--; break;
+			}
+
+			return p.level.GetBlock(x, y, z);
+		}
 	}
 	public struct BCS //BlockChangeStruct (This is used to hold the blockchange information)
 	{
-		Point3 pos;
-		short ID;
-		byte Direction;
-		byte Amount;
-		short Damage;
+		public Point3 pos;
+		public short ID;
+		public byte Direction;
+		public byte Amount;
+		public short Damage;
 
 		public BCS(Point3 pos, short id, byte direction)
 		{

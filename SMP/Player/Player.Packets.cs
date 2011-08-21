@@ -365,7 +365,7 @@ namespace SMP
 			{
 				if (!(bool)BlockChange.RightClickedOn[rc].DynamicInvoke(this, new BCS(new Point3(blockX, blockY, blockZ), blockID, direction, amount, damage)))
 				{
-					Console.WriteLine("Delegate for " + rc + " placed returned false");
+					//Console.WriteLine("Delegate for " + rc + " placed returned false");
 					return;
 				}
 			}
@@ -395,7 +395,7 @@ namespace SMP
 					}
 					if (e1.isPlayer)
 					{
-						//dont do anything here? is there a case where you right click a player? a snowball maybe...
+						//dont do anything here? is there a case where you right click a player? a snowball maybe... but we shouldn't get here then.
 						//Check the players holding item, if they need to do something with it, do it.
 						//anyway, if this is a player, then we dont place a block :D so return.
 						return;
@@ -412,7 +412,7 @@ namespace SMP
 				{
 					if (e1.isPlayer)
 					{
-						//dont do anything here? is there a case where you right click a player? a snowball maybe...
+						//dont do anything here? is there a case where you right click a player? a snowball maybe... but we shouldn't get here then.
 						//we should do an item check, then return...
 						//anyway, if this is a player, then we dont place a block :D so return.
 						return;
@@ -436,10 +436,18 @@ namespace SMP
 				//Player right clicked with empty hand!
 				return;
 			}
-
-			if (blockID >= 1 && blockID <= 127)
-			{				
+			else if (blockID >= 1 && blockID <= 127)
+			{
+				if (BlockChange.Placed.ContainsKey(blockID))
+				{
+					if (!(bool)BlockChange.Placed[blockID].DynamicInvoke(this, new BCS(new Point3(blockX, blockY, blockZ), blockID, direction, amount, damage)))
+					{
+						return;
+					}
+				}
 				level.BlockChange(blockX, (int)blockY, blockZ, (byte)blockID, (byte)damage);
+				inventory.Remove(inventory.current_index, 1);
+				return;
 			}
 			else
 			{
@@ -449,8 +457,6 @@ namespace SMP
 				}
 				return;
 			}
-
-			inventory.Remove(inventory.current_index, 1);
 		}
 		#endregion
 

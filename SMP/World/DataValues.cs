@@ -244,4 +244,67 @@ namespace SMP
 	public enum TrapDoors : byte { West = 0x0, East = 0x1, South = 0x2, North = 0x3, Open = 0x4 };
 	public enum Piston : byte { Down = 0x0, Up = 0x1, East = 0x2, West = 0x3, North = 0x4, South = 0x5, On = 0x8 };
 	public enum PistonExtension : byte { Down = 0x0, Up = 0x1, East = 0x2, West = 0x3, North = 0x4, South = 0x5, Sticky = 0x8 };
+	public enum Directions : byte { Bottom = 0, Top = 1, South = 2, North = 3, West = 4, East = 5 };
+
+	public static class BlockData
+	{
+		/// <summary>
+		/// This method returns weather or not special blocks can be placed against this one, for example, torches cant be placed on torches.
+		/// </summary>
+		/// <param name="a"></param>
+		public static bool CanPlaceAgainst(byte a)
+		{
+			switch (a)
+			{
+				case (0):
+				case (6):
+				case (8):
+				case (9):
+				case (10):
+				case (11):
+				case (26):
+				case (27):
+				case (28):
+				case (30):
+				case (31):
+				case (32):
+				case (34):
+				case (36):
+				case (37):
+				case (38):
+				case (39):
+				case (40):
+				case (43):
+				case (44):
+				case (50):
+				case (51):
+				case (53):
+				case (55):
+				case (59):
+				case (63):
+				case (64):
+				case (65):
+				case (66):
+				case (67):
+				case (68):
+				case (69):
+				case (70):
+				case (71):
+				case (72):
+				case (75):
+				case (76):
+				case (77):
+				case (83):
+				case (85):
+				case (90):
+				case (92):
+				case (93):
+				case (94):
+				case (96):
+					return false;
+			}
+			return true;
+		}
+	}
+
 }
