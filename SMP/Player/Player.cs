@@ -25,7 +25,7 @@ namespace SMP
 		bool disconnected = false;
         public bool LoggedIn { get; protected set; }
 		bool MapSent = false;
-		bool MapLoaded = false;
+		public bool MapLoaded = false;
         public short health = 20;
 		public double Stance;
 		public Point3 pos;
@@ -310,22 +310,14 @@ namespace SMP
 			}
 			void UpdatePosition()
 			{
-				//TODO the oldpos never gets set, we need to figure out why the diff's below always = 0
-
 				e.UpdateEntities();
 				if (!LoggedIn) return;
 
 				Point3 diff = oldpos - pos;
 				int diff1 = (int)oldpos.mdiff(pos);
-				//int diffX = (int)((oldpos[0] * 32) - (pos[0] * 32));
-				//int diffY = (int)((oldpos[1] * 32) - (pos[1] * 32));
-				//int diffZ = (int)((oldpos[2] * 32) - (pos[2] * 32));
 
-				//TODO Move this into the if's below when we get oldpos working
-				if(isFlying) FlyCode(); 
-				//
-
-				//Console.WriteLine(diff.x + " " + diff.y + " " + diff.z + " " + diff1);
+				//TODO Fix oldpos and move this
+				if(isFlying) FlyCode();
 
 				if (diff1 == 0)
 				{
@@ -636,7 +628,7 @@ namespace SMP
 				SendSpawnPoint();
 				SendLoginDone();
 				MapLoaded = true;
-				//GlobalSpawn();
+				
 			}
 			/// <summary>
 			/// Sends a player a Chunk
@@ -1122,24 +1114,37 @@ namespace SMP
         public void hurt()
         {
             hurt(1);
-
         }
-        public void SpawnMob(int EID, byte Type, int x, int y, int z)
+        public void SpawnMob(Entity e)
         {
-            byte[] bytes = new byte[20];
-            util.EndianBitConverter.Big.GetBytes(EID).CopyTo(bytes, 0);
-            bytes[4] = Type;
-            util.EndianBitConverter.Big.GetBytes(x).CopyTo(bytes, 5);
-            util.EndianBitConverter.Big.GetBytes(y).CopyTo(bytes, 9);
-            util.EndianBitConverter.Big.GetBytes(z).CopyTo(bytes, 13);
-           // byte yaw = 27;
-            bytes[17] = 1;
-            bytes[18] = 1;
-            bytes[19] = 0x01;
+			if (e == null)
+			{
+				if (VisibleEntities.Contains(e.id)) VisibleEntities.Remove(e.id);
+				return;
+			}
+			if (!LoggedIn)
+			{
+				if (VisibleEntities.Contains(e.id)) VisibleEntities.Remove(e.id);
+				return;
+			}
+			if (!MapLoaded)
+			{
+				if (VisibleEntities.Contains(e.id)) VisibleEntities.Remove(e.id);
+				return;
+			}
 
-           // SendRaw(0x18, bytes);
-            
+			byte[] bytes = new byte[20 + e.ai.meta.Length];
 
+            util.EndianBitConverter.Big.GetBytes(e.id).CopyTo(bytes, 0);
+            bytes[4] = e.ai.type;
+            util.EndianBitConverter.Big.GetBytes((int)e.ai.pos.x).CopyTo(bytes, 5);
+			util.EndianBitConverter.Big.GetBytes((int)e.ai.pos.y).CopyTo(bytes, 9);
+			util.EndianBitConverter.Big.GetBytes((int)e.ai.pos.z).CopyTo(bytes, 13);
+			bytes[17] = (byte)(e.ai.yaw / 1.40625);
+			bytes[18] = (byte)(e.ai.pitch / 1.40625);
+			e.ai.meta.CopyTo(bytes, 19);
+
+			SendRaw(0x18, bytes);
         }
 		#region TOOLS
 		/// <summary>

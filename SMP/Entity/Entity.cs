@@ -24,7 +24,7 @@ namespace SMP
 			{
 				if(isPlayer) return p.pos;
 				if(isItem) return I.pos;
-				//if(isAI) return ai.pos;
+				if(isAI) return ai.pos;
 				//if(isObject) return obj.pos;
 
 				return Point3.Zero;
@@ -67,6 +67,15 @@ namespace SMP
 
 			if (I.OnGround)
 				UpdateChunks(false, false);
+
+			Entities.Add(id, this);
+		}
+		public Entity(AI ai, World l)
+		{
+			this.ai = ai;
+			id = FreeId();
+			isAI = true;
+			level = l;
 
 			Entities.Add(id, this);
 		}
@@ -164,7 +173,8 @@ namespace SMP
 						}
 						else if (e.isAI)
 						{
-							//TODO Spawn ai
+							p.VisibleEntities.Add(e.id);
+							p.SpawnMob(e);
 							continue;
 						}
 					}
@@ -179,21 +189,33 @@ namespace SMP
 				}
 
 				Entity e = Entities[i];
-				if (!e.isItem) continue;
-
-				//Console.WriteLine(pos.x + " " + pos.y + " " + pos.z);
-				//Console.WriteLine(e.pos.x + " " + e.pos.y + " " + e.pos.z);
-				//Console.WriteLine(pos.mdiff(e.I.pos) + " ");
-
-				Point3 diff = pos.RD() - e.pos.RD();
-
-				if (diff.x == 0 && diff.y == 0 && diff.z == 0)
+				if (e.isItem)
 				{
-					//TODO SendPickupAnimation
-					if (!e.I.OnGround) continue;
-					e.I.OnGround = false;
-					e.CurrentChunk.Entities.Remove(e);
-					p.inventory.Add(e.I);
+					Point3 diff = pos.RD() - e.pos.RD();
+
+					if (diff.x == 0 && diff.y == 0 && diff.z == 0)
+					{
+						//TODO SendPickupAnimation
+						if (!e.I.OnGround) continue;
+						e.I.OnGround = false;
+						e.CurrentChunk.Entities.Remove(e);
+						p.inventory.Add(e.I);
+					}
+				}
+				if (e.isAI)
+				{
+					Point3 sendme = e.pos * 32;
+					byte[] bytes = new byte[0x22];
+					util.EndianBitConverter.Big.GetBytes(e.id).CopyTo(bytes, 0);
+					util.EndianBitConverter.Big.GetBytes((int)sendme.x).CopyTo(bytes, 4);
+					util.EndianBitConverter.Big.GetBytes((int)sendme.y).CopyTo(bytes, 8);
+					util.EndianBitConverter.Big.GetBytes((int)sendme.z).CopyTo(bytes, 12);
+					bytes[16] = (byte)(e.ai.yaw / 1.40625);
+					bytes[17] = (byte)(e.ai.pitch / 1.40625);
+					
+					if (!p.VisibleEntities.Contains(i)) continue;
+					if (!p.MapLoaded) continue;
+					p.SendRaw(0x22, bytes);
 				}
 			}
 			foreach (int i in p.VisibleEntities.ToArray())

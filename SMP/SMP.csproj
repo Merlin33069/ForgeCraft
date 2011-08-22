@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\AI.cs" />
+    <Compile Include="AI\Creeper.cs" />
     <Compile Include="Command\Commands\CmdFly.cs" />
     <Compile Include="Command\Commands\CmdRain.cs" />
     <Compile Include="Command\Commands\CmdStrike.cs" />
