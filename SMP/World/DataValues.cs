@@ -230,7 +230,7 @@ namespace SMP
 	public enum Stairs : byte { South = 0x0, North = 0x1, West = 0x2, East = 0x3 };
 	public enum Levers : byte { WallSouth = 0x1, WallNorth = 0x2, WallWest = 0x3, WallEast = 0x4, GroundWest = 0x5, GroundSouth = 0x6, LeverOn = 0x8 };
 	public enum Doors : byte { NorthEast = 0x0, SouthEast = 0x1, SouthWest = 0x2, NorthWest = 0x3, TopHalf = 0x8, Open = 0x4 };
-	public enum Buttons : byte { Pressed = 0x8, West = 0x1, East = 0x2, South = 0x3, North = 0x4 };
+	public enum Buttons : byte { Pressed = 0x8, North = 0x1, South = 0x2, East = 0x3, West = 0x4 };
 	public enum SignPost : byte { West = 0x0, West_NorthWest = 0x1, NorthWest = 0x2, North_NorthWest = 0x3, North = 0x4, North_NorthEast = 0x5, NorthEast = 0x6, East_NorthEast = 0x7, East = 0x8, East_SouthEast = 0x9, SouthEast = 0xA, South_SouthEast = 0xB, South = 0xC, South_SouthWest = 0xD, SouthWest = 0xE, West_SouthWest = 0xF };
 	public enum WallSigns : byte { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
 	public enum Furnace : byte { East = 0x2, West = 0x3, North = 0x4, South = 0x5 };
@@ -244,7 +244,7 @@ namespace SMP
 	public enum TrapDoors : byte { West = 0x0, East = 0x1, South = 0x2, North = 0x3, Open = 0x4 };
 	public enum Piston : byte { Down = 0x0, Up = 0x1, East = 0x2, West = 0x3, North = 0x4, South = 0x5, On = 0x8 };
 	public enum PistonExtension : byte { Down = 0x0, Up = 0x1, East = 0x2, West = 0x3, North = 0x4, South = 0x5, Sticky = 0x8 };
-	public enum Directions : byte { Bottom = 0, Top = 1, South = 2, North = 3, West = 4, East = 5 };
+	public enum Directions : byte { Bottom = 0, Top = 1, East = 2, West = 3, North = 4, South = 5 };
 
 	public static class BlockData
 	{

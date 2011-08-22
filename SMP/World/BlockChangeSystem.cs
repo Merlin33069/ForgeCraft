@@ -352,7 +352,7 @@ namespace SMP
 		public static bool PlaceButtonStone(Player a, BCS b)
 		{
 			if (!BlockData.CanPlaceAgainst(Blockclicked(a,b))) return false;
-			//TODO check the block where the user is placing, if something exists, return
+			if (a.level.GetBlock((int)b.pos.x, (int)b.pos.y, (int)b.pos.z) != 0) return false;
 
 			switch (b.Direction)
 			{
@@ -374,7 +374,6 @@ namespace SMP
 					break;
 
 				default:
-					Server.Log("PBS - default");
 					return false;
 			}
 
@@ -397,6 +396,31 @@ namespace SMP
 		}
 		public static bool PlaceDispenser(Player a, BCS b)
 		{
+			switch (b.Direction)
+			{
+				case (0):
+				case (1):
+					return false;
+
+				case ((byte)Directions.South):
+					b.Direction = (byte)Dispenser.South;
+					break;
+				case ((byte)Directions.North):
+					b.Direction = (byte)Dispenser.North;
+					break;
+				case ((byte)Directions.West):
+					b.Direction = (byte)Dispenser.West;
+					break;
+				case ((byte)Directions.East):
+					b.Direction = (byte)Dispenser.East;
+					break;
+
+				default:
+					return false;
+			}
+
+			a.level.BlockChange((int)b.pos.x, (int)b.pos.y, (int)b.pos.z, (byte)b.ID, b.Direction);
+			a.inventory.Remove(a.inventory.current_index, 1);
 			return false;
 		}
 		public static bool PlaceFence(Player a, BCS b)
@@ -405,6 +429,31 @@ namespace SMP
 		}
 		public static bool PlaceFurnace(Player a, BCS b)
 		{
+			switch (b.Direction)
+			{
+				case (0):
+				case (1):
+					return false;
+
+				case ((byte)Directions.East):
+					b.Direction = (byte)Furnace.East;
+					break;
+				case ((byte)Directions.West):
+					b.Direction = (byte)Furnace.West;
+					break;
+				case ((byte)Directions.North):
+					b.Direction = (byte)Furnace.North;
+					break;
+				case ((byte)Directions.South):
+					b.Direction = (byte)Furnace.South;
+					break;
+
+				default:
+					return false;
+			}
+
+			a.level.BlockChange((int)b.pos.x, (int)b.pos.y, (int)b.pos.z, (byte)b.ID, b.Direction);
+			a.inventory.Remove(a.inventory.current_index, 1);
 			return false;
 		}
 		public static bool PlaceGravel(Player a, BCS b)
@@ -417,6 +466,31 @@ namespace SMP
 		}
 		public static bool PlaceLadder(Player a, BCS b)
 		{
+			switch (b.Direction)
+			{
+				case (0):
+				case (1):
+					return false;
+
+				case ((byte)Directions.South):
+					b.Direction = (byte)Ladder.South;
+					break;
+				case ((byte)Directions.North):
+					b.Direction = (byte)Furnace.North;
+					break;
+				case ((byte)Directions.West):
+					b.Direction = (byte)Furnace.West;
+					break;
+				case ((byte)Directions.East):
+					b.Direction = (byte)Furnace.East;
+					break;
+
+				default:
+					return false;
+			}
+
+			a.level.BlockChange((int)b.pos.x, (int)b.pos.y, (int)b.pos.z, (byte)b.ID, b.Direction);
+			a.inventory.Remove(a.inventory.current_index, 1);
 			return false;
 		}
 		public static bool PlaceLava(Player a, BCS b)
