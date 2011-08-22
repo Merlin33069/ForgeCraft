@@ -176,13 +176,16 @@ namespace SMP
 						if (util.EndianBitConverter.Big.ToInt16(buffer, 8) != -1) length += 3;
 						break; //Clicked window
 					case 0x82:
-						short a = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 10) * 2);
-						short b = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 12 + (a/2)) * 2);
-						short c = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 14 + (a/2)+(b/2)) * 2);
-						short d = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 16 + (a/2) + (b/2) + (c/2)) * 2);
+						short a = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 11) * 2);
+						short b = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 13 + (a/2)) * 2);
+						short c = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 15 + (a/2)+(b/2)) * 2);
+						short d = (short)(util.EndianBitConverter.Big.ToInt16(buffer, 17 + (a/2) + (b/2) + (c/2)) * 2);
 						length = 18 + a + b + c + d;
 						break;
 					case 0xFF: length = ((util.EndianBitConverter.Big.ToInt16(buffer, 1) * 2) + 2); break; //DC
+
+						//REMOTE CONSOLE PACKETS
+					case 0xFE: length = 0; break; //Remote Console Connected!
 
 					default:
 						Server.Log("unhandled message id " + msg);
@@ -225,6 +228,9 @@ namespace SMP
 						case 0x10: HandleHoldingChange(message); break; //Holding Change
 						case 0x65: HandleWindowClose(message); break; //Window Closed
 						case 0x66: HandleWindowClick(message); break; //Window Click
+
+							//Accept the RC socket and create a new rc class.
+						case 0xFE: new RC(socket); SpecialDispose(); break;
 					}
 					if (buffer.Length > 0)
 						buffer = HandleMessage(buffer);
@@ -1095,7 +1101,18 @@ namespace SMP
                 socket = null;
             }
 		}
-        
+		public void SpecialDispose()
+		{
+			disconnected = true;
+			LoggedIn = false;
+
+			players.Remove(this);
+			e.CurrentChunk.Entities.Remove(e);
+			Entity.Entities.Remove(id);
+
+
+		}
+
         public void hurt(short Amount)
         {
             health -= Amount;

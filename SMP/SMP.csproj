@@ -83,6 +83,7 @@
     <Compile Include="Objects\McObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Command\Commands\CmdFire.cs" />
+    <Compile Include="RemoteControl\RC.cs" />
     <Compile Include="WebserverStuff\WebClient.cs" />
     <Compile Include="WebserverStuff\WebServer.cs" />
     <Compile Include="World\BlockChangeSystem.cs" />
